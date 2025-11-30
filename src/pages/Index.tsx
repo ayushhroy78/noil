@@ -73,7 +73,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-32 overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div className="min-h-screen bg-background pb-40 overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card shadow-soft px-4 py-4">
         <div className="flex items-center gap-2 mb-3">
@@ -95,7 +95,7 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="px-4 py-6 space-y-6 max-w-md mx-auto">
+      <main className="px-4 py-6 space-y-6 max-w-md mx-auto pb-8">
         {/* Offer Carousel */}
         <Carousel
           opts={{
