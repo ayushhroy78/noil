@@ -18,13 +18,14 @@ All colors MUST be HSL.
     --popover-foreground: 0 0% 10%;
 
     /* Swiggy-inspired orange/coral primary */
-    --primary: 15 85% 55%;
+    --primary: 280 70% 55%;
     --primary-foreground: 0 0% 100%;
+    --primary-glow: 280 70% 65%;
     
-    /* Vibrant green for offers */
-    --success: 142 76% 36%;
+    /* Vibrant teal for offers */
+    --success: 180 65% 45%;
     --success-foreground: 0 0% 100%;
-    --success-glow: 142 76% 45%;
+    --success-glow: 180 65% 55%;
 
     --secondary: 0 0% 96%;
     --secondary-foreground: 0 0% 10%;
@@ -45,13 +46,15 @@ All colors MUST be HSL.
     --radius: 1rem;
 
     /* Custom gradients and effects */
-    --gradient-primary: linear-gradient(135deg, hsl(15 85% 55%), hsl(25 90% 60%));
-    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 45%));
-    --gradient-radial: radial-gradient(circle at center, hsl(142 76% 45% / 0.2), transparent 70%);
+    --gradient-primary: linear-gradient(135deg, hsl(280 70% 55%), hsl(290 75% 65%));
+    --gradient-success: linear-gradient(135deg, hsl(180 65% 45%), hsl(190 70% 55%));
+    --gradient-radial: radial-gradient(circle at center, hsl(280 70% 65% / 0.2), transparent 70%);
     
     --shadow-soft: 0 2px 8px hsl(0 0% 0% / 0.06);
     --shadow-medium: 0 4px 16px hsl(0 0% 0% / 0.08);
-    --shadow-glow-success: 0 8px 24px hsl(142 76% 45% / 0.3);
+    --shadow-glow-success: 0 8px 24px hsl(180 65% 45% / 0.3);
+    --shadow-glow-primary: 0 8px 24px hsl(280 70% 55% / 0.3);
+    --shadow-nav: 0 -8px 24px hsl(0 0% 0% / 0.12);
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }

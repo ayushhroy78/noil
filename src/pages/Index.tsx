@@ -193,17 +193,17 @@ const Index = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card shadow-[0_-4px_16px_rgba(0,0,0,0.08)] border-t border-border">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card shadow-nav border-t border-border/50 backdrop-blur-sm">
         <div className="max-w-md mx-auto flex items-center justify-around px-4 py-3">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
               <button
                 key={item.label}
-                className={`flex flex-col items-center gap-1 px-3 py-1 transition-all ${
+                className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all ${
                   item.active
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "text-primary bg-primary/10"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                 }`}
               >
                 <Icon className={`w-5 h-5 ${item.active ? "fill-primary" : ""}`} />
