@@ -10,6 +10,7 @@ import trackerMainImg from "@/assets/tracker-main.jpg";
 import fitMealMainImg from "@/assets/fit-meal-main.jpg";
 import oilhubMainImg from "@/assets/oilhub-main.jpg";
 import discoverMainImg from "@/assets/discover-main.jpg";
+import logoImg from "@/assets/logo.jpg";
 import Autoplay from "embla-carousel-autoplay";
 
 const Index = () => {
@@ -85,7 +86,7 @@ const Index = () => {
       <header className="sticky top-0 z-50 bg-card shadow-soft px-4 py-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-primary">Noil</h1>
+            <img src={logoImg} alt="Noil Logo" className="h-10 w-10 object-contain" />
             <div>
               <p className="text-xs text-muted-foreground">Koramangala, Bangalore</p>
             </div>
