@@ -36,21 +36,21 @@ const Index = () => {
   const categories = [
     {
       id: "oil-tracker",
-      title: "Oil Tracker",
+      title: "Tracker",
       subtitle: "Track Your Daily Oil Use",
       image: oilTrackerImg,
       color: "from-blue-500/10 to-cyan-500/10",
     },
     {
       id: "recipes",
-      title: "Healthy Recipes",
+      title: "Fit Meal",
       subtitle: "Low-Oil Cooking Ideas",
       image: recipesImg,
       color: "from-green-500/10 to-emerald-500/10",
     },
     {
       id: "store",
-      title: "Smart Store",
+      title: "OilHub",
       subtitle: "Buy Certified Oils & Essentials",
       image: storeImg,
       color: "from-orange-500/10 to-amber-500/10",
@@ -149,21 +149,21 @@ const Index = () => {
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
               
-              <div className="relative z-10 space-y-3">
-                <div className="w-16 h-16 mx-auto">
-                  <img
-                    src={category.image}
-                    alt={category.title}
-                    className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
-                  />
-                </div>
-                <div className="text-center">
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="text-left mb-3">
                   <h3 className="font-bold text-foreground text-base mb-1">
                     {category.title}
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     {category.subtitle}
                   </p>
+                </div>
+                <div className="w-16 h-16 mt-auto ml-auto">
+                  <img
+                    src={category.image}
+                    alt={category.title}
+                    className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
+                  />
                 </div>
               </div>
             </Card>
@@ -197,7 +197,7 @@ const Index = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card shadow-nav border-t border-border/50 backdrop-blur-sm">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card shadow-nav border-t border-border">
         <div className="max-w-md mx-auto flex items-center justify-around px-4 py-3">
           {navItems.map((item) => {
             const Icon = item.icon;
