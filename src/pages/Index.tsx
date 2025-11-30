@@ -76,12 +76,16 @@ const Index = () => {
     <div className="min-h-screen bg-background pb-40 overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card shadow-soft px-4 py-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Heart className="w-5 h-5 text-success fill-success/20" />
-          <div className="flex-1">
-            <p className="text-sm font-semibold text-foreground">Wellness Home</p>
-            <p className="text-xs text-muted-foreground">Koramangala, Bangalore</p>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold text-primary">noil</h1>
+            <div>
+              <p className="text-xs text-muted-foreground">Koramangala, Bangalore</p>
+            </div>
           </div>
+          <button className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors">
+            <Heart className="w-5 h-5 text-primary" />
+          </button>
         </div>
         
         <div className="relative">
