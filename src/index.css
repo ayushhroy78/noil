@@ -17,10 +17,10 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
 
-    /* Swiggy-inspired orange/coral primary */
-    --primary: 280 70% 55%;
+    /* Fresh teal primary for noil health theme */
+    --primary: 175 70% 45%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 280 70% 65%;
+    --primary-glow: 175 70% 55%;
     
     /* Vibrant teal for offers */
     --success: 180 65% 45%;
@@ -46,14 +46,14 @@ All colors MUST be HSL.
     --radius: 1rem;
 
     /* Custom gradients and effects */
-    --gradient-primary: linear-gradient(135deg, hsl(280 70% 55%), hsl(290 75% 65%));
+    --gradient-primary: linear-gradient(135deg, hsl(175 70% 45%), hsl(180 75% 55%));
     --gradient-success: linear-gradient(135deg, hsl(180 65% 45%), hsl(190 70% 55%));
-    --gradient-radial: radial-gradient(circle at center, hsl(280 70% 65% / 0.2), transparent 70%);
+    --gradient-radial: radial-gradient(circle at center, hsl(175 70% 55% / 0.2), transparent 70%);
     
     --shadow-soft: 0 2px 8px hsl(0 0% 0% / 0.06);
     --shadow-medium: 0 4px 16px hsl(0 0% 0% / 0.08);
     --shadow-glow-success: 0 8px 24px hsl(180 65% 45% / 0.3);
-    --shadow-glow-primary: 0 8px 24px hsl(280 70% 55% / 0.3);
+    --shadow-glow-primary: 0 8px 24px hsl(175 70% 45% / 0.3);
     --shadow-nav: 0 -8px 24px hsl(0 0% 0% / 0.12);
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
