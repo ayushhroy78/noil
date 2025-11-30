@@ -1,6 +1,6 @@
 import { ArrowLeft, Leaf, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import fitMealDetailImg from "@/assets/fit-meal-detail.jpg";
+import fitMealMainImg from "@/assets/fit-meal-main.jpg";
 import { Button } from "@/components/ui/button";
 
 const FitMeal = () => {
@@ -31,7 +31,7 @@ const FitMeal = () => {
 
           <div className="relative rounded-2xl overflow-hidden shadow-medium">
             <img
-              src={fitMealDetailImg}
+              src={fitMealMainImg}
               alt="Healthy Low-Oil Recipes"
               className="w-full h-auto"
             />

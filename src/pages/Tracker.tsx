@@ -1,6 +1,6 @@
 import { ArrowLeft, Clock, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import trackerDetailImg from "@/assets/tracker-detail.jpg";
+import trackerMainImg from "@/assets/tracker-main.jpg";
 import { Button } from "@/components/ui/button";
 
 const Tracker = () => {
@@ -31,7 +31,7 @@ const Tracker = () => {
 
           <div className="relative rounded-2xl overflow-hidden shadow-medium">
             <img
-              src={trackerDetailImg}
+              src={trackerMainImg}
               alt="Oil Usage Tracker"
               className="w-full h-auto"
             />
