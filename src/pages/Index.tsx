@@ -1,11 +1,38 @@
 import { Heart, Search, Home, Activity, Book, ShoppingBag, Compass } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 import oilTrackerImg from "@/assets/oil-tracker-illustration.png";
 import recipesImg from "@/assets/healthy-recipes-illustration.png";
 import storeImg from "@/assets/smart-store-illustration.png";
 import discoverImg from "@/assets/discover-wellness-illustration.png";
+import Autoplay from "embla-carousel-autoplay";
 
 const Index = () => {
+  const offerSlides = [
+    {
+      id: "wellness-challenge",
+      badge: "💧 WELLNESS CHALLENGE",
+      title: "Save 10% Oil",
+      subtitle: "Improve Your Health Today",
+      buttonText: "Join Challenge",
+      gradient: "bg-gradient-success",
+      glowClass: "success-glow",
+    },
+    {
+      id: "store-discount",
+      badge: "🛍️ SMART STORE SALE",
+      title: "Up to 30% OFF",
+      subtitle: "On Certified Healthy Oils & Essentials",
+      buttonText: "Shop Now",
+      gradient: "bg-gradient-primary",
+      glowClass: "primary-glow",
+    },
+  ];
+
   const categories = [
     {
       id: "oil-tracker",
@@ -69,26 +96,44 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="px-4 py-6 space-y-6 max-w-md mx-auto">
-        {/* Offer Banner */}
-        <Card className="relative overflow-hidden bg-gradient-success shadow-glow-success border-0 p-6 animate-in fade-in slide-in-from-top-4 duration-500">
-          <div className="absolute inset-0 bg-gradient-radial opacity-40" />
-          <div className="absolute top-0 right-0 w-40 h-40 bg-success-glow rounded-full blur-3xl opacity-20" />
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-success-glow rounded-full blur-2xl opacity-15" />
-          
-          <div className="relative z-10 space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-success-foreground/15 rounded-full mb-2">
-              <span className="text-xl">💧</span>
-              <span className="text-xs font-bold text-success-foreground">WELLNESS CHALLENGE</span>
-            </div>
-            <h2 className="text-2xl font-bold text-success-foreground tracking-tight">
-              Save 10% Oil
-            </h2>
-            <p className="text-success-foreground/90 font-medium">Improve Your Health Today</p>
-            <button className="mt-3 px-5 py-2 bg-success-foreground text-success rounded-lg font-semibold text-sm hover:scale-105 transition-transform">
-              Join Challenge
-            </button>
-          </div>
-        </Card>
+        {/* Offer Carousel */}
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          plugins={[
+            Autoplay({
+              delay: 4000,
+            }),
+          ]}
+          className="w-full animate-in fade-in slide-in-from-top-4 duration-500"
+        >
+          <CarouselContent>
+            {offerSlides.map((slide) => (
+              <CarouselItem key={slide.id}>
+                <Card className={`relative overflow-hidden ${slide.gradient} shadow-glow-${slide.id === 'wellness-challenge' ? 'success' : 'primary'} border-0 p-6`}>
+                  <div className="absolute inset-0 bg-gradient-radial opacity-40" />
+                  <div className={`absolute top-0 right-0 w-40 h-40 bg-${slide.glowClass} rounded-full blur-3xl opacity-20`} />
+                  <div className={`absolute bottom-0 left-0 w-32 h-32 bg-${slide.glowClass} rounded-full blur-2xl opacity-15`} />
+                  
+                  <div className="relative z-10 space-y-2">
+                    <div className={`inline-flex items-center gap-2 px-3 py-1 ${slide.id === 'wellness-challenge' ? 'bg-success-foreground/15' : 'bg-primary-foreground/15'} rounded-full mb-2`}>
+                      <span className="text-xs font-bold ${slide.id === 'wellness-challenge' ? 'text-success-foreground' : 'text-primary-foreground'}">{slide.badge}</span>
+                    </div>
+                    <h2 className={`text-2xl font-bold ${slide.id === 'wellness-challenge' ? 'text-success-foreground' : 'text-primary-foreground'} tracking-tight`}>
+                      {slide.title}
+                    </h2>
+                    <p className={`${slide.id === 'wellness-challenge' ? 'text-success-foreground/90' : 'text-primary-foreground/90'} font-medium`}>{slide.subtitle}</p>
+                    <button className={`mt-3 px-5 py-2 ${slide.id === 'wellness-challenge' ? 'bg-success-foreground text-success' : 'bg-primary-foreground text-primary'} rounded-lg font-semibold text-sm hover:scale-105 transition-transform`}>
+                      {slide.buttonText}
+                    </button>
+                  </div>
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
 
         {/* Categories Grid */}
         <div className="grid grid-cols-2 gap-4">
