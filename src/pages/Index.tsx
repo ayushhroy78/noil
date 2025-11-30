@@ -6,10 +6,10 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import trackerDetailImg from "@/assets/tracker-detail.jpg";
-import fitMealDetailImg from "@/assets/fit-meal-detail.jpg";
-import oilhubDetailImg from "@/assets/oilhub-detail.jpg";
-import discoverDetailImg from "@/assets/discover-detail.jpg";
+import trackerMainImg from "@/assets/tracker-main.jpg";
+import fitMealMainImg from "@/assets/fit-meal-main.jpg";
+import oilhubMainImg from "@/assets/oilhub-main.jpg";
+import discoverMainImg from "@/assets/discover-main.jpg";
 import Autoplay from "embla-carousel-autoplay";
 
 const Index = () => {
@@ -41,7 +41,7 @@ const Index = () => {
       id: "oil-tracker",
       title: "Tracker",
       subtitle: "Track Your Daily Oil Use",
-      image: trackerDetailImg,
+      image: trackerMainImg,
       color: "from-blue-500/10 to-cyan-500/10",
       path: "/tracker",
     },
@@ -49,7 +49,7 @@ const Index = () => {
       id: "recipes",
       title: "Fit Meal",
       subtitle: "Low-Oil Cooking Ideas",
-      image: fitMealDetailImg,
+      image: fitMealMainImg,
       color: "from-green-500/10 to-emerald-500/10",
       path: "/fit-meal",
     },
@@ -57,7 +57,7 @@ const Index = () => {
       id: "store",
       title: "OilHub",
       subtitle: "Buy Certified Oils & Essentials",
-      image: oilhubDetailImg,
+      image: oilhubMainImg,
       color: "from-orange-500/10 to-amber-500/10",
       path: "/oilhub",
     },
@@ -65,7 +65,7 @@ const Index = () => {
       id: "discover",
       title: "Discover",
       subtitle: "Learn Healthy Habits",
-      image: discoverDetailImg,
+      image: discoverMainImg,
       color: "from-purple-500/10 to-pink-500/10",
       path: "/discover",
     },
