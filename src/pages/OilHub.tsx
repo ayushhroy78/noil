@@ -1,6 +1,6 @@
 import { ArrowLeft, Leaf, ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import oilhubDetailImg from "@/assets/oilhub-detail.jpg";
+import oilhubMainImg from "@/assets/oilhub-main.jpg";
 import { Button } from "@/components/ui/button";
 
 const OilHub = () => {
@@ -31,7 +31,7 @@ const OilHub = () => {
 
           <div className="relative rounded-2xl overflow-hidden shadow-medium">
             <img
-              src={oilhubDetailImg}
+              src={oilhubMainImg}
               alt="Certified Healthy Oils"
               className="w-full h-auto"
             />
