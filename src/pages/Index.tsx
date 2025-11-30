@@ -73,7 +73,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-24 overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div className="min-h-screen bg-background pb-32 overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card shadow-soft px-4 py-4">
         <div className="flex items-center gap-2 mb-3">
@@ -167,7 +167,7 @@ const Index = () => {
         </div>
 
         {/* Promotional Card */}
-        <Card className="relative overflow-hidden bg-gradient-primary shadow-medium border-0 p-6 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+        <Card className="relative overflow-hidden bg-gradient-primary shadow-medium border-0 p-6 animate-in fade-in duration-700" style={{ animationDelay: '600ms' }}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary-foreground/10 rounded-full blur-2xl" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary-foreground/10 rounded-full blur-xl" />
           
