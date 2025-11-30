@@ -1,4 +1,5 @@
 import { User, Search, Home, Activity, Book, ShoppingBag, Compass } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import {
   Carousel,
@@ -12,6 +13,8 @@ import discoverImg from "@/assets/discover-wellness-illustration.png";
 import Autoplay from "embla-carousel-autoplay";
 
 const Index = () => {
+  const navigate = useNavigate();
+  
   const offerSlides = [
     {
       id: "wellness-challenge",
@@ -40,6 +43,7 @@ const Index = () => {
       subtitle: "Track Your Daily Oil Use",
       image: oilTrackerImg,
       color: "from-blue-500/10 to-cyan-500/10",
+      path: "/tracker",
     },
     {
       id: "recipes",
@@ -47,6 +51,7 @@ const Index = () => {
       subtitle: "Low-Oil Cooking Ideas",
       image: recipesImg,
       color: "from-green-500/10 to-emerald-500/10",
+      path: "/fit-meal",
     },
     {
       id: "store",
@@ -54,6 +59,7 @@ const Index = () => {
       subtitle: "Buy Certified Oils & Essentials",
       image: storeImg,
       color: "from-orange-500/10 to-amber-500/10",
+      path: "/oilhub",
     },
     {
       id: "discover",
@@ -61,15 +67,16 @@ const Index = () => {
       subtitle: "Learn Healthy Habits",
       image: discoverImg,
       color: "from-purple-500/10 to-pink-500/10",
+      path: "/discover",
     },
   ];
 
   const navItems = [
-    { icon: Activity, label: "Tracker", active: false },
-    { icon: Book, label: "Recipes", active: false },
-    { icon: Home, label: "Home", active: true },
-    { icon: ShoppingBag, label: "Store", active: false },
-    { icon: Compass, label: "Discover", active: false },
+    { icon: Activity, label: "Tracker", active: false, path: "/tracker" },
+    { icon: Book, label: "Recipes", active: false, path: "/fit-meal" },
+    { icon: Home, label: "Home", active: true, path: "/" },
+    { icon: ShoppingBag, label: "Store", active: false, path: "/oilhub" },
+    { icon: Compass, label: "Discover", active: false, path: "/discover" },
   ];
 
   return (
@@ -144,6 +151,7 @@ const Index = () => {
           {categories.map((category, index) => (
             <Card
               key={category.id}
+              onClick={() => navigate(category.path)}
               className="group relative overflow-hidden bg-card shadow-medium border-0 p-5 cursor-pointer hover:shadow-lg transition-all duration-500 hover:-translate-y-1 animate-in fade-in duration-700"
               style={{ animationDelay: `${index * 150}ms` }}
             >
@@ -205,6 +213,7 @@ const Index = () => {
             return (
               <button
                 key={item.label}
+                onClick={() => navigate(item.path)}
                 className={`flex flex-col items-center gap-1 rounded-xl transition-all ${
                   isHome 
                     ? "px-4 py-2 -mt-6 bg-primary text-primary-foreground shadow-lg scale-110" 
