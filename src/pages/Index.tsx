@@ -95,7 +95,8 @@ const Index = () => {
           {categories.map((category, index) => (
             <Card
               key={category.id}
-              className="group relative overflow-hidden bg-card shadow-medium border-0 p-5 cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+              className="group relative overflow-hidden bg-card shadow-medium border-0 p-5 cursor-pointer hover:shadow-lg transition-all duration-500 hover:-translate-y-1 animate-in fade-in duration-700"
+              style={{ animationDelay: `${index * 150}ms` }}
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
               
