@@ -161,19 +161,6 @@ const Index = () => {
                 alt={category.title}
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              
-              {/* Dark Overlay for Text Readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-              
-              {/* Text Content */}
-              <div className="relative z-10 flex flex-col justify-end h-full p-4">
-                <h3 className="font-bold text-white text-lg mb-1">
-                  {category.title}
-                </h3>
-                <p className="text-xs text-white/90">
-                  {category.subtitle}
-                </p>
-              </div>
             </Card>
           ))}
         </div>
