@@ -65,9 +65,9 @@ const Index = () => {
   ];
 
   const navItems = [
-    { icon: Home, label: "Home", active: true },
     { icon: Activity, label: "Tracker", active: false },
     { icon: Book, label: "Recipes", active: false },
+    { icon: Home, label: "Home", active: true },
     { icon: ShoppingBag, label: "Store", active: false },
     { icon: Compass, label: "Discover", active: false },
   ];
@@ -197,17 +197,22 @@ const Index = () => {
         <div className="max-w-md mx-auto flex items-center justify-around px-4 py-3">
           {navItems.map((item) => {
             const Icon = item.icon;
+            const isHome = item.label === "Home";
             return (
               <button
                 key={item.label}
-                className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all ${
-                  item.active
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                className={`flex flex-col items-center gap-1 rounded-xl transition-all ${
+                  isHome 
+                    ? "px-4 py-2 -mt-6 bg-primary text-primary-foreground shadow-lg scale-110" 
+                    : `px-3 py-1.5 ${
+                        item.active
+                          ? "text-primary bg-primary/10"
+                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                      }`
                 }`}
               >
-                <Icon className={`w-5 h-5 ${item.active ? "fill-primary" : ""}`} />
-                <span className="text-xs font-medium">{item.label}</span>
+                <Icon className={`w-6 h-6 ${isHome ? "fill-primary-foreground" : item.active ? "fill-primary" : ""}`} />
+                <span className={`text-xs font-medium ${isHome ? "font-semibold" : ""}`}>{item.label}</span>
               </button>
             );
           })}
