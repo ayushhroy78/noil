@@ -1,4 +1,4 @@
-import { Heart, Search, Home, Activity, Book, ShoppingBag, Compass } from "lucide-react";
+import { User, Search, Home, Activity, Book, ShoppingBag, Compass } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import {
   Carousel,
@@ -78,13 +78,13 @@ const Index = () => {
       <header className="sticky top-0 z-50 bg-card shadow-soft px-4 py-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-primary">noil</h1>
+            <h1 className="text-xl font-bold text-primary">Noil</h1>
             <div>
               <p className="text-xs text-muted-foreground">Koramangala, Bangalore</p>
             </div>
           </div>
           <button className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors">
-            <Heart className="w-5 h-5 text-primary" />
+            <User className="w-5 h-5 text-primary" />
           </button>
         </div>
         
