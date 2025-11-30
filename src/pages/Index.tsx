@@ -165,30 +165,17 @@ const Index = () => {
           ))}
         </div>
 
-        {/* Promotional Card */}
-        <Card className="relative overflow-hidden bg-gradient-primary shadow-medium border-0 p-6 animate-in fade-in duration-700" style={{ animationDelay: '600ms' }}>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary-foreground/10 rounded-full blur-2xl" />
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary-foreground/10 rounded-full blur-xl" />
-          
-          <div className="relative z-10 space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-2xl font-bold text-primary-foreground mb-1">
-                  Healthy Rewards
-                </h3>
-                <p className="text-primary-foreground/90 text-sm">
-                  Earn Points for Every Healthy Choice
-                </p>
-              </div>
-              <div className="w-16 h-16 bg-primary-foreground/20 rounded-full flex items-center justify-center">
-                <span className="text-3xl">🌟</span>
-              </div>
-            </div>
-            <button className="w-full py-3 bg-primary-foreground text-primary rounded-xl font-semibold text-sm hover:scale-105 transition-transform">
-              Learn More
-            </button>
-          </div>
-        </Card>
+        {/* Footer Branding */}
+        <div className="py-12 space-y-4 animate-in fade-in duration-700" style={{ animationDelay: '600ms' }}>
+          <h2 className="text-7xl font-black text-muted-foreground/20 leading-tight">
+            Live it
+            <br />
+            healthy!
+          </h2>
+          <p className="text-muted-foreground text-sm flex items-center gap-1">
+            Crafted with <span className="text-red-500">❤️</span> in Bengaluru, India
+          </p>
+        </div>
       </main>
 
       {/* Bottom Navigation */}
