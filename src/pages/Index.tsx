@@ -152,27 +152,27 @@ const Index = () => {
             <Card
               key={category.id}
               onClick={() => navigate(category.path)}
-              className="group relative overflow-hidden bg-card shadow-medium border-0 p-5 cursor-pointer hover:shadow-lg transition-all duration-500 hover:-translate-y-1 animate-in fade-in duration-700"
+              className="group relative overflow-hidden bg-card shadow-medium border-0 cursor-pointer hover:shadow-lg transition-all duration-500 hover:-translate-y-1 animate-in fade-in duration-700 h-48"
               style={{ animationDelay: `${index * 150}ms` }}
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+              {/* Full Image Background */}
+              <img
+                src={category.image}
+                alt={category.title}
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
               
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="text-left mb-3">
-                  <h3 className="font-bold text-foreground text-base mb-1">
-                    {category.title}
-                  </h3>
-                  <p className="text-xs text-muted-foreground">
-                    {category.subtitle}
-                  </p>
-                </div>
-                <div className="w-16 h-16 mt-auto ml-auto">
-                  <img
-                    src={category.image}
-                    alt={category.title}
-                    className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
-                  />
-                </div>
+              {/* Dark Overlay for Text Readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+              
+              {/* Text Content */}
+              <div className="relative z-10 flex flex-col justify-end h-full p-4">
+                <h3 className="font-bold text-white text-lg mb-1">
+                  {category.title}
+                </h3>
+                <p className="text-xs text-white/90">
+                  {category.subtitle}
+                </p>
               </div>
             </Card>
           ))}
