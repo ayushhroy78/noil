@@ -73,7 +73,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24 overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card shadow-soft px-4 py-4">
         <div className="flex items-center gap-2 mb-3">
