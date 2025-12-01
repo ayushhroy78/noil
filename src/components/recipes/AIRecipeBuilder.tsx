@@ -111,7 +111,6 @@ const AIRecipeBuilder = ({ onRecipeGenerated }: AIRecipeBuilderProps) => {
                 <SelectValue placeholder="Any cuisine" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Any cuisine</SelectItem>
                 <SelectItem value="Indian">Indian</SelectItem>
                 <SelectItem value="South Indian">South Indian</SelectItem>
                 <SelectItem value="Asian">Asian</SelectItem>
@@ -130,7 +129,6 @@ const AIRecipeBuilder = ({ onRecipeGenerated }: AIRecipeBuilderProps) => {
                 <SelectValue placeholder="Any meal" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Any meal</SelectItem>
                 <SelectItem value="breakfast">Breakfast</SelectItem>
                 <SelectItem value="lunch">Lunch</SelectItem>
                 <SelectItem value="dinner">Dinner</SelectItem>
