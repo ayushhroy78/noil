@@ -15,6 +15,8 @@ const FitMeal = () => {
   const [selectedRecipe, setSelectedRecipe] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [generatedRecipe, setGeneratedRecipe] = useState<any | null>(null);
+  const [filterMealType, setFilterMealType] = useState<string>("all");
+  const [filterCuisine, setFilterCuisine] = useState<string>("all");
 
   useEffect(() => {
     fetchRecipes();
@@ -71,6 +73,15 @@ const FitMeal = () => {
     );
   }
 
+  const filteredRecipes = recipes.filter((recipe) => {
+    const matchesMealType = filterMealType === "all" || recipe.meal_type === filterMealType;
+    const matchesCuisine = filterCuisine === "all" || recipe.cuisine === filterCuisine;
+    return matchesMealType && matchesCuisine;
+  });
+
+  const mealTypes = ["all", ...new Set(recipes.map((r) => r.meal_type))];
+  const cuisines = ["all", ...new Set(recipes.map((r) => r.cuisine))];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background pb-8">
       <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm shadow-soft px-4 py-4 border-b border-primary/10">
@@ -95,18 +106,91 @@ const FitMeal = () => {
             <TabsTrigger value="ai">AI Recipe Builder</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="explore" className="space-y-4">
+          <TabsContent value="explore" className="space-y-6">
+            {/* Filter Pills */}
+            {!isLoading && recipes.length > 0 && (
+              <div className="max-w-4xl mx-auto space-y-4">
+                {/* Meal Type Filter */}
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-muted-foreground px-1">Filter by Meal</p>
+                  <div className="flex flex-wrap gap-2">
+                    {mealTypes.map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => setFilterMealType(type)}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                          filterMealType === type
+                            ? "bg-primary text-primary-foreground shadow-lg scale-105"
+                            : "bg-secondary/50 text-foreground hover:bg-secondary hover:scale-105"
+                        }`}
+                      >
+                        {type === "all" ? "All Meals" : type.charAt(0).toUpperCase() + type.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Cuisine Filter */}
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-muted-foreground px-1">Filter by Cuisine</p>
+                  <div className="flex flex-wrap gap-2">
+                    {cuisines.map((cuisine) => (
+                      <button
+                        key={cuisine}
+                        onClick={() => setFilterCuisine(cuisine)}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                          filterCuisine === cuisine
+                            ? "bg-primary text-primary-foreground shadow-lg scale-105"
+                            : "bg-secondary/50 text-foreground hover:bg-secondary hover:scale-105"
+                        }`}
+                      >
+                        {cuisine === "all" ? "All Cuisines" : cuisine}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Results Count */}
+                <div className="text-center">
+                  <p className="text-sm text-muted-foreground">
+                    Showing <span className="font-bold text-primary">{filteredRecipes.length}</span> recipes
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Recipe Grid */}
             {isLoading ? (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">Loading recipes...</p>
+              <div className="text-center py-12">
+                <div className="inline-block w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4"></div>
+                <p className="text-muted-foreground">Loading delicious recipes...</p>
               </div>
             ) : recipes.length === 0 ? (
-              <div className="text-center py-8">
+              <div className="text-center py-12">
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-4xl">🍽️</span>
+                </div>
                 <p className="text-muted-foreground">No recipes available yet</p>
               </div>
+            ) : filteredRecipes.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-4xl">🔍</span>
+                </div>
+                <p className="text-muted-foreground">No recipes match your filters</p>
+                <button
+                  onClick={() => {
+                    setFilterMealType("all");
+                    setFilterCuisine("all");
+                  }}
+                  className="mt-4 text-primary font-medium hover:underline"
+                >
+                  Clear filters
+                </button>
+              </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-                {recipes.map((recipe) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                {filteredRecipes.map((recipe) => (
                   <RecipeCard
                     key={recipe.id}
                     id={recipe.id}
