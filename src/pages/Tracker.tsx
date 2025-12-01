@@ -9,6 +9,7 @@ import { HealthScoreCard } from "@/components/tracking/HealthScoreCard";
 import { InsightsSection } from "@/components/tracking/InsightsSection";
 import { BarcodeScanner } from "@/components/tracking/BarcodeScanner";
 import { ProgressCharts } from "@/components/tracking/ProgressCharts";
+import { DailyGoalTracker } from "@/components/tracking/DailyGoalTracker";
 import { useTracking } from "@/hooks/useTracking";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -54,7 +55,10 @@ const Tracker = () => {
 
       {/* Main Content */}
       <main className="px-4 py-6 space-y-6 max-w-2xl mx-auto">
-        {/* Health Score - Featured */}
+        {/* Daily Goal Tracker - Featured */}
+        <DailyGoalTracker todayConsumption={data.consumption.today} />
+
+        {/* Health Score */}
         <HealthScoreCard data={data.healthScore} />
 
         {/* Consumption Summary */}
