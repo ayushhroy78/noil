@@ -1,1 +1,7 @@
 project_id = "dckxzktipfjdjqjceazd"
+
+[functions.lookup-barcode]
+verify_jwt = false
+
+[functions.suggest-oil-alternatives]
+verify_jwt = false

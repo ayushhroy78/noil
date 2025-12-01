@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Camera, X, Scan, Keyboard, History, Plus } from "lucide-react";
+import { Camera, X, Scan, Keyboard, History, Plus, Sparkles, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -37,6 +37,8 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
   const [manualBarcode, setManualBarcode] = useState("");
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [productData, setProductData] = useState<ProductData | null>(null);
+  const [aiSuggestions, setAiSuggestions] = useState<string | null>(null);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [history, setHistory] = useState<BarcodeHistory[]>([]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const readerRef = useRef<BrowserMultiFormatReader | null>(null);
@@ -75,13 +77,16 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
       if (error) throw error;
 
       if (data.found) {
-        setProductData({
+        const product = {
           barcode,
           productName: data.productName,
           oilContentMl: data.oilContentMl,
           fatContentG: data.fatContentG,
           transFatG: data.transFatG,
-        });
+        };
+        setProductData(product);
+        // Fetch AI suggestions for better oil alternatives
+        fetchAiSuggestions(product);
       } else {
         setProductData(null);
         toast({
@@ -319,8 +324,34 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
     }
   };
 
+  const fetchAiSuggestions = async (product: ProductData) => {
+    setIsLoadingSuggestions(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("suggest-oil-alternatives", {
+        body: {
+          productName: product.productName,
+          oilContentMl: product.oilContentMl,
+          fatContentG: product.fatContentG,
+          transFatG: product.transFatG,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        setAiSuggestions(data.suggestions);
+      }
+    } catch (error) {
+      console.error("Error fetching AI suggestions:", error);
+      // Don't show error toast, just fail silently
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  };
+
   const handleCancel = () => {
     setProductData(null);
+    setAiSuggestions(null);
     setManualBarcode("");
   };
 
@@ -475,6 +506,29 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
                   </div>
                 )}
               </div>
+
+              {isLoadingSuggestions && (
+                <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Getting healthier oil suggestions...</span>
+                  </div>
+                </div>
+              )}
+
+              {aiSuggestions && !isLoadingSuggestions && (
+                <div className="space-y-2 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles className="w-4 h-4 text-green-600 dark:text-green-400" />
+                    <p className="text-sm font-semibold text-green-700 dark:text-green-300">
+                      Healthier Oil Alternatives
+                    </p>
+                  </div>
+                  <div className="text-sm text-foreground whitespace-pre-wrap">
+                    {aiSuggestions}
+                  </div>
+                </div>
+              )}
 
               <div className="pt-2">
                 <p className="text-sm text-muted-foreground mb-3">
