@@ -170,11 +170,11 @@ export const ProgressCharts = ({ userId }: ProgressChartsProps) => {
                   <Line
                     type="monotone"
                     dataKey="cookingOil"
-                    stroke="hsl(var(--secondary))"
-                    strokeWidth={2}
+                    stroke="#10b981"
+                    strokeWidth={3}
                     name="Cooking Oil"
-                    dot={{ fill: "hsl(var(--secondary))", r: 4 }}
-                    activeDot={{ r: 6 }}
+                    dot={{ fill: "#10b981", r: 5 }}
+                    activeDot={{ r: 7 }}
                   />
                   <Line
                     type="monotone"
@@ -228,10 +228,10 @@ export const ProgressCharts = ({ userId }: ProgressChartsProps) => {
                   <Line
                     type="monotone"
                     dataKey="cookingOil"
-                    stroke="hsl(var(--secondary))"
-                    strokeWidth={2}
+                    stroke="#10b981"
+                    strokeWidth={3}
                     name="Cooking Oil"
-                    dot={{ fill: "hsl(var(--secondary))" }}
+                    dot={{ fill: "#10b981", r: 5 }}
                   />
                   <Line
                     type="monotone"
