@@ -14,7 +14,156 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      barcode_scans: {
+        Row: {
+          barcode: string | null
+          created_at: string | null
+          fat_content_g: number | null
+          id: string
+          oil_content_ml: number
+          product_name: string
+          scan_date: string
+          trans_fat_g: number | null
+          user_id: string
+        }
+        Insert: {
+          barcode?: string | null
+          created_at?: string | null
+          fat_content_g?: number | null
+          id?: string
+          oil_content_ml: number
+          product_name: string
+          scan_date?: string
+          trans_fat_g?: number | null
+          user_id: string
+        }
+        Update: {
+          barcode?: string | null
+          created_at?: string | null
+          fat_content_g?: number | null
+          id?: string
+          oil_content_ml?: number
+          product_name?: string
+          scan_date?: string
+          trans_fat_g?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      bottles: {
+        Row: {
+          avg_daily_consumption: number | null
+          brand: string
+          created_at: string | null
+          days_used: number | null
+          finish_date: string | null
+          id: string
+          oil_type: string
+          quantity_ml: number
+          start_date: string
+          user_id: string
+        }
+        Insert: {
+          avg_daily_consumption?: number | null
+          brand: string
+          created_at?: string | null
+          days_used?: number | null
+          finish_date?: string | null
+          id?: string
+          oil_type: string
+          quantity_ml: number
+          start_date?: string
+          user_id: string
+        }
+        Update: {
+          avg_daily_consumption?: number | null
+          brand?: string
+          created_at?: string | null
+          days_used?: number | null
+          finish_date?: string | null
+          id?: string
+          oil_type?: string
+          quantity_ml?: number
+          start_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      daily_logs: {
+        Row: {
+          amount_ml: number
+          created_at: string | null
+          id: string
+          log_date: string
+          notes: string | null
+          source: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_ml: number
+          created_at?: string | null
+          id?: string
+          log_date?: string
+          notes?: string | null
+          source?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_ml?: number
+          created_at?: string | null
+          id?: string
+          log_date?: string
+          notes?: string | null
+          source?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      health_scores: {
+        Row: {
+          bottle_oil: number | null
+          cooking_oil: number | null
+          created_at: string | null
+          frequency_score: number | null
+          hidden_oil: number | null
+          hidden_oil_percentage: number | null
+          id: string
+          oil_quality_score: number | null
+          score: number
+          score_date: string
+          total_oil_consumed: number
+          user_id: string
+        }
+        Insert: {
+          bottle_oil?: number | null
+          cooking_oil?: number | null
+          created_at?: string | null
+          frequency_score?: number | null
+          hidden_oil?: number | null
+          hidden_oil_percentage?: number | null
+          id?: string
+          oil_quality_score?: number | null
+          score: number
+          score_date?: string
+          total_oil_consumed: number
+          user_id: string
+        }
+        Update: {
+          bottle_oil?: number | null
+          cooking_oil?: number | null
+          created_at?: string | null
+          frequency_score?: number | null
+          hidden_oil?: number | null
+          hidden_oil_percentage?: number | null
+          id?: string
+          oil_quality_score?: number | null
+          score?: number
+          score_date?: string
+          total_oil_consumed?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
