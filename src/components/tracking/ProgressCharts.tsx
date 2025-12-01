@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Area, AreaChart } from "recharts";
 import { TrendingUp, Calendar } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { startOfWeek, startOfMonth, format, subDays, subMonths, eachDayOfInterval, eachMonthOfInterval } from "date-fns";
@@ -133,115 +133,157 @@ export const ProgressCharts = ({ userId }: ProgressChartsProps) => {
 
           <TabsContent value="weekly" className="mt-4">
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
+              <p className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-primary" />
                 Last 7 Days Oil Consumption
               </p>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={weeklyData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <ResponsiveContainer width="100%" height={350}>
+                <AreaChart data={weeklyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="totalGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#2DD4BF" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#2DD4BF" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="cookingGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10B981" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="hiddenGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#F59E0B" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
                   <XAxis
                     dataKey="date"
-                    className="text-xs"
-                    tick={{ fill: "hsl(var(--muted-foreground))" }}
+                    tick={{ fill: "hsl(var(--foreground))", fontSize: 12, fontWeight: 500 }}
+                    axisLine={{ stroke: "hsl(var(--border))" }}
+                    tickLine={false}
                   />
                   <YAxis
-                    className="text-xs"
-                    tick={{ fill: "hsl(var(--muted-foreground))" }}
-                    label={{ value: "ml", angle: -90, position: "insideLeft" }}
+                    tick={{ fill: "hsl(var(--foreground))", fontSize: 12, fontWeight: 500 }}
+                    axisLine={{ stroke: "hsl(var(--border))" }}
+                    tickLine={false}
+                    label={{ value: "ml", angle: -90, position: "insideLeft", style: { fill: "hsl(var(--foreground))" } }}
                   />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
+                      border: "2px solid hsl(var(--primary))",
+                      borderRadius: "12px",
+                      boxShadow: "0 8px 16px rgba(0,0,0,0.1)",
+                      padding: "12px"
                     }}
+                    labelStyle={{ fontWeight: 600, marginBottom: 8 }}
                   />
-                  <Legend />
-                  <Line
+                  <Legend 
+                    wrapperStyle={{ paddingTop: 20 }}
+                    iconType="circle"
+                  />
+                  <Area
                     type="monotone"
                     dataKey="total"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={2}
+                    stroke="#2DD4BF"
+                    strokeWidth={3}
+                    fill="url(#totalGradient)"
                     name="Total Oil"
-                    dot={{ fill: "hsl(var(--primary))", r: 5 }}
-                    activeDot={{ r: 7 }}
+                    dot={{ fill: "#2DD4BF", r: 6, strokeWidth: 2, stroke: "#fff" }}
+                    activeDot={{ r: 8, strokeWidth: 2, stroke: "#fff" }}
                   />
-                  <Line
+                  <Area
                     type="monotone"
                     dataKey="cookingOil"
-                    stroke="#10b981"
+                    stroke="#10B981"
                     strokeWidth={3}
+                    fill="url(#cookingGradient)"
                     name="Cooking Oil"
-                    dot={{ fill: "#10b981", r: 5 }}
-                    activeDot={{ r: 7 }}
+                    dot={{ fill: "#10B981", r: 6, strokeWidth: 2, stroke: "#fff" }}
+                    activeDot={{ r: 8, strokeWidth: 2, stroke: "#fff" }}
                   />
-                  <Line
+                  <Area
                     type="monotone"
                     dataKey="hiddenOil"
-                    stroke="hsl(var(--destructive))"
-                    strokeWidth={2}
+                    stroke="#F59E0B"
+                    strokeWidth={3}
+                    fill="url(#hiddenGradient)"
                     name="Hidden Oil"
-                    dot={{ fill: "hsl(var(--destructive))", r: 4 }}
-                    activeDot={{ r: 6 }}
+                    dot={{ fill: "#F59E0B", r: 6, strokeWidth: 2, stroke: "#fff" }}
+                    activeDot={{ r: 8, strokeWidth: 2, stroke: "#fff" }}
                   />
-                </LineChart>
+                </AreaChart>
               </ResponsiveContainer>
             </div>
           </TabsContent>
 
           <TabsContent value="monthly" className="mt-4">
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
+              <p className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-primary" />
                 Last 6 Months Oil Consumption
               </p>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={monthlyData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="barTotalGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#2DD4BF" stopOpacity={0.9}/>
+                      <stop offset="100%" stopColor="#2DD4BF" stopOpacity={0.6}/>
+                    </linearGradient>
+                    <linearGradient id="barCookingGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#10B981" stopOpacity={0.9}/>
+                      <stop offset="100%" stopColor="#10B981" stopOpacity={0.6}/>
+                    </linearGradient>
+                    <linearGradient id="barHiddenGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#F59E0B" stopOpacity={0.9}/>
+                      <stop offset="100%" stopColor="#F59E0B" stopOpacity={0.6}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
                   <XAxis
                     dataKey="date"
-                    className="text-xs"
-                    tick={{ fill: "hsl(var(--muted-foreground))" }}
+                    tick={{ fill: "hsl(var(--foreground))", fontSize: 12, fontWeight: 500 }}
+                    axisLine={{ stroke: "hsl(var(--border))" }}
+                    tickLine={false}
                   />
                   <YAxis
-                    className="text-xs"
-                    tick={{ fill: "hsl(var(--muted-foreground))" }}
-                    label={{ value: "ml", angle: -90, position: "insideLeft" }}
+                    tick={{ fill: "hsl(var(--foreground))", fontSize: 12, fontWeight: 500 }}
+                    axisLine={{ stroke: "hsl(var(--border))" }}
+                    tickLine={false}
+                    label={{ value: "ml", angle: -90, position: "insideLeft", style: { fill: "hsl(var(--foreground))" } }}
                   />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
+                      border: "2px solid hsl(var(--primary))",
+                      borderRadius: "12px",
+                      boxShadow: "0 8px 16px rgba(0,0,0,0.1)",
+                      padding: "12px"
                     }}
+                    labelStyle={{ fontWeight: 600, marginBottom: 8 }}
+                    cursor={{ fill: "hsl(var(--muted))", opacity: 0.3 }}
                   />
-                  <Legend />
-                  <Line
-                    type="monotone"
+                  <Legend 
+                    wrapperStyle={{ paddingTop: 20 }}
+                    iconType="circle"
+                  />
+                  <Bar
                     dataKey="total"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={2}
+                    fill="url(#barTotalGradient)"
                     name="Total Oil"
-                    dot={{ fill: "hsl(var(--primary))" }}
+                    radius={[8, 8, 0, 0]}
                   />
-                  <Line
-                    type="monotone"
+                  <Bar
                     dataKey="cookingOil"
-                    stroke="#10b981"
-                    strokeWidth={3}
+                    fill="url(#barCookingGradient)"
                     name="Cooking Oil"
-                    dot={{ fill: "#10b981", r: 5 }}
+                    radius={[8, 8, 0, 0]}
                   />
-                  <Line
-                    type="monotone"
+                  <Bar
                     dataKey="hiddenOil"
-                    stroke="hsl(var(--destructive))"
-                    strokeWidth={2}
+                    fill="url(#barHiddenGradient)"
                     name="Hidden Oil"
-                    dot={{ fill: "hsl(var(--destructive))" }}
+                    radius={[8, 8, 0, 0]}
                   />
-                </LineChart>
+                </BarChart>
               </ResponsiveContainer>
             </div>
           </TabsContent>
