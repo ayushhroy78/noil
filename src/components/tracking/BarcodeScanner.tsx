@@ -32,15 +32,22 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
 
   const startScanning = async () => {
     try {
-      const reader = new BrowserMultiFormatReader();
-      readerRef.current = reader;
-
       const videoElement = videoRef.current;
       if (!videoElement) return;
 
+      // Request camera permissions first
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: 'environment' } 
+      });
+      
+      videoElement.srcObject = stream;
+      await videoElement.play();
+
+      const reader = new BrowserMultiFormatReader();
+      readerRef.current = reader;
       setIsScanning(true);
 
-      await reader.decodeFromVideoDevice(
+      reader.decodeFromVideoDevice(
         undefined,
         videoElement,
         (result, error) => {
@@ -52,6 +59,7 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
               description: `Scanned: ${result.getText()}`,
             });
           }
+          // Continue scanning if no result yet
         }
       );
     } catch (error) {
@@ -149,7 +157,9 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
             <video
               ref={videoRef}
               className="w-full rounded-lg bg-muted"
-              style={{ maxHeight: "300px" }}
+              style={{ maxHeight: "300px", width: "100%" }}
+              playsInline
+              muted
             />
             <Button
               onClick={stopScanning}
@@ -159,6 +169,9 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
             >
               <X className="w-4 h-4" />
             </Button>
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-48 h-48 border-2 border-primary rounded-lg" />
+            </div>
           </div>
         )}
 
