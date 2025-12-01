@@ -38,13 +38,13 @@ const Tracker = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen pb-24 bg-gradient-to-b from-primary/5 via-background to-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-card shadow-soft px-4 py-4">
+      <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm shadow-soft px-4 py-4 border-b border-primary/10">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/")}
-            className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+            className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
           >
             <ArrowLeft className="w-5 h-5 text-primary" />
           </button>
@@ -68,7 +68,7 @@ const Tracker = () => {
 
         {/* Tracking Forms */}
         <Tabs defaultValue="daily" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-3 bg-card/80 backdrop-blur">
             <TabsTrigger value="daily">Daily Log</TabsTrigger>
             <TabsTrigger value="bottle">Bottle</TabsTrigger>
             <TabsTrigger value="scan">Scan</TabsTrigger>
