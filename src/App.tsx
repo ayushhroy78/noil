@@ -10,6 +10,7 @@ import Tracker from "./pages/Tracker";
 import FitMeal from "./pages/FitMeal";
 import OilHub from "./pages/OilHub";
 import Discover from "./pages/Discover";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
             <Route path="/tracker" element={<Tracker />} />
             <Route path="/fit-meal" element={<FitMeal />} />
             <Route path="/oilhub" element={<OilHub />} />
