@@ -108,43 +108,45 @@ export const useTracking = (userId: string | undefined) => {
         (sum, scan) => sum + Number(scan.oil_content_ml), 0
       ) || 0;
 
-      // Calculate bottle consumption
+      // Calculate bottle consumption - ONLY from finished bottles
       let bottleAvgDaily = 0;
+      let weeklyBottleTotal = 0;
       let monthlyBottleTotal = 0;
 
-      bottles?.forEach((bottle) => {
+      const finishedBottles = bottles?.filter((b) => b.finish_date) || [];
+
+      finishedBottles.forEach((bottle) => {
         const startDate = new Date(bottle.start_date);
-        const finishDate = bottle.finish_date ? new Date(bottle.finish_date) : null;
+        const finishDate = new Date(bottle.finish_date!);
+        const avgDaily = Number(bottle.avg_daily_consumption) || 0;
         
-        // For finished bottles with avg_daily_consumption
-        if (finishDate && bottle.avg_daily_consumption) {
-          bottleAvgDaily += Number(bottle.avg_daily_consumption);
-          
-          // Add to monthly total if finished this month
-          if (finishDate >= monthStart) {
-            monthlyBottleTotal += Number(bottle.quantity_ml);
-          }
+        // Add to average daily if this bottle overlaps with today
+        if (startDate <= now && finishDate >= todayStart) {
+          bottleAvgDaily += avgDaily;
         }
-        // For active bottles (no finish date yet)
-        else if (!finishDate && startDate <= now) {
-          const daysUsed = differenceInDays(now, startDate) + 1;
-          const estimatedDaily = Number(bottle.quantity_ml) / daysUsed;
-          bottleAvgDaily += estimatedDaily;
+        
+        // Add to weekly total if finished this week
+        if (finishDate >= weekStart) {
+          weeklyBottleTotal += Number(bottle.quantity_ml);
+        }
+        
+        // Add to monthly total if finished this month
+        if (finishDate >= monthStart) {
+          monthlyBottleTotal += Number(bottle.quantity_ml);
         }
       });
 
       const today = todayManual + todayHidden + bottleAvgDaily;
-      const weekly = weeklyManual + weeklyHidden;
+      const weekly = weeklyManual + weeklyHidden + weeklyBottleTotal;
       const monthly = monthlyManual + monthlyHidden + monthlyBottleTotal;
 
       // Calculate health score with realistic, nuanced approach
       const dailyLimit = 30; // ICMR recommended daily limit in ml
       const optimalRange = { min: 20, max: 25 }; // Optimal daily consumption
-      const weeklyLimit = dailyLimit * 7;
-
+      
       let score = 40; // Base score - everyone starts here
 
-      // 1. QUANTITY SCORE (30 points) - Based on daily consumption
+      // 1. QUANTITY SCORE (30 points max) - Based on daily consumption
       if (today <= optimalRange.max && today >= optimalRange.min) {
         score += 30; // Perfect range
       } else if (today < optimalRange.min && today > 0) {
@@ -154,10 +156,10 @@ export const useTracking = (userId: string | undefined) => {
       } else if (today <= 50) {
         score += 10; // High consumption
       } else if (today > 50) {
-        score += Math.max(0, 10 - ((today - 50) / 5)); // Excessive
+        score = Math.max(score - 10, 0); // Excessive - penalty
       }
 
-      // 2. OIL QUALITY SCORE (20 points) - Based on oil types used
+      // 2. OIL QUALITY SCORE (20 points max) - Based on oil types used
       const qualityOils = bottles?.filter((b) =>
         ["mustard", "groundnut", "cold-pressed", "olive", "coconut"].some((type) =>
           b.oil_type.toLowerCase().includes(type)
@@ -180,20 +182,20 @@ export const useTracking = (userId: string | undefined) => {
         score += 5; // Only refined oils
       }
 
-      // 3. TRANS FAT PENALTY - From packaged foods
+      // 3. TRANS FAT PENALTY (up to -15 points)
       const todayTransFat = todayScans.reduce(
         (sum, scan) => sum + Number(scan.trans_fat_g || 0), 0
       );
       
       if (todayTransFat > 2) {
-        score -= 15; // High trans fat is very bad
+        score = Math.max(score - 15, 0); // High trans fat is very bad
       } else if (todayTransFat > 1) {
-        score -= 10; // Moderate trans fat
+        score = Math.max(score - 10, 0); // Moderate trans fat
       } else if (todayTransFat > 0.5) {
-        score -= 5; // Some trans fat
+        score = Math.max(score - 5, 0); // Some trans fat
       }
 
-      // 4. SOURCE BALANCE SCORE (10 points) - Hidden oil from packaged foods
+      // 4. SOURCE BALANCE SCORE (10 points max or -5 penalty)
       const hiddenPercentage = today > 0 ? (todayHidden / today) * 100 : 0;
       
       if (hiddenPercentage < 20) {
@@ -201,17 +203,18 @@ export const useTracking = (userId: string | undefined) => {
       } else if (hiddenPercentage < 40) {
         score += 5; // Moderate packaged food
       } else if (hiddenPercentage >= 60) {
-        score -= 5; // Heavy reliance on packaged foods
+        score = Math.max(score - 5, 0); // Heavy reliance on packaged foods
       }
 
-      // 5. CONSISTENCY BONUS/PENALTY - Weekly average matters
-      if (weekly / 7 > dailyLimit * 1.5) {
-        score -= 10; // Consistently high consumption
-      } else if (weekly / 7 <= optimalRange.max && weekly > 0) {
-        score += 5; // Consistently good
+      // 5. CONSISTENCY BONUS/PENALTY (5 points or -10 points)
+      const weeklyAvg = weekly > 0 ? weekly / 7 : 0;
+      if (weeklyAvg > dailyLimit * 1.5) {
+        score = Math.max(score - 10, 0); // Consistently high consumption
+      } else if (weeklyAvg <= optimalRange.max && weeklyAvg >= optimalRange.min) {
+        score = Math.min(score + 5, 100); // Consistently good
       }
 
-      // Final score between 0-100
+      // Final score clamped between 0-100
       score = Math.max(0, Math.min(100, Math.round(score)));
 
       // Generate insights
@@ -219,42 +222,40 @@ export const useTracking = (userId: string | undefined) => {
         type: "positive" | "warning" | "info";
         message: string;
       }> = [];
-      
-      // Get finished bottles for insights
-      const finishedBottles = bottles?.filter((b) => b.finish_date) || [];
 
       if (today > dailyLimit) {
         insights.push({
           type: "warning",
-          message: `You used ${Math.round(
+          message: `You consumed ${Math.round(
             today - dailyLimit
-          )} ml more than the recommended daily limit.`,
+          )} ml more than the recommended ${dailyLimit} ml daily limit.`,
         });
       }
 
       if (hiddenPercentage > 30) {
         insights.push({
           type: "warning",
-          message: `Packaged foods added ${Math.round(
+          message: `${Math.round(
             hiddenPercentage
-          )}% of today's oil. Try to reduce processed food intake.`,
+          )}% of today's oil came from packaged foods. Try reducing processed food intake.`,
         });
       }
 
       if (finishedBottles.length > 0) {
         const lastBottle = finishedBottles[finishedBottles.length - 1];
-        const daysUsed = lastBottle.days_used || differenceInDays(
-          new Date(lastBottle.finish_date!),
-          new Date(lastBottle.start_date)
-        );
-        const avgDaily = Number(lastBottle.quantity_ml) / daysUsed;
+        const avgDaily = Number(lastBottle.avg_daily_consumption) || 0;
         
         if (avgDaily > dailyLimit) {
           insights.push({
             type: "info",
-            message: `Your bottle finish speed is high (${Math.round(
+            message: `Your last bottle averaged ${Math.round(
               avgDaily
-            )} ml/day). Consider reducing usage for a better score.`,
+            )} ml/day. Consider reducing usage for better health.`,
+          });
+        } else if (avgDaily <= optimalRange.max) {
+          insights.push({
+            type: "positive",
+            message: `Great job! Your last bottle usage was ${Math.round(avgDaily)} ml/day - within optimal range.`,
           });
         }
       }
@@ -262,7 +263,12 @@ export const useTracking = (userId: string | undefined) => {
       if (score >= 80) {
         insights.push({
           type: "positive",
-          message: "Great job! Your oil consumption is within healthy limits.",
+          message: "Excellent! Your oil consumption is within healthy limits.",
+        });
+      } else if (score < 50) {
+        insights.push({
+          type: "warning",
+          message: "Your oil consumption patterns need improvement. Check the recommendations above.",
         });
       }
 
