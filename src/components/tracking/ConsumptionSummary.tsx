@@ -62,10 +62,6 @@ export const ConsumptionSummary = ({ data }: ConsumptionSummaryProps) => {
             <span className="font-semibold text-foreground">{data.cookingOil} ml</span>
           </div>
           <div className="flex justify-between items-center p-2 rounded-lg bg-muted/30">
-            <span className="text-sm text-muted-foreground">Bottle Usage</span>
-            <span className="font-semibold text-foreground">{data.bottleOil} ml</span>
-          </div>
-          <div className="flex justify-between items-center p-2 rounded-lg bg-muted/30">
             <span className="text-sm text-muted-foreground">Hidden Oil (Packaged)</span>
             <span className="font-semibold text-foreground">{data.hiddenOil} ml</span>
           </div>
