@@ -138,7 +138,7 @@ export const ProgressCharts = ({ userId }: ProgressChartsProps) => {
                 Last 7 Days Oil Consumption
               </p>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={weeklyData}>
+                <LineChart data={weeklyData}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis
                     dataKey="date"
@@ -158,9 +158,34 @@ export const ProgressCharts = ({ userId }: ProgressChartsProps) => {
                     }}
                   />
                   <Legend />
-                  <Bar dataKey="cookingOil" fill="hsl(var(--primary))" name="Cooking Oil" />
-                  <Bar dataKey="hiddenOil" fill="hsl(var(--destructive))" name="Hidden Oil" />
-                </BarChart>
+                  <Line
+                    type="monotone"
+                    dataKey="total"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={2}
+                    name="Total Oil"
+                    dot={{ fill: "hsl(var(--primary))", r: 5 }}
+                    activeDot={{ r: 7 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="cookingOil"
+                    stroke="hsl(var(--secondary))"
+                    strokeWidth={2}
+                    name="Cooking Oil"
+                    dot={{ fill: "hsl(var(--secondary))", r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="hiddenOil"
+                    stroke="hsl(var(--destructive))"
+                    strokeWidth={2}
+                    name="Hidden Oil"
+                    dot={{ fill: "hsl(var(--destructive))", r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
               </ResponsiveContainer>
             </div>
           </TabsContent>
