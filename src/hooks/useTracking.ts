@@ -113,6 +113,11 @@ export const useTracking = (userId: string | undefined) => {
       const bottleConsumption = finishedBottles.reduce(
         (sum, bottle) => sum + Number(bottle.quantity_ml), 0
       );
+      
+      // Calculate average daily bottle consumption from finished bottles
+      const bottleAvgDaily = finishedBottles.reduce(
+        (sum, bottle) => sum + (Number(bottle.avg_daily_consumption) || 0), 0
+      );
 
       const today = todayManual + todayHidden;
       const weekly = weeklyManual + weeklyHidden;
@@ -205,7 +210,7 @@ export const useTracking = (userId: string | undefined) => {
           weekly: Math.round(weekly),
           monthly: Math.round(monthly),
           cookingOil: Math.round(todayManual),
-          bottleOil: Math.round(bottleConsumption / 30), // Average per day
+          bottleOil: Math.round(bottleAvgDaily),
           hiddenOil: Math.round(todayHidden),
         },
         healthScore: {
