@@ -156,15 +156,29 @@ export const ProgressCharts = ({ userId }: ProgressChartsProps) => {
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
                   <XAxis
                     dataKey="date"
-                    tick={{ fill: "hsl(var(--foreground))", fontSize: 12, fontWeight: 500 }}
-                    axisLine={{ stroke: "hsl(var(--border))" }}
-                    tickLine={false}
+                    tick={{ fill: "hsl(var(--foreground))", fontSize: 13, fontWeight: 600, fontFamily: "system-ui" }}
+                    axisLine={{ stroke: "hsl(var(--primary))", strokeWidth: 2 }}
+                    tickLine={{ stroke: "hsl(var(--primary))", strokeWidth: 1.5 }}
+                    tickMargin={10}
+                    height={50}
                   />
                   <YAxis
-                    tick={{ fill: "hsl(var(--foreground))", fontSize: 12, fontWeight: 500 }}
-                    axisLine={{ stroke: "hsl(var(--border))" }}
-                    tickLine={false}
-                    label={{ value: "ml", angle: -90, position: "insideLeft", style: { fill: "hsl(var(--foreground))" } }}
+                    tick={{ fill: "hsl(var(--foreground))", fontSize: 13, fontWeight: 600, fontFamily: "system-ui" }}
+                    axisLine={{ stroke: "hsl(var(--primary))", strokeWidth: 2 }}
+                    tickLine={{ stroke: "hsl(var(--primary))", strokeWidth: 1.5 }}
+                    tickMargin={10}
+                    width={60}
+                    label={{ 
+                      value: "Oil (ml)", 
+                      angle: -90, 
+                      position: "insideLeft", 
+                      style: { 
+                        fill: "hsl(var(--primary))", 
+                        fontSize: 14, 
+                        fontWeight: 700,
+                        fontFamily: "system-ui"
+                      } 
+                    }}
                   />
                   <Tooltip
                     contentStyle={{
@@ -240,15 +254,29 @@ export const ProgressCharts = ({ userId }: ProgressChartsProps) => {
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
                   <XAxis
                     dataKey="date"
-                    tick={{ fill: "hsl(var(--foreground))", fontSize: 12, fontWeight: 500 }}
-                    axisLine={{ stroke: "hsl(var(--border))" }}
-                    tickLine={false}
+                    tick={{ fill: "hsl(var(--foreground))", fontSize: 13, fontWeight: 600, fontFamily: "system-ui" }}
+                    axisLine={{ stroke: "hsl(var(--primary))", strokeWidth: 2 }}
+                    tickLine={{ stroke: "hsl(var(--primary))", strokeWidth: 1.5 }}
+                    tickMargin={10}
+                    height={50}
                   />
                   <YAxis
-                    tick={{ fill: "hsl(var(--foreground))", fontSize: 12, fontWeight: 500 }}
-                    axisLine={{ stroke: "hsl(var(--border))" }}
-                    tickLine={false}
-                    label={{ value: "ml", angle: -90, position: "insideLeft", style: { fill: "hsl(var(--foreground))" } }}
+                    tick={{ fill: "hsl(var(--foreground))", fontSize: 13, fontWeight: 600, fontFamily: "system-ui" }}
+                    axisLine={{ stroke: "hsl(var(--primary))", strokeWidth: 2 }}
+                    tickLine={{ stroke: "hsl(var(--primary))", strokeWidth: 1.5 }}
+                    tickMargin={10}
+                    width={60}
+                    label={{ 
+                      value: "Oil (ml)", 
+                      angle: -90, 
+                      position: "insideLeft", 
+                      style: { 
+                        fill: "hsl(var(--primary))", 
+                        fontSize: 14, 
+                        fontWeight: 700,
+                        fontFamily: "system-ui"
+                      } 
+                    }}
                   />
                   <Tooltip
                     contentStyle={{
