@@ -1,5 +1,5 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -23,36 +23,46 @@ serve(async (req) => {
 
     console.log(`Looking up barcode: ${barcode}`);
 
-    // Query Open Food Facts API
-    const response = await fetch(`https://world.openfoodfacts.org/api/v2/product/${barcode}.json`);
-    const data = await response.json();
+    // Create Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-    if (data.status === 0) {
+    // Query the barcode_scans table for this barcode
+    const { data, error } = await supabase
+      .from('barcode_scans')
+      .select('product_name, oil_content_ml, fat_content_g, trans_fat_g')
+      .eq('barcode', barcode)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Database error:', error);
+      throw error;
+    }
+
+    if (!data) {
+      console.log('Product not found in database');
       return new Response(
         JSON.stringify({ found: false, message: 'Product not found in database' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const product = data.product;
-    
-    // Extract nutritional information
-    const nutritionData = {
+    // Return the product data
+    const productData = {
       found: true,
-      productName: product.product_name || product.generic_name || 'Unknown Product',
-      brand: product.brands || '',
-      // Calculate oil content from fat (approximate: 1g fat ≈ 1ml oil)
-      oilContentMl: product.nutriments?.fat_100g ? Math.round(product.nutriments.fat_100g) : null,
-      fatContentG: product.nutriments?.fat_100g || null,
-      transFatG: product.nutriments?.['trans-fat_100g'] || null,
-      servingSize: product.serving_size || product.quantity || '',
-      imageUrl: product.image_url || null,
+      productName: data.product_name,
+      oilContentMl: data.oil_content_ml,
+      fatContentG: data.fat_content_g,
+      transFatG: data.trans_fat_g,
     };
 
-    console.log('Product lookup result:', nutritionData);
+    console.log('Product found:', productData);
 
     return new Response(
-      JSON.stringify(nutritionData),
+      JSON.stringify(productData),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
