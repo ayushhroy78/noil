@@ -119,6 +119,39 @@ export type Database = {
         }
         Relationships: []
       }
+      generated_recipe_logs: {
+        Row: {
+          created_at: string
+          cuisine_preference: string | null
+          id: string
+          ingredients_input: string
+          meal_type: string | null
+          oil_estimate_ml: number
+          recipe_output: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          cuisine_preference?: string | null
+          id?: string
+          ingredients_input: string
+          meal_type?: string | null
+          oil_estimate_ml: number
+          recipe_output: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          cuisine_preference?: string | null
+          id?: string
+          ingredients_input?: string
+          meal_type?: string | null
+          oil_estimate_ml?: number
+          recipe_output?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       health_scores: {
         Row: {
           bottle_oil: number | null
@@ -161,6 +194,48 @@ export type Database = {
           score_date?: string
           total_oil_consumed?: number
           user_id?: string
+        }
+        Relationships: []
+      }
+      recipes_prebuilt: {
+        Row: {
+          calories: number | null
+          created_at: string
+          cuisine: string
+          id: string
+          ingredients: Json
+          meal_type: string
+          name: string
+          oil_estimate_ml: number
+          prep_time_minutes: number | null
+          steps: Json
+          tags: string[]
+        }
+        Insert: {
+          calories?: number | null
+          created_at?: string
+          cuisine: string
+          id?: string
+          ingredients: Json
+          meal_type: string
+          name: string
+          oil_estimate_ml: number
+          prep_time_minutes?: number | null
+          steps: Json
+          tags?: string[]
+        }
+        Update: {
+          calories?: number | null
+          created_at?: string
+          cuisine?: string
+          id?: string
+          ingredients?: Json
+          meal_type?: string
+          name?: string
+          oil_estimate_ml?: number
+          prep_time_minutes?: number | null
+          steps?: Json
+          tags?: string[]
         }
         Relationships: []
       }

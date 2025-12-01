@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.suggest-oil-alternatives]
 verify_jwt = false
+
+[functions.generate-recipe]
+verify_jwt = false
