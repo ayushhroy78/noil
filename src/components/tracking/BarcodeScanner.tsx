@@ -24,15 +24,19 @@ interface BarcodeHistory {
   scan_date: string;
 }
 
+interface ProductData {
+  barcode: string;
+  productName: string;
+  oilContentMl: number;
+  fatContentG?: number;
+  transFatG?: number;
+}
+
 export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) => {
   const [isScanning, setIsScanning] = useState(false);
-  const [scannedBarcode, setScannedBarcode] = useState("");
   const [manualBarcode, setManualBarcode] = useState("");
-  const [productName, setProductName] = useState("");
-  const [oilContent, setOilContent] = useState("");
-  const [fatContent, setFatContent] = useState("");
-  const [transFat, setTransFat] = useState("");
   const [isLookingUp, setIsLookingUp] = useState(false);
+  const [productData, setProductData] = useState<ProductData | null>(null);
   const [history, setHistory] = useState<BarcodeHistory[]>([]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const readerRef = useRef<BrowserMultiFormatReader | null>(null);
@@ -71,27 +75,27 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
       if (error) throw error;
 
       if (data.found) {
-        setProductName(data.productName);
-        if (data.oilContentMl) setOilContent(data.oilContentMl.toString());
-        if (data.fatContentG) setFatContent(data.fatContentG.toString());
-        if (data.transFatG) setTransFat(data.transFatG.toString());
-        
-        toast({
-          title: "Product Found!",
-          description: `${data.productName} - Nutritional info loaded`,
+        setProductData({
+          barcode,
+          productName: data.productName,
+          oilContentMl: data.oilContentMl,
+          fatContentG: data.fatContentG,
+          transFatG: data.transFatG,
         });
       } else {
+        setProductData(null);
         toast({
           title: "Product Not Found",
-          description: "Please enter details manually",
+          description: "This barcode is not in our database yet",
           variant: "destructive",
         });
       }
     } catch (error) {
       console.error("Error looking up barcode:", error);
+      setProductData(null);
       toast({
         title: "Lookup Failed",
-        description: "Could not fetch product info. Please enter manually.",
+        description: "Could not fetch product info",
         variant: "destructive",
       });
     } finally {
@@ -119,10 +123,9 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
       reader.decodeFromVideoDevice(
         undefined,
         videoElement,
-        (result, error) => {
+          (result, error) => {
           if (result) {
             const barcode = result.getText();
-            setScannedBarcode(barcode);
             stopScanning();
             toast({
               title: "Barcode detected!",
@@ -164,13 +167,13 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
       });
       return;
     }
-    setScannedBarcode(manualBarcode);
     lookupBarcode(manualBarcode);
   };
 
   const handleQuickAdd = async (item: BarcodeHistory) => {
     try {
-      const { error } = await supabase.from("barcode_scans").insert({
+      // Add to both barcode_scans and daily_logs
+      const { error: scanError } = await supabase.from("barcode_scans").insert({
         user_id: userId,
         barcode: item.barcode,
         product_name: item.product_name,
@@ -180,11 +183,21 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
         scan_date: new Date().toISOString(),
       });
 
-      if (error) throw error;
+      if (scanError) throw scanError;
+
+      const { error: logError } = await supabase.from("daily_logs").insert({
+        user_id: userId,
+        amount_ml: item.oil_content_ml,
+        source: "packaged_food",
+        notes: `${item.product_name} (barcode scan)`,
+        log_date: new Date().toISOString().split('T')[0],
+      });
+
+      if (logError) throw logError;
 
       toast({
-        title: "Product Added!",
-        description: `${item.product_name} added to today's tracking.`,
+        title: "Added to Daily Log!",
+        description: `${item.product_name} (${item.oil_content_ml}ml oil) logged successfully.`,
       });
 
       fetchHistory();
@@ -199,54 +212,57 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!productName || !oilContent) {
-      toast({
-        title: "Missing Information",
-        description: "Please enter product name and oil content.",
-        variant: "destructive",
-      });
-      return;
-    }
+  const handleConfirmAdd = async () => {
+    if (!productData) return;
 
     try {
-      const { error } = await supabase.from("barcode_scans").insert({
+      // Add to barcode_scans table
+      const { error: scanError } = await supabase.from("barcode_scans").insert({
         user_id: userId,
-        barcode: scannedBarcode || null,
-        product_name: productName,
-        oil_content_ml: Number(oilContent),
-        fat_content_g: fatContent ? Number(fatContent) : null,
-        trans_fat_g: transFat ? Number(transFat) : null,
+        barcode: productData.barcode,
+        product_name: productData.productName,
+        oil_content_ml: productData.oilContentMl,
+        fat_content_g: productData.fatContentG || null,
+        trans_fat_g: productData.transFatG || null,
         scan_date: new Date().toISOString(),
       });
 
-      if (error) throw error;
+      if (scanError) throw scanError;
 
-      toast({
-        title: "Product Added!",
-        description: `${productName} tracked successfully.`,
+      // Add to daily_logs table
+      const { error: logError } = await supabase.from("daily_logs").insert({
+        user_id: userId,
+        amount_ml: productData.oilContentMl,
+        source: "packaged_food",
+        notes: `${productData.productName} (barcode: ${productData.barcode})`,
+        log_date: new Date().toISOString().split('T')[0],
       });
 
-      // Reset form
-      setScannedBarcode("");
-      setManualBarcode("");
-      setProductName("");
-      setOilContent("");
-      setFatContent("");
-      setTransFat("");
+      if (logError) throw logError;
 
+      toast({
+        title: "Added to Daily Log!",
+        description: `${productData.productName} (${productData.oilContentMl}ml oil) logged successfully.`,
+      });
+
+      // Reset
+      setProductData(null);
+      setManualBarcode("");
       fetchHistory();
       onScanComplete();
     } catch (error) {
-      console.error("Error saving scan:", error);
+      console.error("Error saving:", error);
       toast({
         title: "Error",
-        description: "Failed to save product scan.",
+        description: "Failed to add to daily log.",
         variant: "destructive",
       });
     }
+  };
+
+  const handleCancel = () => {
+    setProductData(null);
+    setManualBarcode("");
   };
 
   return (
@@ -275,7 +291,7 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
           </TabsList>
 
           <TabsContent value="scan" className="space-y-4">
-            {!isScanning && !scannedBarcode && (
+            {!isScanning && !productData && (
               <Button
                 onClick={startScanning}
                 className="w-full"
@@ -368,94 +384,62 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
           </TabsContent>
         </Tabs>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {(scannedBarcode || isLookingUp) && (
-            <div className="p-3 bg-primary/10 rounded-lg">
-              <p className="text-sm font-medium text-foreground">
-                {isLookingUp ? "Looking up product..." : `Barcode: ${scannedBarcode}`}
-              </p>
+        {isLookingUp && (
+          <Card className="p-4 bg-primary/5 border-primary/20">
+            <p className="text-sm font-medium text-center">Looking up product...</p>
+          </Card>
+        )}
+
+        {productData && (
+          <Card className="p-4 space-y-4 bg-accent/50 border-primary/30">
+            <div className="space-y-3">
+              <div>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Product Found</p>
+                <p className="text-lg font-semibold text-foreground">{productData.productName}</p>
+              </div>
+              
+              <div className="space-y-2 p-3 bg-background/50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Oil Content:</span>
+                  <span className="text-base font-semibold text-primary">{productData.oilContentMl} ml</span>
+                </div>
+                {productData.fatContentG && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Total Fat:</span>
+                    <span className="text-sm font-medium">{productData.fatContentG} g</span>
+                  </div>
+                )}
+                {productData.transFatG && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Trans Fat:</span>
+                    <span className="text-sm font-medium">{productData.transFatG} g</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-2">
+                <p className="text-sm text-muted-foreground mb-3">
+                  Do you want to add this to your daily oil consumption log?
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={handleCancel}
+                    className="w-full"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleConfirmAdd}
+                    className="w-full"
+                  >
+                    Add to Log
+                  </Button>
+                </div>
+              </div>
             </div>
-          )}
-
-          {scannedBarcode && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="productName">Product Name *</Label>
-                <Input
-                  id="productName"
-                  value={productName}
-                  onChange={(e) => setProductName(e.target.value)}
-                  placeholder="e.g., Brand Chips 50g"
-                  required
-                  disabled={isLookingUp}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="oilContent">Oil Content (ml) *</Label>
-                  <Input
-                    id="oilContent"
-                    type="number"
-                    step="0.1"
-                    value={oilContent}
-                    onChange={(e) => setOilContent(e.target.value)}
-                    placeholder="10"
-                    required
-                    disabled={isLookingUp}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="fatContent">Fat (g)</Label>
-                  <Input
-                    id="fatContent"
-                    type="number"
-                    step="0.1"
-                    value={fatContent}
-                    onChange={(e) => setFatContent(e.target.value)}
-                    placeholder="5"
-                    disabled={isLookingUp}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="transFat">Trans Fat (g)</Label>
-                <Input
-                  id="transFat"
-                  type="number"
-                  step="0.1"
-                  value={transFat}
-                  onChange={(e) => setTransFat(e.target.value)}
-                  placeholder="0.5"
-                  disabled={isLookingUp}
-                />
-              </div>
-
-              <Button type="submit" className="w-full" disabled={isLookingUp}>
-                Add to Daily Tracking
-              </Button>
-
-              {!isScanning && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => {
-                    setScannedBarcode("");
-                    setManualBarcode("");
-                    setProductName("");
-                    setOilContent("");
-                    setFatContent("");
-                    setTransFat("");
-                  }}
-                >
-                  Clear & Scan Another
-                </Button>
-              )}
-            </>
-          )}
-        </form>
+          </Card>
+        )}
       </CardContent>
     </Card>
   );
