@@ -66,12 +66,12 @@ export const useTracking = (userId: string | undefined) => {
         .eq("user_id", userId)
         .gte("scan_date", monthStart.toISOString());
 
-      // Fetch bottles
+      // Fetch bottles (all bottles, not just from this month)
       const { data: bottles } = await supabase
         .from("bottles")
         .select("*")
         .eq("user_id", userId)
-        .gte("start_date", monthStart.toISOString());
+        .order("start_date", { ascending: false });
 
       // Calculate consumption
       const todayLogs = logs?.filter(
@@ -109,19 +109,33 @@ export const useTracking = (userId: string | undefined) => {
       ) || 0;
 
       // Calculate bottle consumption
-      const finishedBottles = bottles?.filter((b) => b.finish_date) || [];
-      const bottleConsumption = finishedBottles.reduce(
-        (sum, bottle) => sum + Number(bottle.quantity_ml), 0
-      );
-      
-      // Calculate average daily bottle consumption from finished bottles
-      const bottleAvgDaily = finishedBottles.reduce(
-        (sum, bottle) => sum + (Number(bottle.avg_daily_consumption) || 0), 0
-      );
+      let bottleAvgDaily = 0;
+      let monthlyBottleTotal = 0;
+
+      bottles?.forEach((bottle) => {
+        const startDate = new Date(bottle.start_date);
+        const finishDate = bottle.finish_date ? new Date(bottle.finish_date) : null;
+        
+        // For finished bottles with avg_daily_consumption
+        if (finishDate && bottle.avg_daily_consumption) {
+          bottleAvgDaily += Number(bottle.avg_daily_consumption);
+          
+          // Add to monthly total if finished this month
+          if (finishDate >= monthStart) {
+            monthlyBottleTotal += Number(bottle.quantity_ml);
+          }
+        }
+        // For active bottles (no finish date yet)
+        else if (!finishDate && startDate <= now) {
+          const daysUsed = differenceInDays(now, startDate) + 1;
+          const estimatedDaily = Number(bottle.quantity_ml) / daysUsed;
+          bottleAvgDaily += estimatedDaily;
+        }
+      });
 
       const today = todayManual + todayHidden + bottleAvgDaily;
       const weekly = weeklyManual + weeklyHidden;
-      const monthly = monthlyManual + monthlyHidden + bottleConsumption;
+      const monthly = monthlyManual + monthlyHidden + monthlyBottleTotal;
 
       // Calculate health score
       const dailyLimit = 30; // ICMR recommended daily limit in ml
@@ -157,6 +171,9 @@ export const useTracking = (userId: string | undefined) => {
         type: "positive" | "warning" | "info";
         message: string;
       }> = [];
+      
+      // Get finished bottles for insights
+      const finishedBottles = bottles?.filter((b) => b.finish_date) || [];
 
       if (today > dailyLimit) {
         insights.push({
