@@ -137,33 +137,81 @@ export const useTracking = (userId: string | undefined) => {
       const weekly = weeklyManual + weeklyHidden;
       const monthly = monthlyManual + monthlyHidden + monthlyBottleTotal;
 
-      // Calculate health score
+      // Calculate health score with realistic, nuanced approach
       const dailyLimit = 30; // ICMR recommended daily limit in ml
+      const optimalRange = { min: 20, max: 25 }; // Optimal daily consumption
       const weeklyLimit = dailyLimit * 7;
 
-      let score = 100;
+      let score = 40; // Base score - everyone starts here
 
-      // Deduct for exceeding limits
-      if (today > dailyLimit) {
-        score -= Math.min(20, ((today - dailyLimit) / dailyLimit) * 20);
+      // 1. QUANTITY SCORE (30 points) - Based on daily consumption
+      if (today <= optimalRange.max && today >= optimalRange.min) {
+        score += 30; // Perfect range
+      } else if (today < optimalRange.min && today > 0) {
+        score += 25; // A bit low, but acceptable
+      } else if (today <= 35) {
+        score += 20; // Slightly above optimal
+      } else if (today <= 50) {
+        score += 10; // High consumption
+      } else if (today > 50) {
+        score += Math.max(0, 10 - ((today - 50) / 5)); // Excessive
       }
 
-      // Deduct for high hidden oil percentage
-      const hiddenPercentage = today > 0 ? (todayHidden / today) * 100 : 0;
-      if (hiddenPercentage > 30) {
-        score -= Math.min(15, ((hiddenPercentage - 30) / 70) * 15);
-      }
-
-      // Check oil quality from bottles
-      const hasQualityOil = bottles?.some((b) =>
-        ["mustard", "groundnut", "cold-pressed"].some((type) =>
+      // 2. OIL QUALITY SCORE (20 points) - Based on oil types used
+      const qualityOils = bottles?.filter((b) =>
+        ["mustard", "groundnut", "cold-pressed", "olive", "coconut"].some((type) =>
           b.oil_type.toLowerCase().includes(type)
         )
-      );
-      if (hasQualityOil) {
-        score += 10;
+      ) || [];
+      
+      const refinedOils = bottles?.filter((b) =>
+        ["refined", "palm", "vegetable"].some((type) =>
+          b.oil_type.toLowerCase().includes(type)
+        )
+      ) || [];
+
+      if (qualityOils.length > 0 && refinedOils.length === 0) {
+        score += 20; // All quality oils
+      } else if (qualityOils.length > refinedOils.length) {
+        score += 15; // Mostly quality oils
+      } else if (qualityOils.length > 0) {
+        score += 10; // Mix of quality and refined
+      } else if (refinedOils.length > 0) {
+        score += 5; // Only refined oils
       }
 
+      // 3. TRANS FAT PENALTY - From packaged foods
+      const todayTransFat = todayScans.reduce(
+        (sum, scan) => sum + Number(scan.trans_fat_g || 0), 0
+      );
+      
+      if (todayTransFat > 2) {
+        score -= 15; // High trans fat is very bad
+      } else if (todayTransFat > 1) {
+        score -= 10; // Moderate trans fat
+      } else if (todayTransFat > 0.5) {
+        score -= 5; // Some trans fat
+      }
+
+      // 4. SOURCE BALANCE SCORE (10 points) - Hidden oil from packaged foods
+      const hiddenPercentage = today > 0 ? (todayHidden / today) * 100 : 0;
+      
+      if (hiddenPercentage < 20) {
+        score += 10; // Minimal packaged food
+      } else if (hiddenPercentage < 40) {
+        score += 5; // Moderate packaged food
+      } else if (hiddenPercentage >= 60) {
+        score -= 5; // Heavy reliance on packaged foods
+      }
+
+      // 5. CONSISTENCY BONUS/PENALTY - Weekly average matters
+      if (weekly / 7 > dailyLimit * 1.5) {
+        score -= 10; // Consistently high consumption
+      } else if (weekly / 7 <= optimalRange.max && weekly > 0) {
+        score += 5; // Consistently good
+      }
+
+      // Final score between 0-100
       score = Math.max(0, Math.min(100, Math.round(score)));
 
       // Generate insights
