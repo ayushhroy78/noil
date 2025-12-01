@@ -172,7 +172,9 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
 
   const handleQuickAdd = async (item: BarcodeHistory) => {
     try {
-      // Add to both barcode_scans and daily_logs
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Add to barcode_scans
       const { error: scanError } = await supabase.from("barcode_scans").insert({
         user_id: userId,
         barcode: item.barcode,
@@ -185,15 +187,43 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
 
       if (scanError) throw scanError;
 
-      const { error: logError } = await supabase.from("daily_logs").insert({
-        user_id: userId,
-        amount_ml: item.oil_content_ml,
-        source: "packaged_food",
-        notes: `${item.product_name} (barcode scan)`,
-        log_date: new Date().toISOString().split('T')[0],
-      });
+      // Check if there's already a packaged_food log for today
+      const { data: existingLog } = await supabase
+        .from("daily_logs")
+        .select("id, amount_ml, notes")
+        .eq("user_id", userId)
+        .eq("log_date", today)
+        .eq("source", "packaged_food")
+        .maybeSingle();
 
-      if (logError) throw logError;
+      if (existingLog) {
+        // Update existing log by adding to the amount
+        const newAmount = existingLog.amount_ml + item.oil_content_ml;
+        const updatedNotes = existingLog.notes 
+          ? `${existingLog.notes}\n+ ${item.product_name}`
+          : item.product_name;
+        
+        const { error: updateError } = await supabase
+          .from("daily_logs")
+          .update({ 
+            amount_ml: newAmount,
+            notes: updatedNotes
+          })
+          .eq("id", existingLog.id);
+
+        if (updateError) throw updateError;
+      } else {
+        // Create new log entry
+        const { error: logError } = await supabase.from("daily_logs").insert({
+          user_id: userId,
+          amount_ml: item.oil_content_ml,
+          source: "packaged_food",
+          notes: item.product_name,
+          log_date: today,
+        });
+
+        if (logError) throw logError;
+      }
 
       toast({
         title: "Added to Daily Log!",
@@ -216,6 +246,8 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
     if (!productData) return;
 
     try {
+      const today = new Date().toISOString().split('T')[0];
+      
       // Add to barcode_scans table
       const { error: scanError } = await supabase.from("barcode_scans").insert({
         user_id: userId,
@@ -229,16 +261,43 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
 
       if (scanError) throw scanError;
 
-      // Add to daily_logs table
-      const { error: logError } = await supabase.from("daily_logs").insert({
-        user_id: userId,
-        amount_ml: productData.oilContentMl,
-        source: "packaged_food",
-        notes: `${productData.productName} (barcode: ${productData.barcode})`,
-        log_date: new Date().toISOString().split('T')[0],
-      });
+      // Check if there's already a packaged_food log for today
+      const { data: existingLog } = await supabase
+        .from("daily_logs")
+        .select("id, amount_ml, notes")
+        .eq("user_id", userId)
+        .eq("log_date", today)
+        .eq("source", "packaged_food")
+        .maybeSingle();
 
-      if (logError) throw logError;
+      if (existingLog) {
+        // Update existing log by adding to the amount
+        const newAmount = existingLog.amount_ml + productData.oilContentMl;
+        const updatedNotes = existingLog.notes 
+          ? `${existingLog.notes}\n+ ${productData.productName}`
+          : productData.productName;
+        
+        const { error: updateError } = await supabase
+          .from("daily_logs")
+          .update({ 
+            amount_ml: newAmount,
+            notes: updatedNotes
+          })
+          .eq("id", existingLog.id);
+
+        if (updateError) throw updateError;
+      } else {
+        // Create new log entry
+        const { error: logError } = await supabase.from("daily_logs").insert({
+          user_id: userId,
+          amount_ml: productData.oilContentMl,
+          source: "packaged_food",
+          notes: productData.productName,
+          log_date: today,
+        });
+
+        if (logError) throw logError;
+      }
 
       toast({
         title: "Added to Daily Log!",
