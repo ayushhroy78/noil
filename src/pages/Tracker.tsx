@@ -7,6 +7,8 @@ import { DailyLogForm } from "@/components/tracking/DailyLogForm";
 import { ConsumptionSummary } from "@/components/tracking/ConsumptionSummary";
 import { HealthScoreCard } from "@/components/tracking/HealthScoreCard";
 import { InsightsSection } from "@/components/tracking/InsightsSection";
+import { BarcodeScanner } from "@/components/tracking/BarcodeScanner";
+import { ProgressCharts } from "@/components/tracking/ProgressCharts";
 import { useTracking } from "@/hooks/useTracking";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -61,17 +63,24 @@ const Tracker = () => {
         {/* Insights */}
         <InsightsSection insights={data.insights} />
 
+        {/* Progress Charts */}
+        {userId && <ProgressCharts userId={userId} />}
+
         {/* Tracking Forms */}
         <Tabs defaultValue="daily" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="daily">Daily Log</TabsTrigger>
-            <TabsTrigger value="bottle">Bottle Tracking</TabsTrigger>
+            <TabsTrigger value="bottle">Bottle</TabsTrigger>
+            <TabsTrigger value="scan">Scan</TabsTrigger>
           </TabsList>
           <TabsContent value="daily" className="mt-4">
             {userId && <DailyLogForm userId={userId} onLogAdded={refetch} />}
           </TabsContent>
           <TabsContent value="bottle" className="mt-4">
             {userId && <BottleTracking userId={userId} onBottleAdded={refetch} />}
+          </TabsContent>
+          <TabsContent value="scan" className="mt-4">
+            {userId && <BarcodeScanner userId={userId} onScanComplete={refetch} />}
           </TabsContent>
         </Tabs>
       </main>
