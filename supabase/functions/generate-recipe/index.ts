@@ -5,19 +5,64 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Input validation constants
+const MAX_INGREDIENTS_LENGTH = 1000;
+const MAX_CUISINE_LENGTH = 50;
+const MAX_MEAL_TYPE_LENGTH = 50;
+const ALLOWED_CUISINES = ['indian', 'chinese', 'italian', 'mediterranean', 'thai', 'mexican', 'japanese', 'american', 'french', 'korean', 'middle eastern', 'any'];
+const ALLOWED_MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack', 'any'];
+
+// Sanitize string input for AI prompt
+function sanitizeForPrompt(input: string, maxLength: number): string {
+  return input
+    .trim()
+    .slice(0, maxLength)
+    .replace(/[<>{}]/g, '') // Remove potentially harmful characters
+    .replace(/\n+/g, ' '); // Replace newlines with spaces
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { ingredients, cuisine, mealType } = await req.json();
+    const body = await req.json();
+    const { ingredients, cuisine, mealType } = body;
     
-    if (!ingredients) {
+    // Validate ingredients
+    if (!ingredients || typeof ingredients !== 'string') {
       return new Response(
-        JSON.stringify({ error: 'Ingredients are required' }),
+        JSON.stringify({ error: 'Ingredients are required and must be a string' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+    }
+
+    // Sanitize inputs
+    const sanitizedIngredients = sanitizeForPrompt(ingredients, MAX_INGREDIENTS_LENGTH);
+    
+    if (sanitizedIngredients.length < 3) {
+      return new Response(
+        JSON.stringify({ error: 'Please provide at least a few ingredients' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate and sanitize optional fields
+    let sanitizedCuisine = '';
+    if (cuisine && typeof cuisine === 'string') {
+      const normalizedCuisine = cuisine.trim().toLowerCase();
+      if (ALLOWED_CUISINES.includes(normalizedCuisine) || normalizedCuisine.length <= MAX_CUISINE_LENGTH) {
+        sanitizedCuisine = sanitizeForPrompt(cuisine, MAX_CUISINE_LENGTH);
+      }
+    }
+
+    let sanitizedMealType = '';
+    if (mealType && typeof mealType === 'string') {
+      const normalizedMealType = mealType.trim().toLowerCase();
+      if (ALLOWED_MEAL_TYPES.includes(normalizedMealType) || normalizedMealType.length <= MAX_MEAL_TYPE_LENGTH) {
+        sanitizedMealType = sanitizeForPrompt(mealType, MAX_MEAL_TYPE_LENGTH);
+      }
     }
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -46,9 +91,9 @@ Output format must be valid JSON with this structure:
   "calories_approx": number
 }`;
 
-    const userPrompt = `Create a LOW-OIL recipe using these ingredients: ${ingredients}
-${cuisine ? `Cuisine style: ${cuisine}` : ''}
-${mealType ? `Meal type: ${mealType}` : ''}
+    const userPrompt = `Create a LOW-OIL recipe using these ingredients: ${sanitizedIngredients}
+${sanitizedCuisine ? `Cuisine style: ${sanitizedCuisine}` : ''}
+${sanitizedMealType ? `Meal type: ${sanitizedMealType}` : ''}
 
 Requirements:
 - Use MINIMAL oil (max 15ml total)
@@ -57,7 +102,7 @@ Requirements:
 - Provide step-by-step instructions
 - Include approximate calories`;
 
-    console.log('Calling Lovable AI for recipe generation...');
+    console.log('Generating recipe...');
     
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -76,8 +121,7 @@ Requirements:
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Lovable AI error:', response.status, errorText);
+      console.error('AI gateway error:', response.status);
       
       if (response.status === 429) {
         return new Response(
@@ -93,14 +137,14 @@ Requirements:
         );
       }
 
-      throw new Error(`AI API error: ${response.status}`);
+      throw new Error('AI API error');
     }
 
     const data = await response.json();
     const recipeText = data.choices[0].message.content;
     const recipe = JSON.parse(recipeText);
 
-    console.log('Recipe generated successfully:', recipe.name);
+    console.log('Recipe generated successfully');
 
     return new Response(
       JSON.stringify({ success: true, recipe }),
@@ -108,11 +152,9 @@ Requirements:
     );
 
   } catch (error) {
-    console.error('Error in generate-recipe function:', error);
+    console.error('Error in generate-recipe function');
     return new Response(
-      JSON.stringify({ 
-        error: error instanceof Error ? error.message : 'Failed to generate recipe' 
-      }),
+      JSON.stringify({ error: 'Failed to generate recipe. Please try again.' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
