@@ -23,14 +23,14 @@ export const BottomNav = () => {
             <button
               key={item.label}
               onClick={() => navigate(item.path)}
-              className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all ${
+              className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all duration-300 ease-out ${
                 isActive
                   ? "text-foreground bg-primary/10"
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
               }`}
             >
-              <Icon className="w-6 h-6" />
-              <span className="text-xs font-medium">{item.label}</span>
+              <Icon className="w-6 h-6 transition-colors duration-300 ease-out" />
+              <span className="text-xs font-medium transition-colors duration-300 ease-out">{item.label}</span>
             </button>
           );
         })}
