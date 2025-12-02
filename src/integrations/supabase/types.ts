@@ -134,6 +134,39 @@ export type Database = {
           },
         ]
       }
+      challenges: {
+        Row: {
+          challenge_type: string
+          created_at: string
+          description: string
+          duration_days: number
+          id: string
+          reward_points: number | null
+          target_metric: string | null
+          title: string
+        }
+        Insert: {
+          challenge_type: string
+          created_at?: string
+          description: string
+          duration_days: number
+          id?: string
+          reward_points?: number | null
+          target_metric?: string | null
+          title: string
+        }
+        Update: {
+          challenge_type?: string
+          created_at?: string
+          description?: string
+          duration_days?: number
+          id?: string
+          reward_points?: number | null
+          target_metric?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       daily_logs: {
         Row: {
           amount_ml: number
@@ -194,6 +227,36 @@ export type Database = {
           oil_estimate_ml?: number
           recipe_output?: Json
           user_id?: string
+        }
+        Relationships: []
+      }
+      health_content: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          id: string
+          preview: string
+          tags: string[] | null
+          title: string
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string
+          id?: string
+          preview: string
+          tags?: string[] | null
+          title: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          id?: string
+          preview?: string
+          tags?: string[] | null
+          title?: string
         }
         Relationships: []
       }
@@ -323,6 +386,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      nudge_templates: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          priority: number | null
+          template_text: string
+          trigger_type: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          priority?: number | null
+          template_text: string
+          trigger_type: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          priority?: number | null
+          template_text?: string
+          trigger_type?: string
+        }
+        Relationships: []
       }
       order_items: {
         Row: {
@@ -480,6 +570,118 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_attempts: {
+        Row: {
+          answers: Json
+          completed_at: string
+          created_at: string
+          id: string
+          quiz_id: string
+          score: number
+          total_questions: number
+          user_id: string
+        }
+        Insert: {
+          answers: Json
+          completed_at?: string
+          created_at?: string
+          id?: string
+          quiz_id: string
+          score: number
+          total_questions: number
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          completed_at?: string
+          created_at?: string
+          id?: string
+          quiz_id?: string
+          score?: number
+          total_questions?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_attempts_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions: {
+        Row: {
+          correct_answer: number
+          created_at: string
+          explanation: string | null
+          id: string
+          options: Json
+          order_num: number
+          question_text: string
+          quiz_id: string
+        }
+        Insert: {
+          correct_answer: number
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          options: Json
+          order_num: number
+          question_text: string
+          quiz_id: string
+        }
+        Update: {
+          correct_answer?: number
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          options?: Json
+          order_num?: number
+          question_text?: string
+          quiz_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quizzes: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          difficulty: string | null
+          id: string
+          reward_points: number | null
+          title: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty?: string | null
+          id?: string
+          reward_points?: number | null
+          title: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty?: string | null
+          id?: string
+          reward_points?: number | null
+          title?: string
+        }
+        Relationships: []
+      }
       recipes_prebuilt: {
         Row: {
           calories: number | null
@@ -521,6 +723,47 @@ export type Database = {
           tags?: string[]
         }
         Relationships: []
+      }
+      user_challenges: {
+        Row: {
+          challenge_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          progress_data: Json | null
+          started_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          progress_data?: Json | null
+          started_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          progress_data?: Json | null
+          started_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_challenges_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_profiles: {
         Row: {
