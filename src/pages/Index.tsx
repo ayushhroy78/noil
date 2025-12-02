@@ -1,5 +1,6 @@
-import { User, Search, Home, Activity, Book, ShoppingBag, Compass } from "lucide-react";
+import { User, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { BottomNav } from "@/components/BottomNav";
 import { Card } from "@/components/ui/card";
 import {
   Carousel,
@@ -72,13 +73,6 @@ const Index = () => {
     },
   ];
 
-  const navItems = [
-    { icon: Activity, label: "Tracker", active: false, path: "/tracker" },
-    { icon: Book, label: "Recipes", active: false, path: "/fit-meal" },
-    { icon: Home, label: "Home", active: true, path: "/" },
-    { icon: ShoppingBag, label: "Store", active: false, path: "/oilhub" },
-    { icon: Compass, label: "Discover", active: false, path: "/discover" },
-  ];
 
   return (
     <div className="min-h-screen bg-background pb-24 overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -180,32 +174,7 @@ const Index = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card shadow-nav border-t border-border">
-        <div className="max-w-md mx-auto flex items-center justify-around px-4 py-3">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isHome = item.label === "Home";
-            return (
-              <button
-                key={item.label}
-                onClick={() => navigate(item.path)}
-                className={`flex flex-col items-center gap-1 rounded-xl transition-all ${
-                  isHome 
-                    ? "px-4 py-2 -mt-6 bg-primary text-primary-foreground shadow-lg scale-110" 
-                    : `px-3 py-1.5 ${
-                        item.active
-                          ? "text-primary bg-primary/10"
-                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                      }`
-                }`}
-              >
-                <Icon className={`w-6 h-6 ${isHome ? "fill-primary-foreground" : item.active ? "fill-primary" : ""}`} />
-                <span className={`text-xs font-medium ${isHome ? "font-semibold" : ""}`}>{item.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </nav>
+      <BottomNav />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { BottomNav } from "@/components/BottomNav";
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
@@ -83,7 +84,7 @@ const FitMeal = () => {
   const cuisines = ["all", ...new Set(recipes.map((r) => r.cuisine))];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background pb-8">
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background pb-24">
       <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm shadow-soft px-4 py-4 border-b border-primary/10">
         <div className="flex items-center gap-3">
           <button
@@ -213,6 +214,9 @@ const FitMeal = () => {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Bottom Navigation */}
+      <BottomNav />
     </div>
   );
 };
