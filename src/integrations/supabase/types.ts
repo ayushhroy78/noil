@@ -760,6 +760,45 @@ export type Database = {
         }
         Relationships: []
       }
+      rewards: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          name: string
+          points_cost: number
+          reward_type: string
+          reward_value: string
+          stock_quantity: number | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name: string
+          points_cost: number
+          reward_type: string
+          reward_value: string
+          stock_quantity?: number | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name?: string
+          points_cost?: number
+          reward_type?: string
+          reward_value?: string
+          stock_quantity?: number | null
+        }
+        Relationships: []
+      }
       user_achievements: {
         Row: {
           achievement_id: string
@@ -890,12 +929,59 @@ export type Database = {
         }
         Relationships: []
       }
+      user_rewards: {
+        Row: {
+          expires_at: string | null
+          id: string
+          is_used: boolean | null
+          redeemed_at: string
+          redemption_code: string | null
+          reward_id: string
+          user_id: string
+        }
+        Insert: {
+          expires_at?: string | null
+          id?: string
+          is_used?: boolean | null
+          redeemed_at?: string
+          redemption_code?: string | null
+          reward_id: string
+          user_id: string
+        }
+        Update: {
+          expires_at?: string | null
+          id?: string
+          is_used?: boolean | null
+          redeemed_at?: string
+          redemption_code?: string | null
+          reward_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_rewards_reward_id_fkey"
+            columns: ["reward_id"]
+            isOneToOne: false
+            referencedRelation: "rewards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_anonymized_leaderboard: {
+        Args: never
+        Returns: {
+          display_name: string
+          points_this_month: number
+          points_this_week: number
+          rank: number
+          total_points: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

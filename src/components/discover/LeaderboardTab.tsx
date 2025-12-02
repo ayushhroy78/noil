@@ -6,41 +6,48 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect } from "react";
 
+interface LeaderboardEntry {
+  rank: number;
+  display_name: string;
+  total_points: number;
+  points_this_week: number;
+  points_this_month: number;
+}
+
 export const LeaderboardTab = () => {
-  const [user, setUser] = useState<any>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
+      setCurrentUserId(user?.id || null);
     });
   }, []);
 
+  // Use anonymized leaderboard function
   const { data: leaderboard, isLoading } = useQuery({
-    queryKey: ["leaderboard"],
+    queryKey: ["anonymized-leaderboard"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("user_points")
-        .select("*")
-        .order("total_points", { ascending: false })
-        .limit(50);
-
+      const { data, error } = await supabase.rpc("get_anonymized_leaderboard");
       if (error) throw error;
-      return data;
+      return data as LeaderboardEntry[];
     },
   });
 
-  const { data: weeklyLeaderboard } = useQuery({
-    queryKey: ["weekly-leaderboard"],
+  // Get current user's rank
+  const { data: userRank } = useQuery({
+    queryKey: ["user-rank", currentUserId],
     queryFn: async () => {
+      if (!currentUserId) return null;
       const { data, error } = await supabase
         .from("user_points")
-        .select("*")
-        .order("points_this_week", { ascending: false })
-        .limit(50);
-
+        .select("total_points, points_this_week")
+        .eq("user_id", currentUserId)
+        .maybeSingle();
+      
       if (error) throw error;
       return data;
     },
+    enabled: !!currentUserId,
   });
 
   const getRankIcon = (rank: number) => {
@@ -50,45 +57,33 @@ export const LeaderboardTab = () => {
     return <span className="text-sm font-semibold text-muted-foreground">#{rank}</span>;
   };
 
-  const LeaderboardList = ({ data, pointsKey }: { data: any[], pointsKey: string }) => (
+  const LeaderboardList = ({ data, pointsKey }: { data: LeaderboardEntry[], pointsKey: "total_points" | "points_this_week" }) => (
     <div className="space-y-2">
-      {data.map((entry, index) => {
-        const isCurrentUser = entry.user_id === user?.id;
-        return (
-          <Card
-            key={entry.id}
-            className={`p-4 ${
-              isCurrentUser
-                ? "bg-primary/10 border-primary/30"
-                : "bg-card"
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-8 flex items-center justify-center">
-                  {getRankIcon(index + 1)}
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                    <User className="w-4 h-4 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">
-                      {isCurrentUser ? "You" : `User ${entry.user_id.slice(0, 8)}`}
-                    </p>
-                  </div>
-                </div>
+      {data.map((entry) => (
+        <Card key={entry.rank} className="p-4 bg-card">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 flex items-center justify-center">
+                {getRankIcon(entry.rank)}
               </div>
-              <div className="text-right">
-                <p className="text-lg font-bold text-primary">
-                  {entry[pointsKey]}
-                </p>
-                <p className="text-xs text-muted-foreground">points</p>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                  <User className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm">{entry.display_name}</p>
+                </div>
               </div>
             </div>
-          </Card>
-        );
-      })}
+            <div className="text-right">
+              <p className="text-lg font-bold text-primary">
+                {entry[pointsKey]}
+              </p>
+              <p className="text-xs text-muted-foreground">points</p>
+            </div>
+          </div>
+        </Card>
+      ))}
     </div>
   );
 
@@ -109,6 +104,22 @@ export const LeaderboardTab = () => {
         <p className="text-sm text-muted-foreground">Compete with others and climb the ranks!</p>
       </div>
 
+      {/* Current User Stats */}
+      {userRank && (
+        <Card className="p-4 bg-primary/10 border-primary/30 mb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <User className="w-5 h-5 text-primary" />
+              <span className="font-semibold">Your Stats</span>
+            </div>
+            <div className="text-right">
+              <p className="text-lg font-bold text-primary">{userRank.total_points}</p>
+              <p className="text-xs text-muted-foreground">total points</p>
+            </div>
+          </div>
+        </Card>
+      )}
+
       <Tabs defaultValue="all-time" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="all-time">All Time</TabsTrigger>
@@ -126,8 +137,11 @@ export const LeaderboardTab = () => {
         </TabsContent>
         
         <TabsContent value="weekly" className="mt-4">
-          {weeklyLeaderboard && weeklyLeaderboard.length > 0 ? (
-            <LeaderboardList data={weeklyLeaderboard} pointsKey="points_this_week" />
+          {leaderboard && leaderboard.length > 0 ? (
+            <LeaderboardList 
+              data={[...leaderboard].sort((a, b) => b.points_this_week - a.points_this_week)} 
+              pointsKey="points_this_week" 
+            />
           ) : (
             <Card className="p-8 text-center">
               <p className="text-muted-foreground">No weekly data yet. Start earning points!</p>

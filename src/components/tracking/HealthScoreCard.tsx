@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Activity, TrendingUp, TrendingDown } from "lucide-react";
+import { Activity, TrendingUp, TrendingDown, Share2 } from "lucide-react";
+import { SocialShare } from "@/components/discover/SocialShare";
+import { Button } from "@/components/ui/button";
 
 interface HealthScoreData {
   todayScore: number;
@@ -32,13 +34,32 @@ export const HealthScoreCard = ({ data }: HealthScoreCardProps) => {
     return "bg-destructive/10 border-destructive/20";
   };
 
+  const getTrendDescription = () => {
+    if (data.trend === "up") return "I'm improving my health with better oil consumption habits!";
+    if (data.trend === "down") return "Working on improving my oil consumption habits.";
+    return "Maintaining consistent healthy oil consumption.";
+  };
+
   return (
     <Card className={`border-2 ${getScoreBgColor(data.todayScore)} shadow-medium`}>
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Activity className="w-5 h-5 text-primary" />
-          Health Score
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Activity className="w-5 h-5 text-primary" />
+            Health Score
+          </CardTitle>
+          <SocialShare
+            type="health_score"
+            title="My Health Score"
+            description={getTrendDescription()}
+            score={data.todayScore}
+            trigger={
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Share2 className="h-4 w-4" />
+              </Button>
+            }
+          />
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="text-center space-y-2">

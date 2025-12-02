@@ -3,6 +3,7 @@ import { Award, Lock } from "lucide-react";
 import { useAchievements } from "@/hooks/useAchievements";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { SocialShare } from "./SocialShare";
 
 export const BadgesSection = () => {
   const { achievements, userAchievements } = useAchievements();
@@ -63,10 +64,17 @@ export const BadgesSection = () => {
                   <p className="text-xs text-muted-foreground mt-1">
                     {achievement.description}
                   </p>
-                  <div className="mt-2">
+                  <div className="mt-2 flex items-center justify-center gap-2">
                     <Badge variant="outline" className="text-xs">
                       {achievement.points_reward} pts
                     </Badge>
+                    {isUnlocked && (
+                      <SocialShare
+                        type="achievement"
+                        title={achievement.title}
+                        description={achievement.description}
+                      />
+                    )}
                   </div>
                 </div>
               </div>

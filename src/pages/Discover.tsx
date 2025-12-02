@@ -10,6 +10,7 @@ import { NudgesTab } from "@/components/discover/NudgesTab";
 import { LeaderboardTab } from "@/components/discover/LeaderboardTab";
 import { BadgesSection } from "@/components/discover/BadgesSection";
 import { PointsDisplay } from "@/components/discover/PointsDisplay";
+import { RewardsStore } from "@/components/discover/RewardsStore";
 import { supabase } from "@/integrations/supabase/client";
 
 const Discover = () => {
@@ -64,12 +65,13 @@ const Discover = () => {
         )}
 
         <Tabs defaultValue="challenges" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-6">
-            <TabsTrigger value="challenges">Challenges</TabsTrigger>
-            <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
-            <TabsTrigger value="info">Info</TabsTrigger>
-            <TabsTrigger value="tips">Tips</TabsTrigger>
-            <TabsTrigger value="leaderboard">Leaders</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-6 mb-6">
+            <TabsTrigger value="challenges" className="text-xs px-2">Challenges</TabsTrigger>
+            <TabsTrigger value="quizzes" className="text-xs px-2">Quizzes</TabsTrigger>
+            <TabsTrigger value="rewards" className="text-xs px-2">Rewards</TabsTrigger>
+            <TabsTrigger value="info" className="text-xs px-2">Info</TabsTrigger>
+            <TabsTrigger value="tips" className="text-xs px-2">Tips</TabsTrigger>
+            <TabsTrigger value="leaderboard" className="text-xs px-2">Leaders</TabsTrigger>
           </TabsList>
 
           <TabsContent value="challenges">
@@ -90,6 +92,10 @@ const Discover = () => {
                 Please log in to take quizzes
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="rewards">
+            <RewardsStore userId={userId} />
           </TabsContent>
 
           <TabsContent value="info">
