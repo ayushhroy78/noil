@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Tracker from "./pages/Tracker";
 import FitMeal from "./pages/FitMeal";
 import OilHub from "./pages/OilHub";
+import Cart from "./pages/Cart";
 import Discover from "./pages/Discover";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -34,6 +35,7 @@ const App = () => {
             <Route path="/tracker" element={<Tracker />} />
             <Route path="/fit-meal" element={<FitMeal />} />
             <Route path="/oilhub" element={<OilHub />} />
+            <Route path="/cart" element={<Cart />} />
             <Route path="/discover" element={<Discover />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

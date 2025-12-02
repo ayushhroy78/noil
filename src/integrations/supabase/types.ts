@@ -89,6 +89,51 @@ export type Database = {
         }
         Relationships: []
       }
+      cart_items: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          quantity: number
+          updated_at: string
+          user_id: string
+          variant_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          quantity?: number
+          updated_at?: string
+          user_id: string
+          variant_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+          updated_at?: string
+          user_id?: string
+          variant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cart_items_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_logs: {
         Row: {
           amount_ml: number
@@ -197,6 +242,244 @@ export type Database = {
         }
         Relationships: []
       }
+      iot_devices: {
+        Row: {
+          created_at: string
+          device_id: string
+          device_name: string | null
+          id: string
+          is_active: boolean | null
+          linked_bottle_id: string | null
+          linked_oil_type: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          device_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          linked_bottle_id?: string | null
+          linked_oil_type?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          device_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          linked_bottle_id?: string | null
+          linked_oil_type?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "iot_devices_linked_bottle_id_fkey"
+            columns: ["linked_bottle_id"]
+            isOneToOne: false
+            referencedRelation: "bottles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      iot_usage_logs: {
+        Row: {
+          created_at: string
+          device_id: string
+          id: string
+          logged_at: string
+          synced_to_tracking: boolean | null
+          user_id: string
+          volume_used_ml: number
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          id?: string
+          logged_at?: string
+          synced_to_tracking?: boolean | null
+          user_id: string
+          volume_used_ml: number
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          id?: string
+          logged_at?: string
+          synced_to_tracking?: boolean | null
+          user_id?: string
+          volume_used_ml?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "iot_usage_logs_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "iot_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          price_at_purchase: number
+          product_id: string
+          quantity: number
+          variant_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          price_at_purchase: number
+          product_id: string
+          quantity: number
+          variant_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          price_at_purchase?: number
+          product_id?: string
+          quantity?: number
+          variant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          delivery_address: string | null
+          delivery_charges: number | null
+          id: string
+          status: string
+          total_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_address?: string | null
+          delivery_charges?: number | null
+          id?: string
+          status?: string
+          total_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          delivery_address?: string | null
+          delivery_charges?: number | null
+          id?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      product_variants: {
+        Row: {
+          created_at: string
+          id: string
+          price: number
+          product_id: string
+          stock_quantity: number | null
+          variant_name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          price: number
+          product_id: string
+          stock_quantity?: number | null
+          variant_name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          price?: number
+          product_id?: string
+          stock_quantity?: number | null
+          variant_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          created_at: string
+          description: string | null
+          health_tags: string[] | null
+          id: string
+          image_url: string | null
+          name: string
+          oil_type: string | null
+          product_type: string
+          region_tags: string[] | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          health_tags?: string[] | null
+          id?: string
+          image_url?: string | null
+          name: string
+          oil_type?: string | null
+          product_type: string
+          region_tags?: string[] | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          health_tags?: string[] | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          oil_type?: string | null
+          product_type?: string
+          region_tags?: string[] | null
+        }
+        Relationships: []
+      }
       recipes_prebuilt: {
         Row: {
           calories: number | null
@@ -236,6 +519,33 @@ export type Database = {
           prep_time_minutes?: number | null
           steps?: Json
           tags?: string[]
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          created_at: string
+          id: string
+          region: string | null
+          state: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          region?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          region?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
