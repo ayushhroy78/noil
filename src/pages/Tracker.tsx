@@ -11,6 +11,7 @@ import { InsightsSection } from "@/components/tracking/InsightsSection";
 import { BarcodeScanner } from "@/components/tracking/BarcodeScanner";
 import { ProgressCharts } from "@/components/tracking/ProgressCharts";
 import { DailyGoalTracker } from "@/components/tracking/DailyGoalTracker";
+import { IoTDeviceManager } from "@/components/tracking/IoTDeviceManager";
 import { useTracking } from "@/hooks/useTracking";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -73,10 +74,11 @@ const Tracker = () => {
 
         {/* Tracking Forms */}
         <Tabs defaultValue="daily" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-card/80 backdrop-blur">
+          <TabsList className="grid w-full grid-cols-4 bg-card/80 backdrop-blur">
             <TabsTrigger value="daily">Daily Log</TabsTrigger>
             <TabsTrigger value="bottle">Bottle</TabsTrigger>
             <TabsTrigger value="scan">Scan</TabsTrigger>
+            <TabsTrigger value="iot">IoT</TabsTrigger>
           </TabsList>
           <TabsContent value="daily" className="mt-4">
             {userId && <DailyLogForm userId={userId} onLogAdded={refetch} />}
@@ -86,6 +88,9 @@ const Tracker = () => {
           </TabsContent>
           <TabsContent value="scan" className="mt-4">
             {userId && <BarcodeScanner userId={userId} onScanComplete={refetch} />}
+          </TabsContent>
+          <TabsContent value="iot" className="mt-4">
+            {userId && <IoTDeviceManager userId={userId} onRefetch={refetch} />}
           </TabsContent>
         </Tabs>
       </main>
