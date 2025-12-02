@@ -29,7 +29,7 @@ export const BottomNav = () => {
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
               }`}
             >
-              <Icon className={`w-6 h-6 ${isActive ? "fill-primary" : ""}`} />
+              <Icon className="w-6 h-6" />
               <span className="text-xs font-medium">{item.label}</span>
             </button>
           );
