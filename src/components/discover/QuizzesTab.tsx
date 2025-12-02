@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Brain, CheckCircle, XCircle, Award } from "lucide-react";
 import { toast } from "sonner";
+import { usePoints } from "@/hooks/usePoints";
+import { useAchievements } from "@/hooks/useAchievements";
 
 interface Quiz {
   id: string;
@@ -40,6 +42,8 @@ export const QuizzesTab = ({ userId }: QuizzesTabProps) => {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
+  const { addPoints } = usePoints();
+  const { checkAndUnlockAchievements } = useAchievements();
 
   useEffect(() => {
     fetchQuizzes();
@@ -125,7 +129,28 @@ export const QuizzesTab = ({ userId }: QuizzesTabProps) => {
         answers: userAnswers,
       });
 
-      toast.success(`Quiz completed! You scored ${finalScore}/${questions.length}`);
+      // Award points
+      const pointsEarned = selectedQuiz?.reward_points 
+        ? Math.round((finalScore / questions.length) * selectedQuiz.reward_points)
+        : Math.round((finalScore / questions.length) * 50);
+      
+      addPoints(pointsEarned);
+
+      // Check for quiz achievements
+      const { data: attempts } = await supabase
+        .from("quiz_attempts")
+        .select("*")
+        .eq("user_id", userId);
+      
+      const completedCount = (attempts?.length || 0) + 1;
+      await checkAndUnlockAchievements("quizzes_completed", completedCount);
+
+      // Perfect score achievement
+      if (finalScore === questions.length) {
+        await checkAndUnlockAchievements("perfect_quiz_scores", 1);
+      }
+
+      toast.success(`Quiz completed! You scored ${finalScore}/${questions.length} and earned ${pointsEarned} points!`);
     } catch (error) {
       console.error("Error saving quiz attempt:", error);
     }
