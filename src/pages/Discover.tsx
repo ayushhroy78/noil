@@ -1,5 +1,6 @@
 import { ArrowLeft, Leaf, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { BottomNav } from "@/components/BottomNav";
 import discoverMainImg from "@/assets/discover-main.jpg";
 import { Button } from "@/components/ui/button";
 
@@ -7,7 +8,7 @@ const Discover = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background pb-8">
+    <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card shadow-soft px-4 py-4">
         <div className="flex items-center gap-3 mb-3">
@@ -58,6 +59,9 @@ const Discover = () => {
           </div>
         </div>
       </main>
+
+      {/* Bottom Navigation */}
+      <BottomNav />
     </div>
   );
 };
