@@ -760,6 +760,42 @@ export type Database = {
         }
         Relationships: []
       }
+      referrals: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          referral_code: string
+          referred_id: string
+          referred_rewarded: boolean | null
+          referrer_id: string
+          referrer_rewarded: boolean | null
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code: string
+          referred_id: string
+          referred_rewarded?: boolean | null
+          referrer_id: string
+          referrer_rewarded?: boolean | null
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code?: string
+          referred_id?: string
+          referred_rewarded?: boolean | null
+          referrer_id?: string
+          referrer_rewarded?: boolean | null
+          status?: string
+        }
+        Relationships: []
+      }
       rewards: {
         Row: {
           created_at: string
@@ -906,6 +942,8 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          referral_code: string | null
+          referred_by: string | null
           region: string | null
           state: string | null
           updated_at: string
@@ -914,6 +952,8 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          referral_code?: string | null
+          referred_by?: string | null
           region?: string | null
           state?: string | null
           updated_at?: string
@@ -922,6 +962,8 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          referral_code?: string | null
+          referred_by?: string | null
           region?: string | null
           state?: string | null
           updated_at?: string
