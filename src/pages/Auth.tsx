@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,14 +7,17 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { Gift } from "lucide-react";
 import logoImg from "@/assets/logo.jpg";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [referralCode, setReferralCode] = useState(searchParams.get("ref") || "");
 
   useEffect(() => {
     // Check if user is already logged in
@@ -32,23 +35,66 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            referral_code: referralCode || null,
+          },
         },
       });
 
       if (error) throw error;
 
+      // If signup successful and user exists, create profile and handle referral
+      if (data.user) {
+        // Create user profile (trigger will generate referral code)
+        const { error: profileError } = await supabase
+          .from("user_profiles")
+          .insert({ user_id: data.user.id });
+
+        if (profileError && !profileError.message.includes("duplicate")) {
+          console.error("Profile creation error:", profileError);
+        }
+
+        // Apply referral if code was provided
+        if (referralCode) {
+          const { data: referrer } = await supabase
+            .from("user_profiles")
+            .select("user_id")
+            .eq("referral_code", referralCode.toUpperCase())
+            .maybeSingle();
+
+          if (referrer && referrer.user_id !== data.user.id) {
+            await supabase.from("referrals").insert({
+              referrer_id: referrer.user_id,
+              referred_id: data.user.id,
+              referral_code: referralCode.toUpperCase(),
+              status: "completed",
+              completed_at: new Date().toISOString(),
+            });
+
+            // Update profile with referred_by
+            await supabase
+              .from("user_profiles")
+              .update({ referred_by: referrer.user_id })
+              .eq("user_id", data.user.id);
+          }
+        }
+      }
+
       toast({
         title: "Success!",
-        description: "Account created successfully. You can now sign in.",
+        description: referralCode 
+          ? "Account created! You'll receive bonus points after signing in." 
+          : "Account created successfully. You can now sign in.",
       });
 
       setEmail("");
       setPassword("");
+      setReferralCode("");
     } catch (error: any) {
       toast({
         title: "Error",
@@ -164,6 +210,24 @@ const Auth = () => {
                     minLength={6}
                     className="bg-background"
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-referral" className="flex items-center gap-1">
+                    <Gift className="w-4 h-4 text-primary" />
+                    Referral Code (Optional)
+                  </Label>
+                  <Input
+                    id="signup-referral"
+                    type="text"
+                    placeholder="Enter referral code"
+                    value={referralCode}
+                    onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                    className="bg-background font-mono uppercase"
+                    maxLength={8}
+                  />
+                  {referralCode && (
+                    <p className="text-xs text-primary">🎁 You'll earn 100 bonus points!</p>
+                  )}
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "Creating account..." : "Sign Up"}
