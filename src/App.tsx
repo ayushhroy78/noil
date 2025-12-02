@@ -11,6 +11,10 @@ import FitMeal from "./pages/FitMeal";
 import OilHub from "./pages/OilHub";
 import Cart from "./pages/Cart";
 import Discover from "./pages/Discover";
+import Profile from "./pages/Profile";
+import RestaurantApply from "./pages/RestaurantApply";
+import Restaurants from "./pages/Restaurants";
+import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -37,6 +41,10 @@ const App = () => {
             <Route path="/oilhub" element={<OilHub />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/discover" element={<Discover />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/restaurant-apply" element={<RestaurantApply />} />
+            <Route path="/restaurants" element={<Restaurants />} />
+            <Route path="/admin" element={<Admin />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Store, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChallengesTab } from "@/components/discover/ChallengesTab";
+import { Card, CardContent } from "@/components/ui/card";
 import { QuizzesTab } from "@/components/discover/QuizzesTab";
 import { HealthInfoTab } from "@/components/discover/HealthInfoTab";
 import { NudgesTab } from "@/components/discover/NudgesTab";
 import { LeaderboardTab } from "@/components/discover/LeaderboardTab";
-import { BadgesSection } from "@/components/discover/BadgesSection";
-import { PointsDisplay } from "@/components/discover/PointsDisplay";
-import { RewardsStore } from "@/components/discover/RewardsStore";
-import { ReferralSection } from "@/components/discover/ReferralSection";
 import { supabase } from "@/integrations/supabase/client";
 
 const Discover = () => {
@@ -59,32 +55,34 @@ const Discover = () => {
 
       {/* Main Content */}
       <main className="px-4 py-6 max-w-2xl mx-auto">
-        {userId && (
-          <div className="mb-6">
-            <PointsDisplay />
-          </div>
-        )}
-
-        <Tabs defaultValue="challenges" className="w-full">
-          <TabsList className="grid w-full grid-cols-7 mb-6">
-            <TabsTrigger value="challenges" className="text-xs px-1">Challenges</TabsTrigger>
-            <TabsTrigger value="quizzes" className="text-xs px-1">Quizzes</TabsTrigger>
-            <TabsTrigger value="rewards" className="text-xs px-1">Rewards</TabsTrigger>
-            <TabsTrigger value="referral" className="text-xs px-1">Referral</TabsTrigger>
-            <TabsTrigger value="info" className="text-xs px-1">Info</TabsTrigger>
-            <TabsTrigger value="tips" className="text-xs px-1">Tips</TabsTrigger>
-            <TabsTrigger value="leaderboard" className="text-xs px-1">Leaders</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="challenges">
-            {userId ? (
-              <ChallengesTab userId={userId} />
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                Please log in to view challenges
+        <Card 
+          className="mb-6 cursor-pointer hover:shadow-md transition-shadow bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-800"
+          onClick={() => navigate("/restaurants")}
+          data-testid="card-restaurants"
+        >
+          <CardContent className="pt-4 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
+                <Store className="h-6 w-6 text-green-600" />
               </div>
-            )}
-          </TabsContent>
+              <div className="flex-1">
+                <p className="font-medium text-green-800 dark:text-green-200">Healthy Restaurants</p>
+                <p className="text-sm text-green-600 dark:text-green-400">
+                  Find restaurants that cook with healthy oils
+                </p>
+              </div>
+              <MapPin className="h-5 w-5 text-green-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Tabs defaultValue="quizzes" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsTrigger value="quizzes" className="text-xs px-1" data-testid="tab-quizzes">Quizzes</TabsTrigger>
+            <TabsTrigger value="info" className="text-xs px-1" data-testid="tab-info">Info</TabsTrigger>
+            <TabsTrigger value="tips" className="text-xs px-1" data-testid="tab-tips">Tips</TabsTrigger>
+            <TabsTrigger value="leaderboard" className="text-xs px-1" data-testid="tab-leaderboard">Leaders</TabsTrigger>
+          </TabsList>
 
           <TabsContent value="quizzes">
             {userId ? (
@@ -94,14 +92,6 @@ const Discover = () => {
                 Please log in to take quizzes
               </div>
             )}
-          </TabsContent>
-
-          <TabsContent value="rewards">
-            <RewardsStore userId={userId} />
-          </TabsContent>
-
-          <TabsContent value="referral">
-            <ReferralSection userId={userId} />
           </TabsContent>
 
           <TabsContent value="info">
@@ -122,12 +112,6 @@ const Discover = () => {
             <LeaderboardTab />
           </TabsContent>
         </Tabs>
-
-        {userId && (
-          <div className="mt-8">
-            <BadgesSection />
-          </div>
-        )}
       </main>
 
       {/* Bottom Navigation */}

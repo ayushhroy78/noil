@@ -1,0 +1,592 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
+import { BottomNav } from "@/components/BottomNav";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from "@/components/ui/form";
+import { useToast } from "@/hooks/use-toast";
+import {
+  ArrowLeft,
+  Store,
+  Plus,
+  X,
+  Utensils,
+  Droplet,
+  ChefHat,
+  Send,
+  CheckCircle,
+} from "lucide-react";
+
+const OIL_TYPES = [
+  "Mustard Oil",
+  "Groundnut Oil",
+  "Coconut Oil",
+  "Sesame Oil",
+  "Rice Bran Oil",
+  "Olive Oil",
+  "Sunflower Oil",
+  "Other Cold-Pressed Oils",
+];
+
+const COOKING_METHODS = [
+  "Steaming",
+  "Grilling",
+  "Baking",
+  "Air Frying",
+  "Sauteing (Low Oil)",
+  "Stir Frying",
+  "Roasting",
+  "Boiling",
+  "Pressure Cooking",
+];
+
+const applicationSchema = z.object({
+  restaurantName: z.string().min(2, "Restaurant name must be at least 2 characters"),
+  ownerName: z.string().min(2, "Owner name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  address: z.string().min(5, "Address must be at least 5 characters"),
+  city: z.string().min(2, "City is required"),
+  state: z.string().min(2, "State is required"),
+  description: z.string().optional(),
+});
+
+type ApplicationFormData = z.infer<typeof applicationSchema>;
+
+interface MenuItem {
+  name: string;
+  description: string;
+  oilUsed: string;
+  cookingMethod: string;
+}
+
+const RestaurantApply = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [selectedOilTypes, setSelectedOilTypes] = useState<string[]>([]);
+  const [selectedCookingMethods, setSelectedCookingMethods] = useState<string[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [newMenuItem, setNewMenuItem] = useState<MenuItem>({
+    name: "",
+    description: "",
+    oilUsed: "",
+    cookingMethod: "",
+  });
+
+  const form = useForm<ApplicationFormData>({
+    resolver: zodResolver(applicationSchema),
+    defaultValues: {
+      restaurantName: "",
+      ownerName: "",
+      email: "",
+      phone: "",
+      address: "",
+      city: "",
+      state: "",
+      description: "",
+    },
+  });
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+        form.setValue("email", user.email || "");
+      } else {
+        navigate("/auth");
+      }
+      setLoading(false);
+    };
+
+    fetchUser();
+  }, [navigate, form]);
+
+  const addMenuItem = () => {
+    if (newMenuItem.name && newMenuItem.oilUsed && newMenuItem.cookingMethod) {
+      setMenuItems([...menuItems, newMenuItem]);
+      setNewMenuItem({
+        name: "",
+        description: "",
+        oilUsed: "",
+        cookingMethod: "",
+      });
+    } else {
+      toast({
+        title: "Incomplete Menu Item",
+        description: "Please fill in at least name, oil used, and cooking method",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const removeMenuItem = (index: number) => {
+    setMenuItems(menuItems.filter((_, i) => i !== index));
+  };
+
+  const toggleOilType = (oil: string) => {
+    setSelectedOilTypes((prev) =>
+      prev.includes(oil) ? prev.filter((o) => o !== oil) : [...prev, oil]
+    );
+  };
+
+  const toggleCookingMethod = (method: string) => {
+    setSelectedCookingMethods((prev) =>
+      prev.includes(method) ? prev.filter((m) => m !== method) : [...prev, method]
+    );
+  };
+
+  const onSubmit = async (data: ApplicationFormData) => {
+    if (!userId) {
+      toast({
+        title: "Not authenticated",
+        description: "Please log in to submit an application",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (selectedOilTypes.length === 0) {
+      toast({
+        title: "Oil Types Required",
+        description: "Please select at least one oil type you use",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (selectedCookingMethods.length === 0) {
+      toast({
+        title: "Cooking Methods Required",
+        description: "Please select at least one cooking method",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (menuItems.length === 0) {
+      toast({
+        title: "Menu Items Required",
+        description: "Please add at least one menu item",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const { error } = await (supabase as any).from("restaurant_applications").insert({
+        user_id: userId,
+        restaurant_name: data.restaurantName,
+        owner_name: data.ownerName,
+        email: data.email,
+        phone: data.phone,
+        address: data.address,
+        city: data.city,
+        state: data.state,
+        description: data.description || null,
+        menu_items: menuItems,
+        oil_types: selectedOilTypes,
+        cooking_methods: selectedCookingMethods,
+        status: "pending",
+      });
+
+      if (error) throw error;
+
+      setSubmitted(true);
+      toast({
+        title: "Application Submitted!",
+        description: "We'll review your application and get back to you soon.",
+      });
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      toast({
+        title: "Submission Failed",
+        description: "There was an error submitting your application. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen bg-background pb-24">
+        <header className="sticky top-0 z-50 bg-card shadow-soft px-4 py-4">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate("/profile")}
+              className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center"
+              data-testid="button-back"
+            >
+              <ArrowLeft className="w-5 h-5 text-primary" />
+            </button>
+            <h1 className="text-xl font-bold text-foreground">Application Submitted</h1>
+          </div>
+        </header>
+
+        <main className="px-4 py-8 max-w-lg mx-auto text-center">
+          <div className="h-20 w-20 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="h-10 w-10 text-green-600" />
+          </div>
+          <h2 className="text-2xl font-bold mb-3">Thank You!</h2>
+          <p className="text-muted-foreground mb-6">
+            Your restaurant application has been submitted successfully. Our team will review your application and get back to you within 3-5 business days.
+          </p>
+          <Button onClick={() => navigate("/profile")} data-testid="button-back-profile">
+            Back to Profile
+          </Button>
+        </main>
+
+        <BottomNav />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background pb-24">
+      <header className="sticky top-0 z-50 bg-card shadow-soft px-4 py-4">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate("/profile")}
+            className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center"
+            data-testid="button-back"
+          >
+            <ArrowLeft className="w-5 h-5 text-primary" />
+          </button>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Register Restaurant</h1>
+            <p className="text-xs text-muted-foreground">Join our healthy dining network</p>
+          </div>
+        </div>
+      </header>
+
+      <main className="px-4 py-6 max-w-2xl mx-auto">
+        <Card className="mb-6 bg-primary/5 border-primary/20">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex items-center gap-3">
+              <Store className="h-8 w-8 text-primary" />
+              <div>
+                <p className="font-medium">Why Register?</p>
+                <p className="text-sm text-muted-foreground">
+                  Get featured in our app as a healthy dining option and attract health-conscious customers.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Store className="w-4 h-4" />
+                  Restaurant Details
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="restaurantName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Restaurant Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your Restaurant Name" {...field} data-testid="input-restaurant-name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="ownerName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Owner Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Owner's Full Name" {...field} data-testid="input-owner-name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="email@example.com" {...field} data-testid="input-email" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input placeholder="9876543210" {...field} data-testid="input-phone" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Address</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Street Address" {...field} data-testid="input-address" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input placeholder="City" {...field} data-testid="input-city" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="state"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>State</FormLabel>
+                        <FormControl>
+                          <Input placeholder="State" {...field} data-testid="input-state" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>About Your Restaurant (Optional)</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Tell us about your restaurant's specialty and commitment to healthy cooking..."
+                          {...field}
+                          data-testid="input-description"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Droplet className="w-4 h-4" />
+                  Oil Types Used
+                </CardTitle>
+                <CardDescription>Select all oils you use in your kitchen</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {OIL_TYPES.map((oil) => (
+                    <Badge
+                      key={oil}
+                      variant={selectedOilTypes.includes(oil) ? "default" : "outline"}
+                      className="cursor-pointer transition-colors"
+                      onClick={() => toggleOilType(oil)}
+                      data-testid={`badge-oil-${oil.toLowerCase().replace(/\s+/g, "-")}`}
+                    >
+                      {oil}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <ChefHat className="w-4 h-4" />
+                  Cooking Methods
+                </CardTitle>
+                <CardDescription>Select all healthy cooking methods you use</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {COOKING_METHODS.map((method) => (
+                    <Badge
+                      key={method}
+                      variant={selectedCookingMethods.includes(method) ? "default" : "outline"}
+                      className="cursor-pointer transition-colors"
+                      onClick={() => toggleCookingMethod(method)}
+                      data-testid={`badge-method-${method.toLowerCase().replace(/\s+/g, "-")}`}
+                    >
+                      {method}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Utensils className="w-4 h-4" />
+                  Menu Items
+                </CardTitle>
+                <CardDescription>Add your healthy menu items</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {menuItems.length > 0 && (
+                  <div className="space-y-2">
+                    {menuItems.map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                      >
+                        <div>
+                          <p className="font-medium text-sm">{item.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.oilUsed} | {item.cookingMethod}
+                          </p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeMenuItem(index)}
+                          data-testid={`button-remove-menu-${index}`}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="space-y-3 p-4 border rounded-lg">
+                  <Input
+                    placeholder="Dish Name"
+                    value={newMenuItem.name}
+                    onChange={(e) => setNewMenuItem({ ...newMenuItem, name: e.target.value })}
+                    data-testid="input-menu-name"
+                  />
+                  <Input
+                    placeholder="Description (optional)"
+                    value={newMenuItem.description}
+                    onChange={(e) => setNewMenuItem({ ...newMenuItem, description: e.target.value })}
+                    data-testid="input-menu-description"
+                  />
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      placeholder="Oil Used"
+                      value={newMenuItem.oilUsed}
+                      onChange={(e) => setNewMenuItem({ ...newMenuItem, oilUsed: e.target.value })}
+                      data-testid="input-menu-oil"
+                    />
+                    <Input
+                      placeholder="Cooking Method"
+                      value={newMenuItem.cookingMethod}
+                      onChange={(e) => setNewMenuItem({ ...newMenuItem, cookingMethod: e.target.value })}
+                      data-testid="input-menu-method"
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={addMenuItem}
+                    data-testid="button-add-menu-item"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Menu Item
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={submitting}
+              data-testid="button-submit-application"
+            >
+              {submitting ? (
+                "Submitting..."
+              ) : (
+                <>
+                  <Send className="w-4 h-4 mr-2" />
+                  Submit Application
+                </>
+              )}
+            </Button>
+          </form>
+        </Form>
+      </main>
+
+      <BottomNav />
+    </div>
+  );
+};
+
+export default RestaurantApply;
