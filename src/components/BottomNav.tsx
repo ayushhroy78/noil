@@ -25,7 +25,7 @@ export const BottomNav = () => {
               onClick={() => navigate(item.path)}
               className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all ${
                 isActive
-                  ? "text-primary bg-primary/10"
+                  ? "text-foreground bg-primary/10"
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
               }`}
             >
