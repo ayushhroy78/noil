@@ -65,10 +65,17 @@ export const RegionSelector = ({ userId, onRegionChange }: RegionSelectorProps) 
     }
 
     try {
-      const { error } = await supabase.from("user_profiles").upsert({
-        user_id: userId,
-        region,
-      });
+      const { error } = await supabase
+        .from("user_profiles")
+        .upsert(
+          {
+            user_id: userId,
+            region,
+          },
+          {
+            onConflict: "user_id",
+          }
+        );
 
       if (error) throw error;
 
