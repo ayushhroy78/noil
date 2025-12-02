@@ -4,10 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
 import { Product, ProductVariant } from "@/hooks/useProducts";
 import { useState } from "react";
-import mustardOilImg from "@/assets/mustard-oil.jpg";
-import coconutOilImg from "@/assets/coconut-oil.jpg";
-import sesameOilImg from "@/assets/sesame-oil.jpg";
-import groundnutOilImg from "@/assets/groundnut-oil.jpg";
 
 interface ProductCardProps {
   product: Product;
@@ -19,21 +15,12 @@ export const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
     product.variants?.[0]!
   );
 
-  const imageMap: Record<string, string> = {
-    "Cold-Pressed Mustard Oil": mustardOilImg,
-    "Coconut Oil": coconutOilImg,
-    "Sesame Oil": sesameOilImg,
-    "Groundnut Oil": groundnutOilImg,
-  };
-
-  const productImage = imageMap[product.name];
-
   return (
     <Card className="p-4 space-y-3 hover:shadow-lg transition-shadow">
-      {productImage && (
+      {product.image_url && (
         <div className="w-full h-48 overflow-hidden rounded-lg">
           <img
-            src={productImage}
+            src={product.image_url}
             alt={product.name}
             className="w-full h-full object-cover"
           />
