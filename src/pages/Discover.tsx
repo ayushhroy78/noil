@@ -7,6 +7,9 @@ import { ChallengesTab } from "@/components/discover/ChallengesTab";
 import { QuizzesTab } from "@/components/discover/QuizzesTab";
 import { HealthInfoTab } from "@/components/discover/HealthInfoTab";
 import { NudgesTab } from "@/components/discover/NudgesTab";
+import { LeaderboardTab } from "@/components/discover/LeaderboardTab";
+import { BadgesSection } from "@/components/discover/BadgesSection";
+import { PointsDisplay } from "@/components/discover/PointsDisplay";
 import { supabase } from "@/integrations/supabase/client";
 
 const Discover = () => {
@@ -54,12 +57,19 @@ const Discover = () => {
 
       {/* Main Content */}
       <main className="px-4 py-6 max-w-2xl mx-auto">
+        {userId && (
+          <div className="mb-6">
+            <PointsDisplay />
+          </div>
+        )}
+
         <Tabs defaultValue="challenges" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsList className="grid w-full grid-cols-5 mb-6">
             <TabsTrigger value="challenges">Challenges</TabsTrigger>
             <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
             <TabsTrigger value="info">Info</TabsTrigger>
             <TabsTrigger value="tips">Tips</TabsTrigger>
+            <TabsTrigger value="leaderboard">Leaders</TabsTrigger>
           </TabsList>
 
           <TabsContent value="challenges">
@@ -95,7 +105,17 @@ const Discover = () => {
               </div>
             )}
           </TabsContent>
+
+          <TabsContent value="leaderboard">
+            <LeaderboardTab />
+          </TabsContent>
         </Tabs>
+
+        {userId && (
+          <div className="mt-8">
+            <BadgesSection />
+          </div>
+        )}
       </main>
 
       {/* Bottom Navigation */}

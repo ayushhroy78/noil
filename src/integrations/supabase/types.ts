@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          badge_tier: string
+          created_at: string
+          description: string
+          icon: string | null
+          id: string
+          milestone_type: string
+          milestone_value: number
+          points_reward: number
+          title: string
+        }
+        Insert: {
+          badge_tier: string
+          created_at?: string
+          description: string
+          icon?: string | null
+          id?: string
+          milestone_type: string
+          milestone_value: number
+          points_reward?: number
+          title: string
+        }
+        Update: {
+          badge_tier?: string
+          created_at?: string
+          description?: string
+          icon?: string | null
+          id?: string
+          milestone_type?: string
+          milestone_value?: number
+          points_reward?: number
+          title?: string
+        }
+        Relationships: []
+      }
       barcode_scans: {
         Row: {
           barcode: string | null
@@ -724,6 +760,38 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          created_at: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          created_at?: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          created_at?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_challenges: {
         Row: {
           challenge_id: string
@@ -764,6 +832,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_points: {
+        Row: {
+          created_at: string
+          id: string
+          points_this_month: number
+          points_this_week: number
+          total_points: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          points_this_month?: number
+          points_this_week?: number
+          total_points?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          points_this_month?: number
+          points_this_week?: number
+          total_points?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_profiles: {
         Row: {

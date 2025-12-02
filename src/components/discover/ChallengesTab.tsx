@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, Calendar, Play, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import { usePoints } from "@/hooks/usePoints";
+import { useAchievements } from "@/hooks/useAchievements";
 
 interface Challenge {
   id: string;
@@ -34,6 +36,8 @@ export const ChallengesTab = ({ userId }: ChallengesTabProps) => {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [userChallenges, setUserChallenges] = useState<UserChallenge[]>([]);
   const [loading, setLoading] = useState(true);
+  const { addPoints } = usePoints();
+  const { checkAndUnlockAchievements } = useAchievements();
 
   useEffect(() => {
     fetchChallenges();
@@ -86,6 +90,36 @@ export const ChallengesTab = ({ userId }: ChallengesTabProps) => {
     } catch (error: any) {
       console.error("Error starting challenge:", error);
       toast.error(error.message || "Failed to start challenge");
+    }
+  };
+
+  const completeChallenge = async (userChallengeId: string, challengeId: string) => {
+    try {
+      const { error } = await supabase
+        .from("user_challenges")
+        .update({
+          status: "completed",
+          completed_at: new Date().toISOString(),
+        })
+        .eq("id", userChallengeId);
+
+      if (error) throw error;
+
+      // Award points
+      const challenge = challenges.find(c => c.id === challengeId);
+      if (challenge?.reward_points) {
+        addPoints(challenge.reward_points);
+      }
+
+      // Check for achievements
+      const completedCount = userChallenges.filter(uc => uc.status === "completed").length + 1;
+      await checkAndUnlockAchievements("challenges_completed", completedCount);
+
+      toast.success(`Challenge completed! +${challenge?.reward_points || 0} points`);
+      fetchChallenges();
+    } catch (error: any) {
+      console.error("Error completing challenge:", error);
+      toast.error(error.message || "Failed to complete challenge");
     }
   };
 
@@ -165,6 +199,17 @@ export const ChallengesTab = ({ userId }: ChallengesTabProps) => {
                     </span>
                   </div>
                   <Progress value={getChallengeProgress(userChallenge)} className="h-2" />
+                  
+                  {getChallengeProgress(userChallenge) >= 100 && (
+                    <Button
+                      onClick={() => completeChallenge(userChallenge.id, challenge.id)}
+                      size="sm"
+                      className="w-full mt-3"
+                    >
+                      <CheckCircle2 className="w-4 h-4 mr-2" />
+                      Mark as Complete
+                    </Button>
+                  )}
                 </div>
               )}
 
