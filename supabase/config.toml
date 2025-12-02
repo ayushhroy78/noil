@@ -1,10 +1,10 @@
 project_id = "dckxzktipfjdjqjceazd"
 
 [functions.lookup-barcode]
-verify_jwt = false
+verify_jwt = true
 
 [functions.suggest-oil-alternatives]
-verify_jwt = false
+verify_jwt = true
 
 [functions.generate-recipe]
-verify_jwt = false
+verify_jwt = true

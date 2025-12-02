@@ -5,22 +5,49 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Input validation constants
+const MAX_PRODUCT_NAME_LENGTH = 200;
+const MAX_OIL_CONTENT = 10000; // ml
+
+// Sanitize string input for AI prompt
+function sanitizeForPrompt(input: string, maxLength: number): string {
+  return input
+    .trim()
+    .slice(0, maxLength)
+    .replace(/[<>{}]/g, '') // Remove potentially harmful characters
+    .replace(/\n+/g, ' '); // Replace newlines with spaces
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { productName, oilContentMl, fatContentG, transFatG } = await req.json();
+    const body = await req.json();
+    const { productName, oilContentMl, fatContentG, transFatG } = body;
     
-    if (!productName || !oilContentMl) {
+    // Validate required fields
+    if (!productName || typeof productName !== 'string') {
       return new Response(
-        JSON.stringify({ error: 'Product name and oil content are required' }),
+        JSON.stringify({ error: 'Product name is required and must be a string' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log(`Generating oil alternatives for: ${productName}`);
+    if (oilContentMl === undefined || typeof oilContentMl !== 'number' || oilContentMl < 0 || oilContentMl > MAX_OIL_CONTENT) {
+      return new Response(
+        JSON.stringify({ error: `Oil content must be a number between 0 and ${MAX_OIL_CONTENT}` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Sanitize inputs
+    const sanitizedProductName = sanitizeForPrompt(productName, MAX_PRODUCT_NAME_LENGTH);
+    const sanitizedFatContent = typeof fatContentG === 'number' && fatContentG >= 0 ? fatContentG : null;
+    const sanitizedTransFat = typeof transFatG === 'number' && transFatG >= 0 ? transFatG : null;
+
+    console.log('Generating oil alternatives for product');
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -34,10 +61,10 @@ serve(async (req) => {
 - Considering the oil quantity in the product
 - Being practical and realistic in suggestions`;
 
-    const userPrompt = `A user scanned "${productName}" which contains:
+    const userPrompt = `A user scanned a product "${sanitizedProductName}" which contains:
 - Oil content: ${oilContentMl}ml
-${fatContentG ? `- Total fat: ${fatContentG}g` : ''}
-${transFatG ? `- Trans fat: ${transFatG}g` : ''}
+${sanitizedFatContent !== null ? `- Total fat: ${sanitizedFatContent}g` : ''}
+${sanitizedTransFat !== null ? `- Trans fat: ${sanitizedTransFat}g` : ''}
 
 Suggest 2-3 healthier oil alternatives that could be used instead. For each suggestion, provide:
 1. Oil name (e.g., "Extra Virgin Olive Oil", "Cold-pressed Mustard Oil")
@@ -76,8 +103,7 @@ Keep suggestions practical and concise.`;
           { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      const errorText = await response.text();
-      console.error('AI gateway error:', response.status, errorText);
+      console.error('AI gateway error:', response.status);
       throw new Error('Failed to get AI suggestions');
     }
 
@@ -90,16 +116,15 @@ Keep suggestions practical and concise.`;
       JSON.stringify({ 
         success: true,
         suggestions,
-        productName,
+        productName: sanitizedProductName,
         oilContentMl
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Error in suggest-oil-alternatives function:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error('Error in suggest-oil-alternatives function');
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: 'An error occurred while generating suggestions' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
