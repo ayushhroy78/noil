@@ -176,9 +176,7 @@ const Index = () => {
           <h2 className="font-black text-muted-foreground/20 leading-tight text-5xl font-serif text-center">Less Oil, Same Taste, Better Life <br />
             healthy!
           </h2>
-          <p className="text-muted-foreground text-sm flex items-center gap-1">
-          <span className="text-red-500">❤️</span> in Bengaluru, India
-          </p>
+          
         </div>
       </main>
 
