@@ -233,6 +233,51 @@ export type Database = {
         }
         Relationships: []
       }
+      family_members: {
+        Row: {
+          activity_level: string | null
+          age: number | null
+          created_at: string
+          daily_oil_goal_ml: number | null
+          gender: string | null
+          height_cm: number | null
+          id: string
+          name: string
+          relationship: string | null
+          updated_at: string
+          user_id: string
+          weight_kg: number | null
+        }
+        Insert: {
+          activity_level?: string | null
+          age?: number | null
+          created_at?: string
+          daily_oil_goal_ml?: number | null
+          gender?: string | null
+          height_cm?: number | null
+          id?: string
+          name: string
+          relationship?: string | null
+          updated_at?: string
+          user_id: string
+          weight_kg?: number | null
+        }
+        Update: {
+          activity_level?: string | null
+          age?: number | null
+          created_at?: string
+          daily_oil_goal_ml?: number | null
+          gender?: string | null
+          height_cm?: number | null
+          id?: string
+          name?: string
+          relationship?: string | null
+          updated_at?: string
+          user_id?: string
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
       generated_recipe_logs: {
         Row: {
           created_at: string
@@ -940,7 +985,13 @@ export type Database = {
       }
       user_profiles: {
         Row: {
+          activity_level: string | null
+          age: number | null
           created_at: string
+          full_name: string | null
+          gender: string | null
+          health_conditions: string[] | null
+          height_cm: number | null
           id: string
           referral_code: string | null
           referred_by: string | null
@@ -948,9 +999,16 @@ export type Database = {
           state: string | null
           updated_at: string
           user_id: string
+          weight_kg: number | null
         }
         Insert: {
+          activity_level?: string | null
+          age?: number | null
           created_at?: string
+          full_name?: string | null
+          gender?: string | null
+          health_conditions?: string[] | null
+          height_cm?: number | null
           id?: string
           referral_code?: string | null
           referred_by?: string | null
@@ -958,9 +1016,16 @@ export type Database = {
           state?: string | null
           updated_at?: string
           user_id: string
+          weight_kg?: number | null
         }
         Update: {
+          activity_level?: string | null
+          age?: number | null
           created_at?: string
+          full_name?: string | null
+          gender?: string | null
+          health_conditions?: string[] | null
+          height_cm?: number | null
           id?: string
           referral_code?: string | null
           referred_by?: string | null
@@ -968,6 +1033,7 @@ export type Database = {
           state?: string | null
           updated_at?: string
           user_id?: string
+          weight_kg?: number | null
         }
         Relationships: []
       }
