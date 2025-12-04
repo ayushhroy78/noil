@@ -1,4 +1,4 @@
-import { User, Search, Settings, LogOut, Heart, Users, Calendar, Gift, Calculator } from "lucide-react";
+import { User, Search, Settings, LogOut, Heart, Users, Activity, Gift, Calculator } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
 import Chatbot from "@/components/Chatbot";
@@ -99,9 +99,9 @@ const Index = () => {
                 <Users className="w-4 h-4 mr-2" />
                 Family Members
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/profile?tab=calendar")} className="cursor-pointer">
-                <Calendar className="w-4 h-4 mr-2" />
-                Oil Calendar
+              <DropdownMenuItem onClick={() => navigate("/tracker")} className="cursor-pointer">
+                <Activity className="w-4 h-4 mr-2" />
+                Real Time Dashboard
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate("/profile?tab=rewards")} className="cursor-pointer">
                 <Gift className="w-4 h-4 mr-2" />
