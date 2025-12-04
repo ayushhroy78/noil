@@ -87,6 +87,8 @@ const Chatbot = () => {
   }, []);
 
   // Initialize Speech Recognition
+  const finalTranscriptRef = useRef<string>("");
+
   useEffect(() => {
     const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognitionClass) {
@@ -96,23 +98,63 @@ const Chatbot = () => {
       recognitionRef.current.lang = 'en-US';
 
       recognitionRef.current.onresult = (event) => {
-        const transcript = Array.from(event.results)
-          .map(result => result[0].transcript)
-          .join('');
-        setInput(transcript);
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = 0; i < event.results.length; i++) {
+          const result = event.results[i];
+          if (result.isFinal) {
+            finalTranscript += result[0].transcript;
+          } else {
+            interimTranscript += result[0].transcript;
+          }
+        }
+
+        // Update input with current transcript
+        const currentTranscript = finalTranscript || interimTranscript;
+        setInput(currentTranscript);
+        finalTranscriptRef.current = finalTranscript;
+        
+        console.log('Speech recognition result:', { finalTranscript, interimTranscript });
       };
 
       recognitionRef.current.onend = () => {
+        console.log('Speech recognition ended');
         setIsListening(false);
+        
+        // Auto-send if we have a final transcript
+        if (finalTranscriptRef.current.trim()) {
+          const transcript = finalTranscriptRef.current.trim();
+          finalTranscriptRef.current = "";
+          // Use setTimeout to ensure state updates have propagated
+          setTimeout(() => {
+            setInput(transcript);
+            // Trigger send
+            const sendButton = document.querySelector('[data-voice-send]') as HTMLButtonElement;
+            if (sendButton && transcript) {
+              sendButton.click();
+            }
+          }, 100);
+        }
       };
 
       recognitionRef.current.onerror = (event) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
-        if (event.error === 'not-allowed') {
+        finalTranscriptRef.current = "";
+        
+        const errorMessages: Record<string, string> = {
+          'not-allowed': "Please allow microphone access to use voice input.",
+          'no-speech': "No speech detected. Please try again.",
+          'audio-capture': "No microphone found. Please check your device.",
+          'network': "Network error. Please check your connection.",
+          'aborted': "Voice input was cancelled.",
+        };
+
+        if (event.error !== 'aborted') {
           toast({
-            title: "Microphone Access Denied",
-            description: "Please allow microphone access to use voice input.",
+            title: "Voice Input Error",
+            description: errorMessages[event.error] || `Error: ${event.error}`,
             variant: "destructive",
           });
         }
@@ -136,7 +178,7 @@ const Chatbot = () => {
     if (!recognitionRef.current) {
       toast({
         title: "Not Supported",
-        description: "Voice input is not supported in your browser.",
+        description: "Voice input is not supported in your browser. Please use Chrome, Edge, or Safari.",
         variant: "destructive",
       });
       return;
@@ -146,9 +188,20 @@ const Chatbot = () => {
       recognitionRef.current.stop();
       setIsListening(false);
     } else {
+      finalTranscriptRef.current = "";
       setInput("");
-      recognitionRef.current.start();
-      setIsListening(true);
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+        console.log('Speech recognition started');
+      } catch (error) {
+        console.error('Failed to start speech recognition:', error);
+        toast({
+          title: "Voice Input Error",
+          description: "Failed to start voice input. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -414,6 +467,7 @@ const Chatbot = () => {
                 disabled={!input.trim() || isLoading}
                 size="icon"
                 className="bg-primary hover:bg-primary/90"
+                data-voice-send
               >
                 <Send className="w-4 h-4" />
               </Button>
