@@ -495,6 +495,45 @@ export type Database = {
         }
         Relationships: []
       }
+      oil_reduction_goals: {
+        Row: {
+          created_at: string
+          current_annual_oil_kg: number
+          family_size: number
+          id: string
+          is_active: boolean
+          name: string
+          oil_price_per_liter: number
+          target_reduction_percent: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_annual_oil_kg: number
+          family_size?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          oil_price_per_liter?: number
+          target_reduction_percent: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_annual_oil_kg?: number
+          family_size?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          oil_price_per_liter?: number
+          target_reduction_percent?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string

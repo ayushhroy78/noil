@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Calculator, Target, DollarSign, Heart, Leaf, Lightbulb, Calendar, TreePine, Info } from "lucide-react";
+import { ArrowLeft, Calculator, Target, DollarSign, Heart, Leaf, Lightbulb, Calendar, TreePine, Info, Plus, Trash2, Check, Edit2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,16 +14,82 @@ import {
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+interface OilGoal {
+  id: string;
+  name: string;
+  family_size: number;
+  current_annual_oil_kg: number;
+  target_reduction_percent: number;
+  oil_price_per_liter: number;
+  is_active: boolean;
+  created_at: string;
+}
 
 const OilCalculator = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const [userId, setUserId] = useState<string | null>(null);
+  const [savedGoals, setSavedGoals] = useState<OilGoal[]>([]);
+  const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
+  const [goalName, setGoalName] = useState("My Goal");
   const [familySize, setFamilySize] = useState("1");
   const [currentAnnualOil, setCurrentAnnualOil] = useState("45");
   const [targetReduction, setTargetReduction] = useState("10");
   const [oilPrice, setOilPrice] = useState("150");
   const [calculated, setCalculated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+
+  // Fetch user and saved goals
+  useEffect(() => {
+    const fetchUserAndGoals = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+        await fetchGoals(user.id);
+      }
+      setLoading(false);
+    };
+    fetchUserAndGoals();
+  }, []);
+
+  const fetchGoals = async (uid: string) => {
+    const { data, error } = await supabase
+      .from("oil_reduction_goals")
+      .select("*")
+      .eq("user_id", uid)
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setSavedGoals(data);
+      // Load the active goal if exists
+      const activeGoal = data.find(g => g.is_active);
+      if (activeGoal) {
+        loadGoal(activeGoal);
+      }
+    }
+  };
+
+  const loadGoal = (goal: OilGoal) => {
+    setSelectedGoalId(goal.id);
+    setGoalName(goal.name);
+    setFamilySize(goal.family_size.toString());
+    setCurrentAnnualOil(goal.current_annual_oil_kg.toString());
+    setTargetReduction(goal.target_reduction_percent.toString());
+    setOilPrice(goal.oil_price_per_liter.toString());
+    setCalculated(true);
+  };
 
   // Calculated values
   const currentAnnualKg = parseFloat(currentAnnualOil) || 0;
@@ -36,12 +102,12 @@ const OilCalculator = () => {
   const monthlySavingsRupees = Math.round(annualSavingsRupees / 12);
   
   // Health calculations
-  const caloriesPerMl = 9; // approximately 9 calories per ml of oil
+  const caloriesPerMl = 9;
   const calorieReduction = Math.round(annualSavingsKg * 1000 * caloriesPerMl);
   const healthScore = Math.min(100, Math.max(0, 100 - Math.round(currentDailyMl / 3)));
   
   // Environmental impact
-  const carbonFootprintKg = Math.round(annualSavingsKg * 2.7 * 10) / 10; // ~2.7kg CO2 per kg oil
+  const carbonFootprintKg = Math.round(annualSavingsKg * 2.7 * 10) / 10;
   const treesEquivalent = Math.max(1, Math.round(carbonFootprintKg / 12));
 
   // 6-month projection
@@ -82,33 +148,244 @@ const OilCalculator = () => {
     setCalculated(true);
   };
 
-  const handleSaveGoal = () => {
+  const handleSaveGoal = async () => {
+    if (!userId) {
+      toast({
+        title: "Login Required",
+        description: "Please login to save your goals.",
+        variant: "destructive",
+      });
+      navigate("/auth");
+      return;
+    }
+
+    if (!goalName.trim()) {
+      toast({
+        title: "Name Required",
+        description: "Please enter a name for your goal.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      // Set all other goals to inactive if this is a new active goal
+      await supabase
+        .from("oil_reduction_goals")
+        .update({ is_active: false })
+        .eq("user_id", userId);
+
+      if (selectedGoalId) {
+        // Update existing goal
+        const { error } = await supabase
+          .from("oil_reduction_goals")
+          .update({
+            name: goalName,
+            family_size: parseInt(familySize),
+            current_annual_oil_kg: parseFloat(currentAnnualOil),
+            target_reduction_percent: parseFloat(targetReduction),
+            oil_price_per_liter: parseFloat(oilPrice),
+            is_active: true,
+          })
+          .eq("id", selectedGoalId);
+
+        if (error) throw error;
+        toast({
+          title: "Goal Updated!",
+          description: `"${goalName}" has been updated.`,
+        });
+      } else {
+        // Create new goal
+        const { error } = await supabase
+          .from("oil_reduction_goals")
+          .insert({
+            user_id: userId,
+            name: goalName,
+            family_size: parseInt(familySize),
+            current_annual_oil_kg: parseFloat(currentAnnualOil),
+            target_reduction_percent: parseFloat(targetReduction),
+            oil_price_per_liter: parseFloat(oilPrice),
+            is_active: true,
+          });
+
+        if (error) throw error;
+        toast({
+          title: "Goal Saved!",
+          description: `"${goalName}" has been saved.`,
+        });
+      }
+
+      await fetchGoals(userId);
+      setShowSaveDialog(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save goal. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteGoal = async (goalId: string, goalName: string) => {
+    if (!userId) return;
+
+    const { error } = await supabase
+      .from("oil_reduction_goals")
+      .delete()
+      .eq("id", goalId);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete goal.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     toast({
-      title: "Goal Saved!",
-      description: `Your target of ${targetReduction}% oil reduction has been saved.`,
+      title: "Goal Deleted",
+      description: `"${goalName}" has been removed.`,
     });
-    navigate("/");
+
+    if (selectedGoalId === goalId) {
+      setSelectedGoalId(null);
+      resetForm();
+    }
+
+    await fetchGoals(userId);
+  };
+
+  const handleSetActive = async (goal: OilGoal) => {
+    if (!userId) return;
+
+    await supabase
+      .from("oil_reduction_goals")
+      .update({ is_active: false })
+      .eq("user_id", userId);
+
+    await supabase
+      .from("oil_reduction_goals")
+      .update({ is_active: true })
+      .eq("id", goal.id);
+
+    loadGoal({ ...goal, is_active: true });
+    await fetchGoals(userId);
+
+    toast({
+      title: "Goal Activated",
+      description: `"${goal.name}" is now your active goal.`,
+    });
+  };
+
+  const resetForm = () => {
+    setGoalName("My Goal");
+    setFamilySize("1");
+    setCurrentAnnualOil("45");
+    setTargetReduction("10");
+    setOilPrice("150");
+    setCalculated(false);
+  };
+
+  const handleNewGoal = () => {
+    setSelectedGoalId(null);
+    resetForm();
   };
 
   return (
     <div className="min-h-screen bg-background pb-8">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card shadow-soft px-4 py-4">
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-foreground" />
-          </button>
-          <div className="flex items-center gap-2">
-            <Calculator className="w-6 h-6 text-primary" />
-            <h1 className="text-xl font-bold text-foreground">Oil Calculator</h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => navigate(-1)}
+              className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-foreground" />
+            </button>
+            <div className="flex items-center gap-2">
+              <Calculator className="w-6 h-6 text-primary" />
+              <h1 className="text-xl font-bold text-foreground">Oil Calculator</h1>
+            </div>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleNewGoal}
+            className="gap-1"
+          >
+            <Plus className="w-4 h-4" />
+            New
+          </Button>
         </div>
       </header>
 
       <main className="px-4 py-6 space-y-6 max-w-2xl mx-auto">
+        {/* Saved Goals Section */}
+        {savedGoals.length > 0 && (
+          <div className="space-y-3">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Your Saved Goals</h2>
+            <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+              {savedGoals.map((goal) => (
+                <Card 
+                  key={goal.id}
+                  className={`flex-shrink-0 w-48 cursor-pointer transition-all ${
+                    goal.is_active 
+                      ? "border-primary bg-primary/5" 
+                      : "border-border hover:border-primary/50"
+                  }`}
+                  onClick={() => loadGoal(goal)}
+                >
+                  <CardContent className="p-3 space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm text-foreground truncate">{goal.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {goal.family_size} person{goal.family_size > 1 ? "s" : ""} • {goal.target_reduction_percent}% reduction
+                        </p>
+                      </div>
+                      {goal.is_active && (
+                        <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                      )}
+                    </div>
+                    <div className="flex gap-1">
+                      {!goal.is_active && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 text-xs"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSetActive(goal);
+                          }}
+                        >
+                          Set Active
+                        </Button>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-destructive hover:text-destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteGoal(goal.id, goal.name);
+                        }}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Calculator Input Section */}
         <Card className="border-0 shadow-medium">
           <CardContent className="p-6 space-y-5">
@@ -371,12 +648,41 @@ const OilCalculator = () => {
             </Card>
 
             {/* Save Goal Button */}
-            <Button 
-              onClick={handleSaveGoal}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6"
-            >
-              Save Goal & Return to Dashboard
-            </Button>
+            <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+              <DialogTrigger asChild>
+                <Button 
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6"
+                >
+                  {selectedGoalId ? "Update Goal" : "Save Goal"}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-card">
+                <DialogHeader>
+                  <DialogTitle>{selectedGoalId ? "Update Goal" : "Save Your Goal"}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 pt-4">
+                  <div className="space-y-2">
+                    <Label>Goal Name</Label>
+                    <Input
+                      value={goalName}
+                      onChange={(e) => setGoalName(e.target.value)}
+                      placeholder="e.g., Family of 4 - Weekly Goal"
+                      className="bg-secondary border-0"
+                    />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {familySize} person{parseInt(familySize) > 1 ? "s" : ""} • {currentAnnualOil}kg/year • {targetReduction}% reduction
+                  </p>
+                  <Button
+                    onClick={handleSaveGoal}
+                    disabled={saving}
+                    className="w-full"
+                  >
+                    {saving ? "Saving..." : selectedGoalId ? "Update Goal" : "Save Goal"}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
 
             {/* Info Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
