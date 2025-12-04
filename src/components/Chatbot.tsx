@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Bot, User, Trash2, Copy, Check } from "lucide-react";
+import { MessageCircle, X, Send, Bot, User, Trash2, Copy, Check, Heart, Scale, Utensils, Activity, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -12,39 +12,78 @@ interface Message {
   content: string;
 }
 
+interface Topic {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  color: string;
+}
+
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
-const quickSuggestions = [
-  "How to reduce oil intake?",
-  "Healthy cooking tips",
-  "Best oils for heart health",
-  "Daily oil limit for adults",
-  "Low-oil recipe ideas",
+const topics: Topic[] = [
+  { id: "general", label: "General", icon: <Bot className="w-3 h-3" />, color: "bg-primary/20 text-primary border-primary/30" },
+  { id: "heart_health", label: "Heart Health", icon: <Heart className="w-3 h-3" />, color: "bg-red-500/20 text-red-600 border-red-500/30" },
+  { id: "weight_loss", label: "Weight Loss", icon: <Scale className="w-3 h-3" />, color: "bg-green-500/20 text-green-600 border-green-500/30" },
+  { id: "indian_recipes", label: "Indian Recipes", icon: <Utensils className="w-3 h-3" />, color: "bg-orange-500/20 text-orange-600 border-orange-500/30" },
+  { id: "diabetes", label: "Diabetes", icon: <Activity className="w-3 h-3" />, color: "bg-blue-500/20 text-blue-600 border-blue-500/30" },
+  { id: "family_cooking", label: "Family", icon: <Users className="w-3 h-3" />, color: "bg-purple-500/20 text-purple-600 border-purple-500/30" },
 ];
+
+const quickSuggestions: Record<string, string[]> = {
+  general: ["How to reduce oil intake?", "Healthy cooking tips", "Best oils for heart health"],
+  heart_health: ["Which oils lower cholesterol?", "PUFA vs MUFA explained", "Heart-healthy cooking methods"],
+  weight_loss: ["Calories in cooking oil", "Oil-free cooking tips", "Hidden oils in food"],
+  indian_recipes: ["Low-oil tadka tips", "Healthy curry recipes", "Air fryer Indian snacks"],
+  diabetes: ["Best oils for diabetics", "Low glycemic cooking", "Sugar-free Indian desserts"],
+  family_cooking: ["Kid-friendly healthy meals", "Quick low-oil dinners", "Healthy school lunch ideas"],
+};
 
 const WELCOME_MESSAGE: Message = { 
   role: "assistant", 
-  content: "Hi! I'm your Noil health assistant 🌿 How can I help you with healthy cooking and oil tracking today?" 
+  content: "Hi! I'm your Noil health assistant 🌿 Select a topic above for specialized advice, or ask me anything about healthy cooking and oil tracking!" 
 };
 
-// Floating bubble component for background decoration
+// Enhanced floating background with more elements
 const FloatingBubbles = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none">
-    {/* Large gradient orb */}
+    {/* Large gradient orbs */}
     <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full blur-3xl animate-pulse" />
     <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-gradient-to-tr from-primary/15 to-transparent rounded-full blur-2xl animate-pulse" style={{ animationDelay: "1s" }} />
+    <div className="absolute top-1/2 -right-20 w-48 h-48 bg-gradient-to-l from-green-500/10 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
     
-    {/* Small floating dots */}
-    <div className="absolute top-20 left-8 w-2 h-2 bg-primary/30 rounded-full animate-bounce" style={{ animationDuration: "3s" }} />
-    <div className="absolute top-40 right-12 w-1.5 h-1.5 bg-primary/25 rounded-full animate-bounce" style={{ animationDuration: "2.5s", animationDelay: "0.5s" }} />
-    <div className="absolute bottom-32 left-16 w-1 h-1 bg-primary/20 rounded-full animate-bounce" style={{ animationDuration: "4s", animationDelay: "1s" }} />
-    <div className="absolute top-60 left-4 w-1.5 h-1.5 bg-primary/15 rounded-full animate-bounce" style={{ animationDuration: "3.5s", animationDelay: "1.5s" }} />
+    {/* Animated floating circles */}
+    <div className="absolute top-16 left-6 w-3 h-3 bg-primary/25 rounded-full animate-float" style={{ animationDuration: "6s" }} />
+    <div className="absolute top-32 right-8 w-2 h-2 bg-green-500/30 rounded-full animate-float" style={{ animationDuration: "5s", animationDelay: "1s" }} />
+    <div className="absolute top-48 left-12 w-2.5 h-2.5 bg-orange-500/25 rounded-full animate-float" style={{ animationDuration: "7s", animationDelay: "2s" }} />
+    <div className="absolute bottom-40 right-6 w-1.5 h-1.5 bg-blue-500/30 rounded-full animate-float" style={{ animationDuration: "4s", animationDelay: "0.5s" }} />
+    <div className="absolute bottom-24 left-8 w-2 h-2 bg-purple-500/25 rounded-full animate-float" style={{ animationDuration: "5.5s", animationDelay: "1.5s" }} />
     
-    {/* Subtle pattern overlay */}
-    <div className="absolute inset-0 opacity-[0.02]" style={{
+    {/* Sparkle elements */}
+    <div className="absolute top-24 right-16 w-1 h-1 bg-yellow-400/50 rounded-full animate-ping" style={{ animationDuration: "3s" }} />
+    <div className="absolute top-56 left-4 w-1 h-1 bg-yellow-400/40 rounded-full animate-ping" style={{ animationDuration: "4s", animationDelay: "1s" }} />
+    <div className="absolute bottom-48 right-12 w-1 h-1 bg-yellow-400/30 rounded-full animate-ping" style={{ animationDuration: "3.5s", animationDelay: "2s" }} />
+    
+    {/* Gradient lines */}
+    <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/10 to-transparent" />
+    <div className="absolute top-2/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/10 to-transparent" />
+    
+    {/* Subtle mesh pattern */}
+    <div className="absolute inset-0 opacity-[0.03]" style={{
       backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
-      backgroundSize: '24px 24px'
+      backgroundSize: '20px 20px'
     }} />
+    
+    {/* Corner decorations */}
+    <svg className="absolute top-2 right-2 w-16 h-16 text-primary/5" viewBox="0 0 100 100">
+      <circle cx="80" cy="20" r="15" fill="currentColor" />
+      <circle cx="60" cy="10" r="8" fill="currentColor" />
+      <circle cx="90" cy="40" r="6" fill="currentColor" />
+    </svg>
+    <svg className="absolute bottom-16 left-2 w-12 h-12 text-green-500/5" viewBox="0 0 100 100">
+      <circle cx="20" cy="80" r="12" fill="currentColor" />
+      <circle cx="40" cy="70" r="6" fill="currentColor" />
+    </svg>
   </div>
 );
 
@@ -55,6 +94,7 @@ const Chatbot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<string>("general");
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -102,7 +142,7 @@ const Chatbot = () => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
       },
-      body: JSON.stringify({ messages: userMessages }),
+      body: JSON.stringify({ messages: userMessages, topic: selectedTopic }),
     });
 
     if (!resp.ok) {
@@ -223,9 +263,22 @@ const Chatbot = () => {
     handleSend(suggestion);
   };
 
+  const handleTopicChange = (topicId: string) => {
+    setSelectedTopic(topicId);
+    const topic = topics.find(t => t.id === topicId);
+    if (topic && topicId !== "general") {
+      toast({ 
+        title: `${topic.label} Mode`, 
+        description: `I'll focus on ${topic.label.toLowerCase()} advice now!` 
+      });
+    }
+  };
+
+  const currentSuggestions = quickSuggestions[selectedTopic] || quickSuggestions.general;
+
   return (
     <>
-      {/* Floating Chat Button */}
+      {/* Floating Chat Button with pulse effect */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`fixed bottom-24 right-4 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
@@ -234,18 +287,21 @@ const Chatbot = () => {
             : "bg-primary text-primary-foreground hover:scale-110 hover:shadow-xl"
         }`}
       >
+        {!isOpen && (
+          <span className="absolute inset-0 rounded-full bg-primary animate-ping opacity-20" />
+        )}
         {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
       </button>
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed bottom-40 right-4 z-50 w-[calc(100%-2rem)] max-w-sm h-[70vh] max-h-[550px] flex flex-col shadow-2xl border-border bg-gradient-to-b from-card to-card/95 animate-in slide-in-from-bottom-4 duration-300 overflow-hidden">
+        <Card className="fixed bottom-40 right-4 z-50 w-[calc(100%-2rem)] max-w-sm h-[75vh] max-h-[600px] flex flex-col shadow-2xl border-border bg-gradient-to-b from-card via-card to-card/95 animate-in slide-in-from-bottom-4 duration-300 overflow-hidden">
           {/* Background decorations */}
           <FloatingBubbles />
           
           {/* Header */}
-          <div className="relative flex items-center gap-3 p-4 border-b border-border bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-t-lg backdrop-blur-sm">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center ring-2 ring-primary/20">
+          <div className="relative flex items-center gap-3 p-4 border-b border-border bg-gradient-to-r from-primary/10 via-primary/5 to-transparent backdrop-blur-sm">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center ring-2 ring-primary/20 shadow-lg">
               <Bot className="w-5 h-5 text-primary" />
             </div>
             <div className="flex-1">
@@ -265,6 +321,26 @@ const Chatbot = () => {
             )}
           </div>
 
+          {/* Topic Selector */}
+          <div className="relative px-3 py-2 border-b border-border/50 bg-gradient-to-r from-secondary/30 to-transparent backdrop-blur-sm">
+            <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+              {topics.map((topic) => (
+                <button
+                  key={topic.id}
+                  onClick={() => handleTopicChange(topic.id)}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border transition-all whitespace-nowrap ${
+                    selectedTopic === topic.id
+                      ? `${topic.color} border-current shadow-sm scale-105`
+                      : "bg-secondary/50 text-muted-foreground border-transparent hover:bg-secondary hover:scale-102"
+                  }`}
+                >
+                  {topic.icon}
+                  {topic.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Messages */}
           <ScrollArea className="relative flex-1 p-4" ref={scrollRef}>
             <div className="space-y-4">
@@ -274,7 +350,7 @@ const Chatbot = () => {
                   className={`flex gap-2 ${message.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}
                 >
                   {message.role === "assistant" && (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center flex-shrink-0 shadow-sm">
                       <Bot className="w-4 h-4 text-primary" />
                     </div>
                   )}
@@ -283,7 +359,7 @@ const Chatbot = () => {
                       className={`rounded-2xl px-4 py-2 ${
                         message.role === "user"
                           ? "bg-primary text-primary-foreground rounded-br-md shadow-md"
-                          : "bg-secondary/80 text-secondary-foreground rounded-bl-md backdrop-blur-sm shadow-sm"
+                          : "bg-secondary/80 text-secondary-foreground rounded-bl-md backdrop-blur-sm shadow-sm border border-border/30"
                       }`}
                     >
                       <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
@@ -296,8 +372,8 @@ const Chatbot = () => {
                       >
                         {copiedIndex === index ? (
                           <>
-                            <Check className="w-3 h-3" />
-                            <span>Copied</span>
+                            <Check className="w-3 h-3 text-green-500" />
+                            <span className="text-green-500">Copied</span>
                           </>
                         ) : (
                           <>
@@ -319,11 +395,11 @@ const Chatbot = () => {
               {/* Typing Indicator */}
               {isLoading && messages[messages.length - 1]?.role === "user" && (
                 <div className="flex gap-2 justify-start animate-fade-in">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Bot className="w-4 h-4 text-primary" />
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <Bot className="w-4 h-4 text-primary animate-pulse" />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <div className="bg-secondary/80 rounded-2xl rounded-bl-md px-4 py-3 backdrop-blur-sm shadow-sm">
+                    <div className="bg-secondary/80 rounded-2xl rounded-bl-md px-4 py-3 backdrop-blur-sm shadow-sm border border-border/30">
                       <div className="flex items-center gap-2">
                         <div className="flex gap-1">
                           <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
@@ -342,11 +418,11 @@ const Chatbot = () => {
                 <div className="pt-2">
                   <p className="text-xs text-muted-foreground mb-2">Quick questions:</p>
                   <div className="flex flex-wrap gap-2">
-                    {quickSuggestions.map((suggestion, index) => (
+                    {currentSuggestions.map((suggestion, index) => (
                       <button
                         key={index}
                         onClick={() => handleSuggestionClick(suggestion)}
-                        className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-all hover:scale-105 hover:shadow-sm"
+                        className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-all hover:scale-105 hover:shadow-sm border border-primary/20"
                       >
                         {suggestion}
                       </button>
@@ -358,14 +434,14 @@ const Chatbot = () => {
           </ScrollArea>
 
           {/* Input */}
-          <div className="relative p-4 border-t border-border bg-card/80 backdrop-blur-sm">
+          <div className="relative p-4 border-t border-border bg-gradient-to-t from-card via-card/95 to-card/90 backdrop-blur-sm">
             <div className="flex gap-2">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask about healthy cooking..."
-                className="flex-1 bg-secondary/50 border-0 focus-visible:ring-primary/30"
+                className="flex-1 bg-secondary/50 border-border/50 focus-visible:ring-primary/30 focus-visible:border-primary/50"
                 disabled={isLoading}
               />
               <Button
@@ -380,6 +456,24 @@ const Chatbot = () => {
           </div>
         </Card>
       )}
+
+      {/* Custom animation styles */}
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(-10px) rotate(5deg); }
+        }
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </>
   );
 };
