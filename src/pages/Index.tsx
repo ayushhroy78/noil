@@ -1,4 +1,4 @@
-import { User, Search, Settings, LogOut, Heart, Users, Calendar, Gift } from "lucide-react";
+import { User, Search, Settings, LogOut, Heart, Users, Calendar, Gift, Calculator } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
 import { Card } from "@/components/ui/card";
@@ -128,6 +128,10 @@ const Index = () => {
               <DropdownMenuItem onClick={() => navigate("/profile?tab=rewards")} className="cursor-pointer">
                 <Gift className="w-4 h-4 mr-2" />
                 Rewards Store
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/profile?tab=health")} className="cursor-pointer">
+                <Calculator className="w-4 h-4 mr-2" />
+                Oil Calculator
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
