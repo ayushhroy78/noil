@@ -26,6 +26,7 @@ const Index = () => {
       buttonText: "Join Challenge",
       gradient: "bg-gradient-success",
       glowClass: "success-glow",
+      action: () => navigate("/profile?tab=challenges"),
     },
     {
       id: "store-discount",
@@ -35,6 +36,7 @@ const Index = () => {
       buttonText: "Shop Now",
       gradient: "bg-gradient-primary",
       glowClass: "primary-glow",
+      action: () => navigate("/oilhub"),
     },
   ];
 
@@ -131,7 +133,10 @@ const Index = () => {
                       {slide.title}
                     </h2>
                     <p className={`${slide.id === 'wellness-challenge' ? 'text-success-foreground/90' : 'text-primary-foreground/90'} font-medium`}>{slide.subtitle}</p>
-                    <button className={`mt-3 px-5 py-2 ${slide.id === 'wellness-challenge' ? 'bg-success-foreground text-success' : 'bg-primary-foreground text-primary'} rounded-lg font-semibold text-sm hover:scale-105 transition-transform`}>
+                    <button 
+                      onClick={slide.action}
+                      className={`mt-3 px-5 py-2 ${slide.id === 'wellness-challenge' ? 'bg-success-foreground text-success' : 'bg-primary-foreground text-primary'} rounded-lg font-semibold text-sm hover:scale-105 transition-transform`}
+                    >
                       {slide.buttonText}
                     </button>
                   </div>
