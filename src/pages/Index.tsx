@@ -174,7 +174,7 @@ const Index = () => {
         animationDelay: '600ms'
       }}>
           <h2 className="font-black text-muted-foreground/20 leading-tight text-5xl font-serif text-center">Less Oil, Same Taste, Better Life <br />
-            healthy!
+            ​
           </h2>
           
         </div>
