@@ -13,6 +13,7 @@ import { RewardsStore } from "@/components/discover/RewardsStore";
 import { ReferralSection } from "@/components/discover/ReferralSection";
 import { BadgesSection } from "@/components/discover/BadgesSection";
 import { ChallengesTab } from "@/components/discover/ChallengesTab";
+import { OilConsumptionCalendar } from "@/components/profile/OilConsumptionCalendar";
 import {
   ArrowLeft,
   User,
@@ -27,6 +28,7 @@ import {
   Share2,
   ChevronRight,
   Shield,
+  CalendarDays,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -141,8 +143,11 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="rewards" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-6">
+        <Tabs defaultValue="calendar" className="w-full">
+          <TabsList className="grid w-full grid-cols-6 mb-6">
+            <TabsTrigger value="calendar" className="text-xs px-1" data-testid="tab-calendar">
+              <CalendarDays className="w-4 h-4" />
+            </TabsTrigger>
             <TabsTrigger value="rewards" className="text-xs px-1" data-testid="tab-rewards">
               <Gift className="w-4 h-4" />
             </TabsTrigger>
@@ -159,6 +164,10 @@ const Profile = () => {
               <Settings className="w-4 h-4" />
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="calendar">
+            <OilConsumptionCalendar userId={userId} />
+          </TabsContent>
 
           <TabsContent value="rewards">
             <RewardsStore userId={userId} />
