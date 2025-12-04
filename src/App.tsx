@@ -18,6 +18,7 @@ import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import OilCalculator from "./pages/OilCalculator";
 import Dashboard from "./pages/Dashboard";
+import CompleteProfile from "./pages/CompleteProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => {
             <Route path="/admin" element={<Admin />} />
             <Route path="/oil-calculator" element={<OilCalculator />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/complete-profile" element={<CompleteProfile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

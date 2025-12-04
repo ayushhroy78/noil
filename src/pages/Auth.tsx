@@ -87,14 +87,11 @@ const Auth = () => {
 
       toast({
         title: "Success!",
-        description: referralCode 
-          ? "Account created! You'll receive bonus points after signing in." 
-          : "Account created successfully. You can now sign in.",
+        description: "Account created! Please complete your profile.",
       });
 
-      setEmail("");
-      setPassword("");
-      setReferralCode("");
+      // Redirect to profile completion
+      navigate("/complete-profile");
     } catch (error: any) {
       toast({
         title: "Error",
@@ -111,12 +108,27 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
+
+      // Check if profile is complete
+      if (data.user) {
+        const { data: profile } = await supabase
+          .from("user_profiles")
+          .select("full_name, state")
+          .eq("user_id", data.user.id)
+          .maybeSingle();
+
+        // If profile doesn't exist or key fields are missing, redirect to complete profile
+        if (!profile || (!profile.full_name && !profile.state)) {
+          navigate("/complete-profile");
+          return;
+        }
+      }
 
       toast({
         title: "Welcome back!",

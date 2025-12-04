@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar } from "recharts";
 import { format, subDays, startOfWeek, endOfWeek } from "date-fns";
+import IndiaMap from "@/components/dashboard/IndiaMap";
 
 interface DailyLog {
   id: string;
@@ -26,6 +27,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [userId, setUserId] = useState<string | null>(null);
+  const [userState, setUserState] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [todayConsumption, setTodayConsumption] = useState(0);
   const [weeklyConsumption, setWeeklyConsumption] = useState(0);
@@ -45,6 +47,17 @@ const Dashboard = () => {
         return;
       }
       setUserId(user.id);
+      
+      // Fetch user's state
+      const { data: profile } = await supabase
+        .from("user_profiles")
+        .select("state")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      
+      if (profile?.state) {
+        setUserState(profile.state);
+      }
     };
     checkAuth();
   }, [navigate]);
@@ -410,6 +423,9 @@ const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* India Map */}
+        <IndiaMap userState={userState} />
 
         {/* Tips Card */}
         <Card className="border-0 shadow-soft bg-gradient-to-r from-success/10 to-success/5">
