@@ -1,10 +1,38 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Bot, User } from "lucide-react";
+import { MessageCircle, X, Send, Bot, User, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
+
+// Type declarations for Speech Recognition
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+}
+
+interface SpeechRecognitionInstance extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onend: (() => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition?: new () => SpeechRecognitionInstance;
+    webkitSpeechRecognition?: new () => SpeechRecognitionInstance;
+  }
+}
 
 interface Message {
   role: "user" | "assistant";
@@ -13,6 +41,14 @@ interface Message {
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
+const quickSuggestions = [
+  "How to reduce oil intake?",
+  "Healthy cooking tips",
+  "Best oils for heart health",
+  "Daily oil limit for adults",
+  "Low-oil recipe ideas",
+];
+
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -20,14 +56,76 @@ const Chatbot = () => {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const { toast } = useToast();
+
+  // Initialize Speech Recognition
+  useEffect(() => {
+    const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognitionClass) {
+      recognitionRef.current = new SpeechRecognitionClass();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'en-US';
+
+      recognitionRef.current.onresult = (event) => {
+        const transcript = Array.from(event.results)
+          .map(result => result[0].transcript)
+          .join('');
+        setInput(transcript);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+        if (event.error === 'not-allowed') {
+          toast({
+            title: "Microphone Access Denied",
+            description: "Please allow microphone access to use voice input.",
+            variant: "destructive",
+          });
+        }
+      };
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+    };
+  }, [toast]);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  const toggleListening = () => {
+    if (!recognitionRef.current) {
+      toast({
+        title: "Not Supported",
+        description: "Voice input is not supported in your browser.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      setInput("");
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
 
   const streamChat = async (userMessages: Message[]) => {
     const resp = await fetch(CHAT_URL, {
@@ -92,10 +190,17 @@ const Chatbot = () => {
     }
   };
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+  const handleSend = async (text?: string) => {
+    const messageText = text || input.trim();
+    if (!messageText || isLoading) return;
 
-    const userMessage: Message = { role: "user", content: input.trim() };
+    // Stop listening if active
+    if (isListening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
+
+    const userMessage: Message = { role: "user", content: messageText };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setInput("");
@@ -110,7 +215,6 @@ const Chatbot = () => {
         description: error instanceof Error ? error.message : "Failed to send message",
         variant: "destructive",
       });
-      // Remove the failed assistant message if any
       setMessages(prev => {
         if (prev[prev.length - 1]?.role === "assistant" && prev[prev.length - 1]?.content === "") {
           return prev.slice(0, -1);
@@ -129,6 +233,10 @@ const Chatbot = () => {
     }
   };
 
+  const handleSuggestionClick = (suggestion: string) => {
+    handleSend(suggestion);
+  };
+
   return (
     <>
       {/* Floating Chat Button */}
@@ -145,7 +253,7 @@ const Chatbot = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed bottom-40 right-4 z-50 w-[calc(100%-2rem)] max-w-sm h-[60vh] max-h-[500px] flex flex-col shadow-xl border-border bg-card animate-in slide-in-from-bottom-4 duration-300">
+        <Card className="fixed bottom-40 right-4 z-50 w-[calc(100%-2rem)] max-w-sm h-[70vh] max-h-[550px] flex flex-col shadow-xl border-border bg-card animate-in slide-in-from-bottom-4 duration-300">
           {/* Header */}
           <div className="flex items-center gap-3 p-4 border-b border-border bg-primary/5 rounded-t-lg">
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
@@ -200,22 +308,49 @@ const Chatbot = () => {
                   </div>
                 </div>
               )}
+
+              {/* Quick Suggestions - show only when no messages sent yet */}
+              {messages.length === 1 && !isLoading && (
+                <div className="pt-2">
+                  <p className="text-xs text-muted-foreground mb-2">Quick questions:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {quickSuggestions.map((suggestion, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSuggestionClick(suggestion)}
+                        className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </ScrollArea>
 
           {/* Input */}
           <div className="p-4 border-t border-border">
             <div className="flex gap-2">
+              <Button
+                onClick={toggleListening}
+                variant={isListening ? "destructive" : "outline"}
+                size="icon"
+                className={`flex-shrink-0 ${isListening ? "animate-pulse" : ""}`}
+                disabled={isLoading}
+              >
+                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </Button>
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask about healthy cooking..."
+                placeholder={isListening ? "Listening..." : "Ask about healthy cooking..."}
                 className="flex-1 bg-secondary border-0"
                 disabled={isLoading}
               />
               <Button
-                onClick={handleSend}
+                onClick={() => handleSend()}
                 disabled={!input.trim() || isLoading}
                 size="icon"
                 className="bg-primary hover:bg-primary/90"
