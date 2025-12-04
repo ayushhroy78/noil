@@ -20,6 +20,7 @@ import Auth from "./pages/Auth";
 import OilCalculator from "./pages/OilCalculator";
 import Dashboard from "./pages/Dashboard";
 import CompleteProfile from "./pages/CompleteProfile";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/tracker" element={<Tracker />} />
               <Route path="/fit-meal" element={<FitMeal />} />
               <Route path="/oilhub" element={<OilHub />} />
