@@ -1,39 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Bot, User, Mic, MicOff, Trash2 } from "lucide-react";
+import { MessageCircle, X, Send, Bot, User, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-
-// Type declarations for Speech Recognition
-interface SpeechRecognitionEvent extends Event {
-  results: SpeechRecognitionResultList;
-}
-
-interface SpeechRecognitionErrorEvent extends Event {
-  error: string;
-}
-
-interface SpeechRecognitionInstance extends EventTarget {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  onresult: ((event: SpeechRecognitionEvent) => void) | null;
-  onend: (() => void) | null;
-  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
-  start: () => void;
-  stop: () => void;
-  abort: () => void;
-}
-
-declare global {
-  interface Window {
-    SpeechRecognition?: new () => SpeechRecognitionInstance;
-    webkitSpeechRecognition?: new () => SpeechRecognitionInstance;
-  }
-}
 
 interface Message {
   role: "user" | "assistant";
@@ -60,10 +32,8 @@ const Chatbot = () => {
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isListening, setIsListening] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const { toast } = useToast();
 
   // Load user and chat history
@@ -86,125 +56,11 @@ const Chatbot = () => {
     loadUserAndHistory();
   }, []);
 
-  // Initialize Speech Recognition
-  const finalTranscriptRef = useRef<string>("");
-
-  useEffect(() => {
-    const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognitionClass) {
-      recognitionRef.current = new SpeechRecognitionClass();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = true;
-      recognitionRef.current.lang = 'en-US';
-
-      recognitionRef.current.onresult = (event) => {
-        let interimTranscript = '';
-        let finalTranscript = '';
-
-        for (let i = 0; i < event.results.length; i++) {
-          const result = event.results[i];
-          if (result.isFinal) {
-            finalTranscript += result[0].transcript;
-          } else {
-            interimTranscript += result[0].transcript;
-          }
-        }
-
-        // Update input with current transcript
-        const currentTranscript = finalTranscript || interimTranscript;
-        setInput(currentTranscript);
-        finalTranscriptRef.current = finalTranscript;
-        
-        console.log('Speech recognition result:', { finalTranscript, interimTranscript });
-      };
-
-      recognitionRef.current.onend = () => {
-        console.log('Speech recognition ended');
-        setIsListening(false);
-        
-        // Auto-send if we have a final transcript
-        if (finalTranscriptRef.current.trim()) {
-          const transcript = finalTranscriptRef.current.trim();
-          finalTranscriptRef.current = "";
-          // Use setTimeout to ensure state updates have propagated
-          setTimeout(() => {
-            setInput(transcript);
-            // Trigger send
-            const sendButton = document.querySelector('[data-voice-send]') as HTMLButtonElement;
-            if (sendButton && transcript) {
-              sendButton.click();
-            }
-          }, 100);
-        }
-      };
-
-      recognitionRef.current.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
-        setIsListening(false);
-        finalTranscriptRef.current = "";
-        
-        const errorMessages: Record<string, string> = {
-          'not-allowed': "Please allow microphone access to use voice input.",
-          'no-speech': "No speech detected. Please try again.",
-          'audio-capture': "No microphone found. Please check your device.",
-          'network': "Network error. Please check your connection.",
-          'aborted': "Voice input was cancelled.",
-        };
-
-        if (event.error !== 'aborted') {
-          toast({
-            title: "Voice Input Error",
-            description: errorMessages[event.error] || `Error: ${event.error}`,
-            variant: "destructive",
-          });
-        }
-      };
-    }
-
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.abort();
-      }
-    };
-  }, [toast]);
-
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
-
-  const toggleListening = () => {
-    if (!recognitionRef.current) {
-      toast({
-        title: "Not Supported",
-        description: "Voice input is not supported in your browser. Please use Chrome, Edge, or Safari.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (isListening) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    } else {
-      finalTranscriptRef.current = "";
-      setInput("");
-      try {
-        recognitionRef.current.start();
-        setIsListening(true);
-        console.log('Speech recognition started');
-      } catch (error) {
-        console.error('Failed to start speech recognition:', error);
-        toast({
-          title: "Voice Input Error",
-          description: "Failed to start voice input. Please try again.",
-          variant: "destructive",
-        });
-      }
-    }
-  };
-
   const streamChat = async (userMessages: Message[]): Promise<string> => {
     const resp = await fetch(CHAT_URL, {
       method: "POST",
@@ -288,12 +144,6 @@ const Chatbot = () => {
   const handleSend = async (text?: string) => {
     const messageText = text || input.trim();
     if (!messageText || isLoading) return;
-
-    // Stop listening if active
-    if (isListening && recognitionRef.current) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    }
 
     const userMessage: Message = { role: "user", content: messageText };
     const newMessages = [...messages, userMessage];
@@ -445,20 +295,11 @@ const Chatbot = () => {
           {/* Input */}
           <div className="p-4 border-t border-border">
             <div className="flex gap-2">
-              <Button
-                onClick={toggleListening}
-                variant={isListening ? "destructive" : "outline"}
-                size="icon"
-                className={`flex-shrink-0 ${isListening ? "animate-pulse" : ""}`}
-                disabled={isLoading}
-              >
-                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-              </Button>
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder={isListening ? "Listening..." : "Ask about healthy cooking..."}
+                placeholder="Ask about healthy cooking..."
                 className="flex-1 bg-secondary border-0"
                 disabled={isLoading}
               />
@@ -467,7 +308,6 @@ const Chatbot = () => {
                 disabled={!input.trim() || isLoading}
                 size="icon"
                 className="bg-primary hover:bg-primary/90"
-                data-voice-send
               >
                 <Send className="w-4 h-4" />
               </Button>
