@@ -5,7 +5,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { usePoints } from "@/hooks/usePoints";
 import { useAchievements } from "@/hooks/useAchievements";
@@ -14,6 +13,8 @@ import { ReferralSection } from "@/components/discover/ReferralSection";
 import { BadgesSection } from "@/components/discover/BadgesSection";
 import { ChallengesTab } from "@/components/discover/ChallengesTab";
 import { OilConsumptionCalendar } from "@/components/profile/OilConsumptionCalendar";
+import { HealthProfileForm } from "@/components/profile/HealthProfileForm";
+import { FamilyMembersManager } from "@/components/profile/FamilyMembersManager";
 import {
   ArrowLeft,
   User,
@@ -23,12 +24,13 @@ import {
   LogOut,
   Store,
   Sparkles,
-  Target,
   Medal,
   Share2,
   ChevronRight,
   Shield,
   CalendarDays,
+  Heart,
+  Users,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -143,47 +145,34 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="calendar" className="w-full">
-          <TabsList className="grid w-full grid-cols-6 mb-6">
+        <Tabs defaultValue="health" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsTrigger value="health" className="text-xs px-1" data-testid="tab-health">
+              <Heart className="w-4 h-4" />
+            </TabsTrigger>
+            <TabsTrigger value="family" className="text-xs px-1" data-testid="tab-family">
+              <Users className="w-4 h-4" />
+            </TabsTrigger>
             <TabsTrigger value="calendar" className="text-xs px-1" data-testid="tab-calendar">
               <CalendarDays className="w-4 h-4" />
-            </TabsTrigger>
-            <TabsTrigger value="rewards" className="text-xs px-1" data-testid="tab-rewards">
-              <Gift className="w-4 h-4" />
-            </TabsTrigger>
-            <TabsTrigger value="challenges" className="text-xs px-1" data-testid="tab-challenges">
-              <Target className="w-4 h-4" />
-            </TabsTrigger>
-            <TabsTrigger value="badges" className="text-xs px-1" data-testid="tab-badges">
-              <Trophy className="w-4 h-4" />
-            </TabsTrigger>
-            <TabsTrigger value="referral" className="text-xs px-1" data-testid="tab-referral">
-              <Share2 className="w-4 h-4" />
             </TabsTrigger>
             <TabsTrigger value="settings" className="text-xs px-1" data-testid="tab-settings">
               <Settings className="w-4 h-4" />
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="health">
+            <HealthProfileForm userId={userId} />
+          </TabsContent>
+
+          <TabsContent value="family">
+            <FamilyMembersManager userId={userId} />
+          </TabsContent>
+
           <TabsContent value="calendar">
             <OilConsumptionCalendar userId={userId} />
           </TabsContent>
 
-          <TabsContent value="rewards">
-            <RewardsStore userId={userId} />
-          </TabsContent>
-
-          <TabsContent value="challenges">
-            <ChallengesTab userId={userId} />
-          </TabsContent>
-
-          <TabsContent value="badges">
-            <BadgesSection />
-          </TabsContent>
-
-          <TabsContent value="referral">
-            <ReferralSection userId={userId} />
-          </TabsContent>
 
           <TabsContent value="settings">
             <div className="space-y-4">
