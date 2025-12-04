@@ -50,6 +50,10 @@ const Auth = () => {
   const [resetEmail, setResetEmail] = useState("");
   const [resetLoading, setResetLoading] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
+  
+  // Email confirmation state
+  const [confirmationSent, setConfirmationSent] = useState(false);
+  const [confirmationEmail, setConfirmationEmail] = useState("");
 
   const getPasswordStrength = (pass: string) => {
     let strength = 0;
@@ -132,19 +136,43 @@ const Auth = () => {
 
     try {
       const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
+        email: validation.data.email,
+        password: validation.data.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: `${window.location.origin}/complete-profile`,
           data: {
             referral_code: referralCode || null,
           },
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Handle specific error for existing email
+        if (error.message.toLowerCase().includes("already registered") || 
+            error.message.toLowerCase().includes("user already exists")) {
+          toast({
+            title: "Email Already Registered",
+            description: "This email is already registered. Please sign in instead.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw error;
+      }
+
+      // Check if user needs email confirmation (identities array is empty means email not confirmed)
+      if (data.user && data.user.identities && data.user.identities.length === 0) {
+        // Email already exists but not confirmed - this is Supabase's way of indicating duplicate
+        toast({
+          title: "Email Already Registered",
+          description: "This email is already registered. Please sign in or check your email for confirmation.",
+          variant: "destructive",
+        });
+        return;
+      }
 
       if (data.user) {
+        // Create user profile
         const { error: profileError } = await supabase
           .from("user_profiles")
           .insert({ user_id: data.user.id });
@@ -153,6 +181,7 @@ const Auth = () => {
           console.error("Profile creation error:", profileError);
         }
 
+        // Handle referral code if provided
         if (referralCode) {
           const { data: referrer } = await supabase
             .from("user_profiles")
@@ -165,8 +194,7 @@ const Auth = () => {
               referrer_id: referrer.user_id,
               referred_id: data.user.id,
               referral_code: referralCode.toUpperCase(),
-              status: "completed",
-              completed_at: new Date().toISOString(),
+              status: "pending",
             });
 
             await supabase
@@ -177,12 +205,15 @@ const Auth = () => {
         }
       }
 
+      // Show confirmation email sent screen
+      setConfirmationEmail(validation.data.email);
+      setConfirmationSent(true);
+      
       toast({
-        title: "Success!",
-        description: "Account created! Please complete your profile.",
+        title: "Confirmation Email Sent!",
+        description: "Please check your inbox and click the confirmation link to complete registration.",
       });
 
-      navigate("/complete-profile");
     } catch (error: any) {
       toast({
         title: "Error",
@@ -258,6 +289,52 @@ const Auth = () => {
       <span className={met ? "text-green-600" : "text-muted-foreground"}>{text}</span>
     </div>
   );
+
+  // Show confirmation email sent screen
+  if (confirmationSent) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-medium border-0">
+          <CardHeader className="text-center space-y-4">
+            <div className="mx-auto w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
+              <Mail className="w-10 h-10 text-green-600" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl font-bold text-foreground">Check Your Email</CardTitle>
+              <CardDescription className="text-base mt-2">
+                We've sent a confirmation link to
+              </CardDescription>
+              <p className="font-medium text-primary mt-1">{confirmationEmail}</p>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4 text-center">
+            <p className="text-sm text-muted-foreground">
+              Click the link in the email to verify your account and complete registration.
+            </p>
+            <div className="bg-secondary/50 rounded-lg p-4 text-sm text-muted-foreground">
+              <p className="flex items-center justify-center gap-2">
+                <AlertCircle className="w-4 h-4" />
+                Didn't receive the email? Check your spam folder.
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                setConfirmationSent(false);
+                setEmail("");
+                setPassword("");
+                setConfirmPassword("");
+              }}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Sign Up
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20 flex items-center justify-center p-4">
