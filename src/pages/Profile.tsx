@@ -146,7 +146,7 @@ const Profile = () => {
         </Card>
 
         <Tabs defaultValue="health" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsList className="grid w-full grid-cols-7 mb-6">
             <TabsTrigger value="health" className="text-xs px-1" data-testid="tab-health">
               <Heart className="w-4 h-4" />
             </TabsTrigger>
@@ -155,6 +155,15 @@ const Profile = () => {
             </TabsTrigger>
             <TabsTrigger value="calendar" className="text-xs px-1" data-testid="tab-calendar">
               <CalendarDays className="w-4 h-4" />
+            </TabsTrigger>
+            <TabsTrigger value="rewards" className="text-xs px-1" data-testid="tab-rewards">
+              <Gift className="w-4 h-4" />
+            </TabsTrigger>
+            <TabsTrigger value="challenges" className="text-xs px-1" data-testid="tab-challenges">
+              <Trophy className="w-4 h-4" />
+            </TabsTrigger>
+            <TabsTrigger value="referral" className="text-xs px-1" data-testid="tab-referral">
+              <Share2 className="w-4 h-4" />
             </TabsTrigger>
             <TabsTrigger value="settings" className="text-xs px-1" data-testid="tab-settings">
               <Settings className="w-4 h-4" />
@@ -171,6 +180,21 @@ const Profile = () => {
 
           <TabsContent value="calendar">
             <OilConsumptionCalendar userId={userId} />
+          </TabsContent>
+
+          <TabsContent value="rewards">
+            <RewardsStore userId={userId} />
+          </TabsContent>
+
+          <TabsContent value="challenges">
+            <ChallengesTab userId={userId} />
+          </TabsContent>
+
+          <TabsContent value="referral">
+            <div className="space-y-4">
+              <ReferralSection userId={userId} />
+              <BadgesSection />
+            </div>
           </TabsContent>
 
 
