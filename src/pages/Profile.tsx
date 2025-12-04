@@ -54,14 +54,15 @@ const Profile = () => {
         setUserId(user.id);
         setUserEmail(user.email || null);
         
-        const { data: profile } = await supabase
-          .from("user_profiles")
-          .select("*")
+        // Check role from secure user_roles table
+        const { data: roleData } = await supabase
+          .from("user_roles")
+          .select("role")
           .eq("user_id", user.id)
           .maybeSingle();
         
-        if (profile && (profile as any).role) {
-          setUserRole((profile as any).role);
+        if (roleData?.role) {
+          setUserRole(roleData.role);
         }
       } else {
         navigate("/auth");
