@@ -99,7 +99,7 @@ const Index = () => {
                 <Users className="w-4 h-4 mr-2" />
                 Family Members
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/tracker")} className="cursor-pointer">
+              <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
                 <Activity className="w-4 h-4 mr-2" />
                 Real Time Dashboard
               </DropdownMenuItem>
