@@ -1,6 +1,7 @@
 import { User, Search, Settings, LogOut, Heart, Users, Calendar, Gift, Calculator } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
+import Chatbot from "@/components/Chatbot";
 import { Card } from "@/components/ui/card";
 import {
   Carousel,
@@ -227,6 +228,9 @@ const Index = () => {
           </p>
         </div>
       </main>
+
+      {/* Chatbot */}
+      <Chatbot />
 
       {/* Bottom Navigation */}
       <BottomNav />
