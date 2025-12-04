@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,6 +36,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [userId, setUserId] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -43,6 +44,8 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const { userPoints, isLoading: pointsLoading } = usePoints();
   const { userAchievements } = useAchievements();
+  
+  const defaultTab = searchParams.get("tab") || "health";
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -145,7 +148,7 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="health" className="w-full">
+        <Tabs defaultValue={defaultTab} className="w-full">
           <TabsList className="grid w-full grid-cols-7 mb-6">
             <TabsTrigger value="health" className="text-xs px-1" data-testid="tab-health">
               <Heart className="w-4 h-4" />
