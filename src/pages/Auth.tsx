@@ -11,6 +11,26 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useToast } from "@/hooks/use-toast";
 import { Gift, Eye, EyeOff, Mail, Lock, CheckCircle2, XCircle, AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
 import logoImg from "@/assets/logo.jpg";
+import { z } from "zod";
+
+// Zod schemas for input validation
+const signInSchema = z.object({
+  email: z.string().trim().email("Please enter a valid email address").max(255, "Email is too long"),
+  password: z.string().min(1, "Password is required").max(72, "Password is too long"),
+});
+
+const signUpSchema = z.object({
+  email: z.string().trim().email("Please enter a valid email address").max(255, "Email is too long"),
+  password: z.string().min(6, "Password must be at least 6 characters").max(72, "Password is too long"),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+const resetEmailSchema = z.object({
+  email: z.string().trim().email("Please enter a valid email address").max(255, "Email is too long"),
+});
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -57,10 +77,22 @@ const Auth = () => {
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate email with zod
+    const validation = resetEmailSchema.safeParse({ email: resetEmail });
+    if (!validation.success) {
+      toast({
+        title: "Invalid Email",
+        description: validation.error.errors[0].message,
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setResetLoading(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      const { error } = await supabase.auth.resetPasswordForEmail(validation.data.email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
 
@@ -85,19 +117,12 @@ const Auth = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (password !== confirmPassword) {
+    // Validate with zod schema
+    const validation = signUpSchema.safeParse({ email, password, confirmPassword });
+    if (!validation.success) {
       toast({
-        title: "Passwords don't match",
-        description: "Please make sure both passwords are the same.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (password.length < 6) {
-      toast({
-        title: "Password too short",
-        description: "Password must be at least 6 characters.",
+        title: "Validation Error",
+        description: validation.error.errors[0].message,
         variant: "destructive",
       });
       return;
@@ -171,12 +196,24 @@ const Auth = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate with zod schema
+    const validation = signInSchema.safeParse({ email, password });
+    if (!validation.success) {
+      toast({
+        title: "Validation Error",
+        description: validation.error.errors[0].message,
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setLoading(true);
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: validation.data.email,
+        password: validation.data.password,
       });
 
       if (error) throw error;
