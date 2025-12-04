@@ -1,4 +1,4 @@
-import { User, Search } from "lucide-react";
+import { User, Search, Settings, LogOut, Heart, Users, Calendar, Gift } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
 import { Card } from "@/components/ui/card";
@@ -7,6 +7,15 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import trackerMainImg from "@/assets/tracker-main.jpg";
 import fitMealMainImg from "@/assets/fit-meal-main.jpg";
 import oilhubMainImg from "@/assets/oilhub-main.jpg";
@@ -16,6 +25,16 @@ import Autoplay from "embla-carousel-autoplay";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out.",
+    });
+    navigate("/auth");
+  };
   
   const offerSlides = [
     {
@@ -87,9 +106,36 @@ const Index = () => {
               <p className="text-xs text-muted-foreground">Koramangala, Bangalore</p>
             </div>
           </div>
-          <button className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors">
-            <User className="w-5 h-5 text-primary" />
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors">
+                <User className="w-5 h-5 text-primary" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48 bg-card border-border">
+              <DropdownMenuItem onClick={() => navigate("/profile?tab=health")} className="cursor-pointer">
+                <Heart className="w-4 h-4 mr-2" />
+                Health Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/profile?tab=family")} className="cursor-pointer">
+                <Users className="w-4 h-4 mr-2" />
+                Family Members
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/profile?tab=calendar")} className="cursor-pointer">
+                <Calendar className="w-4 h-4 mr-2" />
+                Oil Calendar
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/profile?tab=rewards")} className="cursor-pointer">
+                <Gift className="w-4 h-4 mr-2" />
+                Rewards Store
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         
         <div className="relative">
