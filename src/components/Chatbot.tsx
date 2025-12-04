@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Bot, User, Mic, MicOff } from "lucide-react";
+import { MessageCircle, X, Send, Bot, User, Mic, MicOff, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 // Type declarations for Speech Recognition
 interface SpeechRecognitionEvent extends Event {
@@ -49,17 +50,41 @@ const quickSuggestions = [
   "Low-oil recipe ideas",
 ];
 
+const WELCOME_MESSAGE: Message = { 
+  role: "assistant", 
+  content: "Hi! I'm your Noil health assistant 🌿 How can I help you with healthy cooking and oil tracking today?" 
+};
+
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: "Hi! I'm your Noil health assistant 🌿 How can I help you with healthy cooking and oil tracking today?" }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const { toast } = useToast();
+
+  // Load user and chat history
+  useEffect(() => {
+    const loadUserAndHistory = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+        const { data } = await supabase
+          .from("chat_messages")
+          .select("role, content")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: true });
+        
+        if (data && data.length > 0) {
+          setMessages(data as Message[]);
+        }
+      }
+    };
+    loadUserAndHistory();
+  }, []);
 
   // Initialize Speech Recognition
   useEffect(() => {
@@ -127,7 +152,7 @@ const Chatbot = () => {
     }
   };
 
-  const streamChat = async (userMessages: Message[]) => {
+  const streamChat = async (userMessages: Message[]): Promise<string> => {
     const resp = await fetch(CHAT_URL, {
       method: "POST",
       headers: {
@@ -188,6 +213,23 @@ const Chatbot = () => {
         }
       }
     }
+    return assistantContent;
+  };
+
+  const saveMessage = async (message: Message) => {
+    if (!userId) return;
+    await supabase.from("chat_messages").insert({
+      user_id: userId,
+      role: message.role,
+      content: message.content,
+    });
+  };
+
+  const clearHistory = async () => {
+    if (!userId) return;
+    await supabase.from("chat_messages").delete().eq("user_id", userId);
+    setMessages([WELCOME_MESSAGE]);
+    toast({ title: "Chat cleared", description: "Your conversation history has been deleted." });
   };
 
   const handleSend = async (text?: string) => {
@@ -206,8 +248,15 @@ const Chatbot = () => {
     setInput("");
     setIsLoading(true);
 
+    // Save user message
+    await saveMessage(userMessage);
+
     try {
-      await streamChat(newMessages.filter(m => m.content));
+      const assistantContent = await streamChat(newMessages.filter(m => m.content));
+      // Save assistant message after streaming completes
+      if (assistantContent) {
+        await saveMessage({ role: "assistant", content: assistantContent });
+      }
     } catch (error) {
       console.error("Chat error:", error);
       toast({
@@ -259,10 +308,21 @@ const Chatbot = () => {
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
               <Bot className="w-5 h-5 text-primary" />
             </div>
-            <div>
+            <div className="flex-1">
               <h3 className="font-semibold text-foreground">Noil Assistant</h3>
               <p className="text-xs text-muted-foreground">Your health coach</p>
             </div>
+            {userId && messages.length > 1 && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={clearHistory}
+                className="text-muted-foreground hover:text-destructive"
+                title="Clear chat history"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
           </div>
 
           {/* Messages */}
