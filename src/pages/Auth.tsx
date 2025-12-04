@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Gift, Eye, EyeOff, Mail, Lock, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Gift, Eye, EyeOff, Mail, Lock, CheckCircle2, XCircle, AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
 import logoImg from "@/assets/logo.jpg";
 
 const Auth = () => {
@@ -23,8 +24,13 @@ const Auth = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [referralCode, setReferralCode] = useState(searchParams.get("ref") || "");
+  
+  // Forgot password states
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
 
-  // Password strength calculation
   const getPasswordStrength = (pass: string) => {
     let strength = 0;
     if (pass.length >= 6) strength++;
@@ -48,6 +54,33 @@ const Auth = () => {
     };
     checkUser();
   }, [navigate]);
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) throw error;
+
+      setResetEmailSent(true);
+      toast({
+        title: "Reset email sent!",
+        description: "Check your inbox for the password reset link.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setResetLoading(false);
+    }
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -264,7 +297,11 @@ const Auth = () => {
                   <button
                     type="button"
                     className="text-sm text-primary hover:underline"
-                    onClick={() => toast({ title: "Coming soon", description: "Password reset feature will be available soon." })}
+                    onClick={() => {
+                      setShowForgotPassword(true);
+                      setResetEmail(email);
+                      setResetEmailSent(false);
+                    }}
                   >
                     Forgot password?
                   </button>
@@ -318,7 +355,6 @@ const Auth = () => {
                     </button>
                   </div>
                   
-                  {/* Password Strength Indicator */}
                   {password && (
                     <div className="space-y-2 pt-1">
                       <div className="flex gap-1">
@@ -424,6 +460,84 @@ const Auth = () => {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Forgot Password Dialog */}
+      <Dialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="w-5 h-5 text-primary" />
+              {resetEmailSent ? "Check your email" : "Reset Password"}
+            </DialogTitle>
+            <DialogDescription>
+              {resetEmailSent
+                ? "We've sent a password reset link to your email address."
+                : "Enter your email address and we'll send you a link to reset your password."}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {resetEmailSent ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-center py-6">
+                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                  <CheckCircle2 className="w-8 h-8 text-green-600" />
+                </div>
+              </div>
+              <p className="text-sm text-center text-muted-foreground">
+                If an account exists for <span className="font-medium text-foreground">{resetEmail}</span>, you will receive an email with instructions to reset your password.
+              </p>
+              <div className="flex flex-col gap-2">
+                <Button onClick={() => setShowForgotPassword(false)} className="w-full">
+                  Back to Sign In
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setResetEmailSent(false)}
+                  className="w-full"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Try a different email
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="reset-email">Email address</Label>
+                <Input
+                  id="reset-email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  required
+                  className="h-11"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowForgotPassword(false)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" className="flex-1" disabled={resetLoading}>
+                  {resetLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    "Send Reset Link"
+                  )}
+                </Button>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
