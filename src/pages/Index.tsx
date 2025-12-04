@@ -129,7 +129,7 @@ const Index = () => {
                 <Gift className="w-4 h-4 mr-2" />
                 Rewards Store
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/profile?tab=health")} className="cursor-pointer">
+              <DropdownMenuItem onClick={() => navigate("/oil-calculator")} className="cursor-pointer">
                 <Calculator className="w-4 h-4 mr-2" />
                 Oil Calculator
               </DropdownMenuItem>
