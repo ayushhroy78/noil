@@ -156,8 +156,9 @@ const Chatbot = () => {
     const decoder = new TextDecoder();
     let textBuffer = "";
     let assistantContent = "";
+    let streamDone = false;
 
-    while (true) {
+    while (!streamDone) {
       const { done, value } = await reader.read();
       if (done) break;
       
@@ -173,7 +174,10 @@ const Chatbot = () => {
         if (!line.startsWith("data: ")) continue;
 
         const jsonStr = line.slice(6).trim();
-        if (jsonStr === "[DONE]") break;
+        if (jsonStr === "[DONE]") {
+          streamDone = true;
+          break;
+        }
 
         try {
           const parsed = JSON.parse(jsonStr);
@@ -191,11 +195,35 @@ const Chatbot = () => {
             });
           }
         } catch {
+          // Incomplete JSON, put back and wait for more data
           textBuffer = line + "\n" + textBuffer;
           break;
         }
       }
     }
+
+    // Process any remaining buffer after stream ends
+    if (textBuffer.trim()) {
+      for (let raw of textBuffer.split("\n")) {
+        if (!raw) continue;
+        if (raw.endsWith("\r")) raw = raw.slice(0, -1);
+        if (raw.startsWith(":") || raw.trim() === "") continue;
+        if (!raw.startsWith("data: ")) continue;
+        const jsonStr = raw.slice(6).trim();
+        if (jsonStr === "[DONE]") continue;
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const content = parsed.choices?.[0]?.delta?.content;
+          if (content) {
+            assistantContent += content;
+            setMessages(prev => prev.map((m, i) => 
+              i === prev.length - 1 ? { ...m, content: assistantContent } : m
+            ));
+          }
+        } catch { /* ignore partial leftovers */ }
+      }
+    }
+
     return assistantContent;
   };
 
