@@ -1120,6 +1120,90 @@ export type Database = {
         }
         Relationships: []
       }
+      restaurant_applications: {
+        Row: {
+          address: string
+          admin_notes: string | null
+          approved_at: string | null
+          certifications: string[] | null
+          city: string
+          cooking_methods: string[] | null
+          created_at: string
+          cuisines: string[] | null
+          daily_customers: string | null
+          description: string | null
+          email: string
+          food_photos: Json | null
+          id: string
+          logo_url: string | null
+          menu_items: Json | null
+          oil_types: string[] | null
+          owner_name: string
+          phone: string
+          rejected_at: string | null
+          restaurant_name: string
+          state: string
+          status: string
+          updated_at: string
+          user_id: string
+          years_in_business: string | null
+        }
+        Insert: {
+          address: string
+          admin_notes?: string | null
+          approved_at?: string | null
+          certifications?: string[] | null
+          city: string
+          cooking_methods?: string[] | null
+          created_at?: string
+          cuisines?: string[] | null
+          daily_customers?: string | null
+          description?: string | null
+          email: string
+          food_photos?: Json | null
+          id?: string
+          logo_url?: string | null
+          menu_items?: Json | null
+          oil_types?: string[] | null
+          owner_name: string
+          phone: string
+          rejected_at?: string | null
+          restaurant_name: string
+          state: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          years_in_business?: string | null
+        }
+        Update: {
+          address?: string
+          admin_notes?: string | null
+          approved_at?: string | null
+          certifications?: string[] | null
+          city?: string
+          cooking_methods?: string[] | null
+          created_at?: string
+          cuisines?: string[] | null
+          daily_customers?: string | null
+          description?: string | null
+          email?: string
+          food_photos?: Json | null
+          id?: string
+          logo_url?: string | null
+          menu_items?: Json | null
+          oil_types?: string[] | null
+          owner_name?: string
+          phone?: string
+          rejected_at?: string | null
+          restaurant_name?: string
+          state?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          years_in_business?: string | null
+        }
+        Relationships: []
+      }
       rewards: {
         Row: {
           created_at: string

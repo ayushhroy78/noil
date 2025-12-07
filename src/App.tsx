@@ -14,6 +14,7 @@ import Cart from "./pages/Cart";
 import Discover from "./pages/Discover";
 import Profile from "./pages/Profile";
 import RestaurantApply from "./pages/RestaurantApply";
+import RestaurantDashboard from "./pages/RestaurantDashboard";
 import Restaurants from "./pages/Restaurants";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
@@ -50,6 +51,7 @@ const App = () => {
               <Route path="/discover" element={<Discover />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/restaurant-apply" element={<RestaurantApply />} />
+              <Route path="/restaurant-dashboard" element={<RestaurantDashboard />} />
               <Route path="/restaurants" element={<Restaurants />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/oil-calculator" element={<OilCalculator />} />
