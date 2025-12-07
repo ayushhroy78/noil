@@ -5,22 +5,49 @@ import { ShoppingCart } from "lucide-react";
 import { Product, ProductVariant } from "@/hooks/useProducts";
 import { useState } from "react";
 
+import mustardOil from "@/assets/mustard-oil.jpg";
+import groundnutOil from "@/assets/groundnut-oil.jpg";
+import coconutOil from "@/assets/coconut-oil.jpg";
+import sesameOil from "@/assets/sesame-oil.jpg";
+
+const oilImageMap: Record<string, string> = {
+  mustard: mustardOil,
+  groundnut: groundnutOil,
+  coconut: coconutOil,
+  sesame: sesameOil,
+};
+
 interface ProductCardProps {
   product: Product;
   onAddToCart: (productId: string, variantId: string) => void;
 }
 
+const getProductImage = (product: Product): string | null => {
+  if (product.image_url) return product.image_url;
+  
+  // Try to match oil type to local images
+  const oilType = product.oil_type?.toLowerCase() || product.name.toLowerCase();
+  for (const [key, image] of Object.entries(oilImageMap)) {
+    if (oilType.includes(key)) {
+      return image;
+    }
+  }
+  return null;
+};
+
 export const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(
     product.variants?.[0]!
   );
+  
+  const productImage = getProductImage(product);
 
   return (
     <Card className="p-4 space-y-3 hover:shadow-lg transition-shadow">
-      {product.image_url && (
+      {productImage && (
         <div className="w-full h-48 overflow-hidden rounded-lg">
           <img
-            src={product.image_url}
+            src={productImage}
             alt={product.name}
             className="w-full h-full object-cover"
           />
