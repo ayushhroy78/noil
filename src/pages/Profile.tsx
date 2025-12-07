@@ -11,7 +11,7 @@ import { useAchievements } from "@/hooks/useAchievements";
 import { RewardsStore } from "@/components/discover/RewardsStore";
 import { ReferralSection } from "@/components/discover/ReferralSection";
 import { BadgesSection } from "@/components/discover/BadgesSection";
-import { ChallengesTab } from "@/components/discover/ChallengesTab";
+import { EnhancedChallengesTab } from "@/components/discover/EnhancedChallengesTab";
 import { OilConsumptionCalendar } from "@/components/profile/OilConsumptionCalendar";
 import { HealthProfileForm } from "@/components/profile/HealthProfileForm";
 import { FamilyMembersManager } from "@/components/profile/FamilyMembersManager";
@@ -191,7 +191,7 @@ const Profile = () => {
           </TabsContent>
 
           <TabsContent value="challenges">
-            <ChallengesTab userId={userId} />
+            <EnhancedChallengesTab userId={userId} />
           </TabsContent>
 
           <TabsContent value="referral">
