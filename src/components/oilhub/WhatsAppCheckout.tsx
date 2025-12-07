@@ -11,7 +11,7 @@ interface WhatsAppCheckoutProps {
   cartItems: CartItem[];
   cartTotal: number;
   deliveryCharges: number;
-  onOrderPlaced: () => void;
+  onOrderPlaced: (customerName: string) => void;
 }
 
 const WHATSAPP_NUMBER = "+917892583384";
@@ -83,13 +83,8 @@ export const WhatsAppCheckout = ({
     // Open WhatsApp in new tab
     window.open(whatsappUrl, "_blank");
     
-    toast({
-      title: "Order Sent!",
-      description: "Your order has been sent via WhatsApp. We'll confirm shortly!",
-    });
-    
     setIsSubmitting(false);
-    onOrderPlaced();
+    onOrderPlaced(customerName);
   };
 
   return (
