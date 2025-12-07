@@ -12,7 +12,7 @@ import {
 import { toast } from "sonner";
 import { usePoints } from "@/hooks/usePoints";
 import { useAchievements } from "@/hooks/useAchievements";
-import { useChallengeTracking } from "@/hooks/useChallengeTracking";
+import { useChallengeTracking, CheckIn } from "@/hooks/useChallengeTracking";
 import { ChallengeCheckInForm, CheckInFormData } from "./ChallengeCheckInForm";
 import { ChallengeStreakCalendar } from "./ChallengeStreakCalendar";
 import { ChallengeWeeklySummary } from "./ChallengeWeeklySummary";
@@ -188,9 +188,20 @@ export const EnhancedChallengesTab = ({ userId }: EnhancedChallengesTabProps) =>
     return await addCheckIn(data);
   };
 
-  const getChallengeProgress = (userChallenge: UserChallenge) => {
+  // Calculate progress based on actual check-ins (days with at least 1 check-in)
+  const getChallengeProgress = (userChallenge: UserChallenge, actualCheckIns?: CheckIn[]) => {
     if (!userChallenge.started_at) return 0;
+    
+    // For active challenge with check-in data
+    if (actualCheckIns && actualCheckIns.length > 0) {
+      // Count unique days with check-ins
+      const uniqueDays = new Set(actualCheckIns.map(c => c.check_in_date)).size;
+      return Math.min((uniqueDays / userChallenge.challenge.duration_days) * 100, 100);
+    }
+    
+    // For list view, use days passed as fallback but cap at 0 for same day start
     const daysPassed = differenceInDays(new Date(), parseISO(userChallenge.started_at));
+    if (daysPassed === 0) return 0; // Started today, no progress yet without check-ins
     return Math.min((daysPassed / userChallenge.challenge.duration_days) * 100, 100);
   };
 
@@ -219,12 +230,14 @@ export const EnhancedChallengesTab = ({ userId }: EnhancedChallengesTabProps) =>
 
   // Detail View for Active Challenge
   if (viewMode === "detail" && activeChallenge) {
-    const progress = getChallengeProgress(activeChallenge);
-    const daysRemaining = Math.max(
-      0,
-      activeChallenge.challenge.duration_days - 
-        differenceInDays(new Date(), parseISO(activeChallenge.started_at || new Date().toISOString()))
-    );
+    // Calculate progress based on actual check-ins
+    const uniqueDays = checkIns.length > 0 
+      ? new Set(checkIns.map(c => c.check_in_date)).size 
+      : 0;
+    const progress = Math.min((uniqueDays / activeChallenge.challenge.duration_days) * 100, 100);
+    
+    const daysElapsed = differenceInDays(new Date(), parseISO(activeChallenge.started_at || new Date().toISOString()));
+    const daysRemaining = Math.max(0, activeChallenge.challenge.duration_days - daysElapsed);
 
     return (
       <div className="space-y-4">
@@ -416,7 +429,12 @@ export const EnhancedChallengesTab = ({ userId }: EnhancedChallengesTabProps) =>
                 </div>
                 <Progress value={getChallengeProgress(userChallenge)} className="h-2 mb-2" />
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>{Math.round(getChallengeProgress(userChallenge))}% complete</span>
+                  <span>
+                    {userChallenge.started_at && (
+                      <>Started {format(parseISO(userChallenge.started_at), "MMM d")} • </>
+                    )}
+                    {Math.round(getChallengeProgress(userChallenge))}% complete
+                  </span>
                   <Button size="sm" variant="ghost" className="gap-1">
                     Continue <ArrowRight className="w-4 h-4" />
                   </Button>
