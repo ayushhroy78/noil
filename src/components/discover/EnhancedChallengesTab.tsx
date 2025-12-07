@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Trophy, Calendar, Play, CheckCircle2, ArrowRight, 
-  Flame, Target, Shield, AlertCircle, Clock
+  Flame, Target, Shield, AlertCircle, Clock, BarChart3
 } from "lucide-react";
 import { toast } from "sonner";
 import { usePoints } from "@/hooks/usePoints";
@@ -15,6 +15,7 @@ import { useAchievements } from "@/hooks/useAchievements";
 import { useChallengeTracking } from "@/hooks/useChallengeTracking";
 import { ChallengeCheckInForm, CheckInFormData } from "./ChallengeCheckInForm";
 import { ChallengeStreakCalendar } from "./ChallengeStreakCalendar";
+import { ChallengeWeeklySummary } from "./ChallengeWeeklySummary";
 import { format, differenceInDays, parseISO } from "date-fns";
 
 interface Challenge {
@@ -263,9 +264,9 @@ export const EnhancedChallengesTab = ({ userId }: EnhancedChallengesTabProps) =>
           </CardContent>
         </Card>
 
-        {/* Tabs for Check-in and Calendar */}
+        {/* Tabs for Check-in, Calendar, and Summary */}
         <Tabs defaultValue="checkin" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-card/80">
+          <TabsList className="grid w-full grid-cols-3 bg-card/80">
             <TabsTrigger value="checkin" className="gap-2">
               <Target className="w-4 h-4" />
               Check-In
@@ -273,6 +274,10 @@ export const EnhancedChallengesTab = ({ userId }: EnhancedChallengesTabProps) =>
             <TabsTrigger value="calendar" className="gap-2">
               <Calendar className="w-4 h-4" />
               Calendar
+            </TabsTrigger>
+            <TabsTrigger value="summary" className="gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Summary
             </TabsTrigger>
           </TabsList>
 
@@ -322,6 +327,14 @@ export const EnhancedChallengesTab = ({ userId }: EnhancedChallengesTabProps) =>
               streak={streak}
               calendarData={getCalendarData()}
               challengeStartDate={activeChallenge.started_at || undefined}
+            />
+          </TabsContent>
+
+          <TabsContent value="summary" className="mt-4">
+            <ChallengeWeeklySummary
+              checkIns={checkIns}
+              challengeStartDate={activeChallenge.started_at || new Date().toISOString()}
+              currentWeek={Math.ceil(differenceInDays(new Date(), parseISO(activeChallenge.started_at || new Date().toISOString())) / 7) || 1}
             />
           </TabsContent>
         </Tabs>
