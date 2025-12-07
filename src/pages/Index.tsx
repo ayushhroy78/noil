@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { User, Search, LogOut, Heart, Users, Activity, Gift, Calculator, MapPin, ChevronDown } from "lucide-react";
+import { User, Search, LogOut, Heart, Store, Activity, Gift, Calculator, MapPin, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
 import Chatbot from "@/components/Chatbot";
 import { Card } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -82,6 +82,15 @@ const Index = () => {
     gradient: "bg-gradient-primary",
     glowClass: "primary-glow",
     action: () => navigate("/oilhub")
+  }, {
+    id: "register-restaurant",
+    badge: "🍴 PARTNER WITH US",
+    title: "Register Restaurant",
+    subtitle: "Join Noil's Healthy Dining Network & Grow Your Business",
+    buttonText: "Apply Now",
+    gradient: "bg-gradient-to-br from-amber-500 to-orange-600",
+    glowClass: "amber-glow",
+    action: () => navigate("/restaurant-apply")
   }];
   const categories = [{
     id: "oil-tracker",
@@ -143,9 +152,9 @@ const Index = () => {
                 <Heart className="w-4 h-4 mr-2" />
                 Health Profile
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/profile?tab=family")} className="cursor-pointer">
-                <Users className="w-4 h-4 mr-2" />
-                Family Members
+              <DropdownMenuItem onClick={() => navigate("/restaurant-apply")} className="cursor-pointer">
+                <Store className="w-4 h-4 mr-2" />
+                Register Restaurant
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
                 <Activity className="w-4 h-4 mr-2" />
@@ -177,35 +186,40 @@ const Index = () => {
       {/* Main Content */}
       <main className="px-4 py-6 space-y-6 max-w-md mx-auto pb-8">
         {/* Offer Carousel */}
-        <Carousel opts={{
-        align: "start",
-        loop: true
-      }} plugins={[Autoplay({
-        delay: 4000
-      })]} className="w-full animate-in fade-in slide-in-from-top-4 duration-500">
-          <CarouselContent>
-            {offerSlides.map(slide => <CarouselItem key={slide.id}>
-                <Card className={`relative overflow-hidden ${slide.gradient} shadow-glow-${slide.id === 'wellness-challenge' ? 'success' : 'primary'} border-0 p-6`}>
-                  <div className="absolute inset-0 bg-gradient-radial opacity-40" />
-                  <div className={`absolute top-0 right-0 w-40 h-40 bg-${slide.glowClass} rounded-full blur-3xl opacity-20`} />
-                  <div className={`absolute bottom-0 left-0 w-32 h-32 bg-${slide.glowClass} rounded-full blur-2xl opacity-15`} />
-                  
-                  <div className="relative z-10 space-y-2">
-                    <div className={`inline-flex items-center gap-2 px-3 py-1 ${slide.id === 'wellness-challenge' ? 'bg-success-foreground/15' : 'bg-primary-foreground/15'} rounded-full mb-2`}>
-                      <span className="text-xs font-bold ${slide.id === 'wellness-challenge' ? 'text-success-foreground' : 'text-primary-foreground'}">{slide.badge}</span>
+        <div className="relative">
+          <Carousel opts={{
+            align: "start",
+            loop: true
+          }} plugins={[Autoplay({
+            delay: 4000,
+            stopOnInteraction: true
+          })]} className="w-full animate-in fade-in slide-in-from-top-4 duration-500">
+            <CarouselContent>
+              {offerSlides.map(slide => <CarouselItem key={slide.id}>
+                  <Card className={`relative overflow-hidden ${slide.gradient} border-0 p-6 min-h-[160px]`}>
+                    <div className="absolute inset-0 bg-gradient-radial opacity-40" />
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl opacity-20" />
+                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full blur-2xl opacity-15" />
+                    
+                    <div className="relative z-10 space-y-2">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/15 rounded-full mb-2">
+                        <span className="text-xs font-bold text-white">{slide.badge}</span>
+                      </div>
+                      <h2 className="text-2xl font-bold text-white tracking-tight">
+                        {slide.title}
+                      </h2>
+                      <p className="text-white/90 font-medium text-sm">{slide.subtitle}</p>
+                      <button onClick={slide.action} className="mt-3 px-5 py-2 bg-white text-foreground rounded-lg font-semibold text-sm hover:scale-105 transition-transform shadow-md">
+                        {slide.buttonText}
+                      </button>
                     </div>
-                    <h2 className={`text-2xl font-bold ${slide.id === 'wellness-challenge' ? 'text-success-foreground' : 'text-primary-foreground'} tracking-tight`}>
-                      {slide.title}
-                    </h2>
-                    <p className={`${slide.id === 'wellness-challenge' ? 'text-success-foreground/90' : 'text-primary-foreground/90'} font-medium`}>{slide.subtitle}</p>
-                    <button onClick={slide.action} className={`mt-3 px-5 py-2 ${slide.id === 'wellness-challenge' ? 'bg-success-foreground text-success' : 'bg-primary-foreground text-primary'} rounded-lg font-semibold text-sm hover:scale-105 transition-transform`}>
-                      {slide.buttonText}
-                    </button>
-                  </div>
-                </Card>
-              </CarouselItem>)}
-          </CarouselContent>
-        </Carousel>
+                  </Card>
+                </CarouselItem>)}
+            </CarouselContent>
+            <CarouselPrevious className="left-2 bg-white/80 hover:bg-white border-0 shadow-md" />
+            <CarouselNext className="right-2 bg-white/80 hover:bg-white border-0 shadow-md" />
+          </Carousel>
+        </div>
 
         {/* Categories Grid */}
         <div className="grid grid-cols-2 gap-4">
