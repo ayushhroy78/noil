@@ -77,6 +77,51 @@ export const useChallengeTracking = (userId: string, userChallengeId: string | n
   const [loading, setLoading] = useState(true);
   const [todayCheckIns, setTodayCheckIns] = useState<CheckIn[]>([]);
 
+  const initializeStreak = useCallback(async () => {
+    if (!userId || !userChallengeId) return null;
+    
+    const today = format(new Date(), "yyyy-MM-dd");
+    
+    // Check if streak exists
+    const { data: existingStreak, error: checkError } = await supabase
+      .from("challenge_streaks")
+      .select("*")
+      .eq("user_challenge_id", userChallengeId)
+      .maybeSingle();
+    
+    if (checkError) {
+      console.error("Error checking streak:", checkError);
+      return null;
+    }
+    
+    if (existingStreak) {
+      return existingStreak as Streak;
+    }
+    
+    // Create new streak
+    const { data: newStreak, error: insertError } = await supabase
+      .from("challenge_streaks")
+      .insert({
+        user_id: userId,
+        user_challenge_id: userChallengeId,
+        current_streak: 0,
+        best_streak: 0,
+        last_check_in_date: null,
+        streak_start_date: today,
+        total_check_ins: 0,
+        missed_days: 0,
+      })
+      .select()
+      .single();
+    
+    if (insertError) {
+      console.error("Error creating streak:", insertError);
+      return null;
+    }
+    
+    return newStreak as Streak;
+  }, [userId, userChallengeId]);
+
   const fetchData = useCallback(async () => {
     if (!userId || !userChallengeId) {
       setLoading(false);
@@ -101,15 +146,9 @@ export const useChallengeTracking = (userId: string, userChallengeId: string | n
       const today = format(new Date(), "yyyy-MM-dd");
       setTodayCheckIns(typedCheckIns.filter(c => c.check_in_date === today));
 
-      // Fetch or create streak
-      const { data: streakData, error: streakError } = await supabase
-        .from("challenge_streaks")
-        .select("*")
-        .eq("user_challenge_id", userChallengeId)
-        .maybeSingle();
-
-      if (streakError) throw streakError;
-      setStreak(streakData as Streak | null);
+      // Fetch or initialize streak
+      let streakData = await initializeStreak();
+      setStreak(streakData);
 
       // Fetch today's prompt
       const { data: promptData, error: promptError } = await supabase
@@ -127,7 +166,7 @@ export const useChallengeTracking = (userId: string, userChallengeId: string | n
     } finally {
       setLoading(false);
     }
-  }, [userId, userChallengeId]);
+  }, [userId, userChallengeId, initializeStreak]);
 
   useEffect(() => {
     fetchData();
@@ -266,8 +305,8 @@ export const useChallengeTracking = (userId: string, userChallengeId: string | n
       if (fetchError) throw fetchError;
 
       if (!currentStreak) {
-        // Create new streak
-        await supabase.from("challenge_streaks").insert({
+        // Create new streak with first check-in
+        const { error: insertError } = await supabase.from("challenge_streaks").insert({
           user_id: userId,
           user_challenge_id: userChallengeId,
           current_streak: 1,
@@ -277,6 +316,10 @@ export const useChallengeTracking = (userId: string, userChallengeId: string | n
           total_check_ins: 1,
           missed_days: 0,
         });
+        
+        if (insertError && insertError.code !== "23505") {
+          throw insertError;
+        }
       } else {
         const typedStreak = currentStreak as Streak;
         const lastDate = typedStreak.last_check_in_date;
@@ -289,7 +332,19 @@ export const useChallengeTracking = (userId: string, userChallengeId: string | n
               total_check_ins: (typedStreak.total_check_ins || 0) + 1,
             })
             .eq("id", typedStreak.id);
-        } else if (lastDate) {
+        } else if (!lastDate) {
+          // First check-in ever for this streak (lastDate is null)
+          await supabase
+            .from("challenge_streaks")
+            .update({
+              current_streak: 1,
+              best_streak: 1,
+              last_check_in_date: today,
+              streak_start_date: today,
+              total_check_ins: 1,
+            })
+            .eq("id", typedStreak.id);
+        } else {
           const daysDiff = differenceInDays(parseISO(today), parseISO(lastDate));
           
           if (daysDiff === 1) {
@@ -304,7 +359,7 @@ export const useChallengeTracking = (userId: string, userChallengeId: string | n
                 total_check_ins: (typedStreak.total_check_ins || 0) + 1,
               })
               .eq("id", typedStreak.id);
-          } else {
+          } else if (daysDiff > 1) {
             // Streak broken
             await supabase
               .from("challenge_streaks")
@@ -349,17 +404,36 @@ export const useChallengeTracking = (userId: string, userChallengeId: string | n
     }
   };
 
-  const generateDailyPrompt = async (challengeStartDate: string) => {
+  const generateDailyPrompt = useCallback(async (challengeStartDate: string) => {
     if (!userId || !userChallengeId) return null;
 
     const today = format(new Date(), "yyyy-MM-dd");
+    
+    // First check if prompt exists for today
+    const { data: existingPrompt, error: checkError } = await supabase
+      .from("challenge_daily_prompts")
+      .select("*")
+      .eq("user_challenge_id", userChallengeId)
+      .eq("prompt_date", today)
+      .maybeSingle();
+    
+    if (checkError) {
+      console.error("Error checking prompt:", checkError);
+      return null;
+    }
+    
+    if (existingPrompt) {
+      setDailyPrompt(existingPrompt as DailyPrompt);
+      return existingPrompt;
+    }
+
     const dayNumber = differenceInDays(new Date(), parseISO(challengeStartDate)) + 1;
 
     // Get progressive prompt based on day
     const progressivePrompt = PROGRESSIVE_PROMPTS.find(p => p.day === dayNumber) 
-      || PROGRESSIVE_PROMPTS[dayNumber % PROGRESSIVE_PROMPTS.length];
+      || PROGRESSIVE_PROMPTS[(dayNumber - 1) % PROGRESSIVE_PROMPTS.length];
 
-    // Add a random verification prompt
+    // Add a random verification prompt for days after week 1
     const randomPrompt = RANDOM_VERIFICATION_PROMPTS[
       Math.floor(Math.random() * RANDOM_VERIFICATION_PROMPTS.length)
     ];
@@ -381,14 +455,31 @@ export const useChallengeTracking = (userId: string, userChallengeId: string | n
         .select()
         .single();
 
-      if (error && error.code !== "23505") throw error;
+      if (error) {
+        // If duplicate key error, fetch existing
+        if (error.code === "23505") {
+          const { data: existing } = await supabase
+            .from("challenge_daily_prompts")
+            .select("*")
+            .eq("user_challenge_id", userChallengeId)
+            .eq("prompt_date", today)
+            .single();
+          
+          if (existing) {
+            setDailyPrompt(existing as DailyPrompt);
+            return existing;
+          }
+        }
+        throw error;
+      }
       
+      setDailyPrompt(data as DailyPrompt);
       return data;
     } catch (error) {
       console.error("Error generating prompt:", error);
       return null;
     }
-  };
+  }, [userId, userChallengeId]);
 
   const answerDailyPrompt = async (promptId: string, response: string) => {
     try {
