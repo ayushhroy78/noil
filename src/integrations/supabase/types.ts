@@ -1050,6 +1050,7 @@ export type Database = {
         Row: {
           activity_level: string | null
           age: number | null
+          city: string | null
           created_at: string
           full_name: string | null
           gender: string | null
@@ -1067,6 +1068,7 @@ export type Database = {
         Insert: {
           activity_level?: string | null
           age?: number | null
+          city?: string | null
           created_at?: string
           full_name?: string | null
           gender?: string | null
@@ -1084,6 +1086,7 @@ export type Database = {
         Update: {
           activity_level?: string | null
           age?: number | null
+          city?: string | null
           created_at?: string
           full_name?: string | null
           gender?: string | null

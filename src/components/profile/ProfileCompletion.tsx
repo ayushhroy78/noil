@@ -79,6 +79,7 @@ const ProfileCompletion = ({ userId, onComplete }: ProfileCompletionProps) => {
     height_cm: "",
     weight_kg: "",
     activity_level: "moderate",
+    city: "",
     state: "",
     region: "",
   });
@@ -100,6 +101,7 @@ const ProfileCompletion = ({ userId, onComplete }: ProfileCompletionProps) => {
           height_cm: formData.height_cm ? parseFloat(formData.height_cm) : null,
           weight_kg: formData.weight_kg ? parseFloat(formData.weight_kg) : null,
           activity_level: formData.activity_level,
+          city: formData.city || null,
           state: formData.state || null,
           region: formData.region || null,
         })
@@ -207,6 +209,16 @@ const ProfileCompletion = ({ userId, onComplete }: ProfileCompletionProps) => {
               <div className="flex items-center gap-2 text-muted-foreground mb-4">
                 <MapPin className="w-5 h-5" />
                 <span className="font-medium">Your Location</span>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="city">City / District</Label>
+                <Input
+                  id="city"
+                  placeholder="e.g., Koramangala, Andheri"
+                  value={formData.city}
+                  onChange={(e) => handleChange("city", e.target.value)}
+                />
               </div>
               
               <div className="space-y-2">
