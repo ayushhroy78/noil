@@ -337,7 +337,17 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20 flex items-center justify-center p-4 relative">
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-4 left-4 rounded-full"
+        onClick={() => navigate("/")}
+      >
+        <ArrowLeft className="w-5 h-5" />
+      </Button>
+      
       <Card className="w-full max-w-md shadow-medium border-0">
         <CardHeader className="text-center space-y-4 pb-2">
           <div className="mx-auto w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center shadow-soft">
