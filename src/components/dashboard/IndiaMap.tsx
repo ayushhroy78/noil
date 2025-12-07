@@ -48,50 +48,54 @@ const INDIAN_STATES: { [key: string]: string } = {
   "Ladakh": "LA",
 };
 
-// Clickable region positions (percentage-based for responsiveness) - fine-tuned for accuracy
+// Clickable region positions (percentage-based for responsiveness) - precisely calibrated
 const STATE_REGIONS: { [key: string]: { x: number; y: number; w: number; h: number } } = {
-  // Northern States
-  "Ladakh": { x: 28, y: 2, w: 14, h: 12 },
-  "Jammu & Kashmir": { x: 20, y: 8, w: 12, h: 14 },
-  "Himachal Pradesh": { x: 28, y: 18, w: 7, h: 6 },
-  "Punjab": { x: 21, y: 20, w: 7, h: 7 },
-  "Uttarakhand": { x: 35, y: 20, w: 7, h: 6 },
-  "Haryana": { x: 24, y: 26, w: 6, h: 6 },
-  "Delhi": { x: 29, y: 28, w: 3, h: 3 },
+  // Northern States (J&K, Ladakh region)
+  "Ladakh": { x: 32, y: 3, w: 12, h: 10 },
+  "Jammu & Kashmir": { x: 24, y: 10, w: 10, h: 12 },
+  
+  // Himalayan & Punjab belt
+  "Himachal Pradesh": { x: 30, y: 20, w: 6, h: 5 },
+  "Punjab": { x: 24, y: 22, w: 6, h: 5 },
+  "Uttarakhand": { x: 36, y: 22, w: 6, h: 5 },
+  "Haryana": { x: 27, y: 27, w: 5, h: 5 },
+  "Delhi": { x: 31, y: 29, w: 2, h: 2 },
   
   // Western States
-  "Rajasthan": { x: 12, y: 26, w: 16, h: 18 },
-  "Gujarat": { x: 6, y: 38, w: 14, h: 16 },
+  "Rajasthan": { x: 16, y: 28, w: 14, h: 16 },
+  "Gujarat": { x: 10, y: 42, w: 12, h: 14 },
   
-  // Central States
-  "Uttar Pradesh": { x: 32, y: 28, w: 18, h: 14 },
-  "Madhya Pradesh": { x: 22, y: 42, w: 20, h: 12 },
-  "Chhattisgarh": { x: 40, y: 48, w: 10, h: 12 },
+  // Central & North India
+  "Uttar Pradesh": { x: 34, y: 30, w: 16, h: 12 },
+  "Madhya Pradesh": { x: 26, y: 44, w: 16, h: 10 },
+  "Chhattisgarh": { x: 42, y: 50, w: 8, h: 10 },
   
   // Eastern States
-  "Bihar": { x: 50, y: 32, w: 10, h: 8 },
-  "Jharkhand": { x: 48, y: 40, w: 10, h: 8 },
-  "West Bengal": { x: 54, y: 40, w: 10, h: 16 },
-  "Odisha": { x: 46, y: 52, w: 12, h: 12 },
+  "Bihar": { x: 52, y: 34, w: 8, h: 6 },
+  "Jharkhand": { x: 50, y: 42, w: 8, h: 6 },
+  "West Bengal": { x: 56, y: 42, w: 8, h: 14 },
+  "Odisha": { x: 48, y: 54, w: 10, h: 10 },
   
-  // Northeastern States
-  "Sikkim": { x: 58, y: 32, w: 4, h: 4 },
-  "Arunachal Pradesh": { x: 68, y: 26, w: 16, h: 10 },
-  "Assam": { x: 62, y: 34, w: 14, h: 8 },
-  "Nagaland": { x: 78, y: 36, w: 6, h: 5 },
-  "Manipur": { x: 76, y: 41, w: 6, h: 5 },
-  "Mizoram": { x: 74, y: 46, w: 6, h: 8 },
-  "Tripura": { x: 70, y: 46, w: 5, h: 6 },
-  "Meghalaya": { x: 64, y: 40, w: 8, h: 5 },
+  // Northeast States (Seven Sisters + Sikkim)
+  "Sikkim": { x: 60, y: 34, w: 3, h: 3 },
+  "Arunachal Pradesh": { x: 70, y: 28, w: 14, h: 8 },
+  "Assam": { x: 64, y: 36, w: 12, h: 6 },
+  "Nagaland": { x: 78, y: 38, w: 5, h: 4 },
+  "Manipur": { x: 76, y: 42, w: 5, h: 4 },
+  "Mizoram": { x: 74, y: 48, w: 5, h: 6 },
+  "Tripura": { x: 70, y: 48, w: 4, h: 5 },
+  "Meghalaya": { x: 66, y: 42, w: 6, h: 4 },
   
-  // Western & Southern States
-  "Maharashtra": { x: 16, y: 52, w: 18, h: 14 },
-  "Goa": { x: 18, y: 66, w: 4, h: 4 },
-  "Karnataka": { x: 20, y: 66, w: 14, h: 14 },
-  "Kerala": { x: 22, y: 80, w: 8, h: 12 },
-  "Tamil Nadu": { x: 30, y: 76, w: 14, h: 14 },
-  "Telangana": { x: 30, y: 56, w: 12, h: 10 },
-  "Andhra Pradesh": { x: 32, y: 64, w: 16, h: 14 },
+  // Western Peninsula
+  "Maharashtra": { x: 20, y: 54, w: 14, h: 12 },
+  "Goa": { x: 20, y: 68, w: 3, h: 3 },
+  
+  // Southern States
+  "Karnataka": { x: 22, y: 68, w: 10, h: 12 },
+  "Kerala": { x: 24, y: 82, w: 6, h: 10 },
+  "Tamil Nadu": { x: 32, y: 78, w: 10, h: 12 },
+  "Telangana": { x: 32, y: 58, w: 10, h: 8 },
+  "Andhra Pradesh": { x: 34, y: 66, w: 12, h: 12 },
 };
 
 const IndiaMap = ({ userState }: IndiaMapProps) => {
