@@ -14,7 +14,7 @@ interface WhatsAppCheckoutProps {
   onOrderPlaced: (customerName: string) => void;
 }
 
-const WHATSAPP_NUMBER = "+917892583384";
+const WHATSAPP_NUMBER = "917892583384";
 
 export const WhatsAppCheckout = ({
   cartItems,
@@ -78,24 +78,18 @@ export const WhatsAppCheckout = ({
     setIsSubmitting(true);
     
     const message = formatOrderMessage();
-    const phoneNumber = WHATSAPP_NUMBER.replace(/[^0-9]/g, "");
     
-    // Use api.whatsapp.com for better mobile compatibility
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${message}`;
+    // Direct redirect to WhatsApp using wa.me
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
     
-    // Open WhatsApp - works on both mobile and desktop
-    const whatsappWindow = window.open(whatsappUrl, "_blank");
+    // Redirect to WhatsApp
+    window.location.href = whatsappUrl;
     
-    // If popup was blocked, try location redirect
-    if (!whatsappWindow || whatsappWindow.closed || typeof whatsappWindow.closed === 'undefined') {
-      window.location.href = whatsappUrl;
-    }
-    
-    // Small delay to ensure WhatsApp opens before showing confirmation
+    // Show confirmation after redirect initiated
     setTimeout(() => {
       setIsSubmitting(false);
       onOrderPlaced(customerName);
-    }, 500);
+    }, 300);
   };
 
   return (
