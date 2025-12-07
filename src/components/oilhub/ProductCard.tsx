@@ -9,12 +9,17 @@ import mustardOil from "@/assets/mustard-oil.jpg";
 import groundnutOil from "@/assets/groundnut-oil.jpg";
 import coconutOil from "@/assets/coconut-oil.jpg";
 import sesameOil from "@/assets/sesame-oil.jpg";
+import riceBranOil from "@/assets/rice-bran-oil.jpg";
+import oliveOil from "@/assets/olive-oil.jpg";
 
 const oilImageMap: Record<string, string> = {
   mustard: mustardOil,
   groundnut: groundnutOil,
   coconut: coconutOil,
   sesame: sesameOil,
+  "rice bran": riceBranOil,
+  rice: riceBranOil,
+  olive: oliveOil,
 };
 
 interface ProductCardProps {
