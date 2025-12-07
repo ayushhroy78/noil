@@ -78,13 +78,24 @@ export const WhatsAppCheckout = ({
     setIsSubmitting(true);
     
     const message = formatOrderMessage();
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, "")}?text=${message}`;
+    const phoneNumber = WHATSAPP_NUMBER.replace(/[^0-9]/g, "");
     
-    // Open WhatsApp in new tab
-    window.open(whatsappUrl, "_blank");
+    // Use api.whatsapp.com for better mobile compatibility
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${message}`;
     
-    setIsSubmitting(false);
-    onOrderPlaced(customerName);
+    // Open WhatsApp - works on both mobile and desktop
+    const whatsappWindow = window.open(whatsappUrl, "_blank");
+    
+    // If popup was blocked, try location redirect
+    if (!whatsappWindow || whatsappWindow.closed || typeof whatsappWindow.closed === 'undefined') {
+      window.location.href = whatsappUrl;
+    }
+    
+    // Small delay to ensure WhatsApp opens before showing confirmation
+    setTimeout(() => {
+      setIsSubmitting(false);
+      onOrderPlaced(customerName);
+    }, 500);
   };
 
   return (
