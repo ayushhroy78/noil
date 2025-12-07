@@ -823,6 +823,42 @@ export type Database = {
         }
         Relationships: []
       }
+      point_transactions: {
+        Row: {
+          balance_after: number
+          created_at: string
+          description: string
+          id: string
+          points: number
+          source: string
+          source_id: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          balance_after: number
+          created_at?: string
+          description: string
+          id?: string
+          points: number
+          source: string
+          source_id?: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          balance_after?: number
+          created_at?: string
+          description?: string
+          id?: string
+          points?: number
+          source?: string
+          source_id?: string | null
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       product_variants: {
         Row: {
           created_at: string
@@ -1200,6 +1236,8 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          lifetime_points_earned: number
+          lifetime_points_spent: number
           points_this_month: number
           points_this_week: number
           total_points: number
@@ -1209,6 +1247,8 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          lifetime_points_earned?: number
+          lifetime_points_spent?: number
           points_this_month?: number
           points_this_week?: number
           total_points?: number
@@ -1218,6 +1258,8 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          lifetime_points_earned?: number
+          lifetime_points_spent?: number
           points_this_month?: number
           points_this_week?: number
           total_points?: number
