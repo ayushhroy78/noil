@@ -358,72 +358,100 @@ export const EnhancedChallengesTab = ({ userId }: EnhancedChallengesTabProps) =>
   }
 
   // List View
+  const inProgressChallenges = userChallenges.filter(uc => uc.status === "in_progress");
+  const completedChallenges = userChallenges.filter(uc => uc.status === "completed");
+  const availableChallenges = challenges.filter(
+    c => !userChallenges.find(uc => uc.challenge_id === c.id)
+  );
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 mb-4">
-        <Trophy className="w-5 h-5 text-primary" />
-        <h2 className="text-lg font-semibold text-foreground">Active Challenges</h2>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Trophy className="w-5 h-5 text-primary" />
+          <h2 className="text-lg font-semibold text-foreground">Challenges</h2>
+        </div>
+        <div className="flex gap-2 text-xs">
+          <Badge variant="outline">{inProgressChallenges.length} Active</Badge>
+          <Badge variant="secondary">{completedChallenges.length} Completed</Badge>
+        </div>
       </div>
 
-      {/* In-Progress Challenge Card (if any) */}
-      {userChallenges.filter(uc => uc.status === "in_progress").map(userChallenge => (
-        <Card 
-          key={userChallenge.id} 
-          className="shadow-soft border-primary cursor-pointer hover:shadow-medium transition-all"
-          onClick={() => {
-            setActiveChallenge(userChallenge);
-            setViewMode("detail");
-          }}
-        >
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Flame className="w-5 h-5 text-primary animate-pulse" />
-                <h3 className="font-semibold">{userChallenge.challenge.title}</h3>
-              </div>
-              <Badge>Active</Badge>
-            </div>
-            <Progress value={getChallengeProgress(userChallenge)} className="h-2 mb-2" />
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>{Math.round(getChallengeProgress(userChallenge))}% complete</span>
-              <Button size="sm" variant="ghost" className="gap-1">
-                Continue <ArrowRight className="w-4 h-4" />
-              </Button>
-            </div>
+      {/* No challenges message */}
+      {challenges.length === 0 && (
+        <Card className="shadow-soft">
+          <CardContent className="p-6 text-center">
+            <Trophy className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+            <h3 className="font-medium text-foreground mb-1">No Challenges Available</h3>
+            <p className="text-sm text-muted-foreground">
+              Check back soon for new challenges to participate in!
+            </p>
           </CardContent>
         </Card>
-      ))}
+      )}
+
+      {/* In-Progress Challenge Cards */}
+      {inProgressChallenges.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+            <Flame className="w-4 h-4 text-primary" />
+            Your Active Challenges
+          </h3>
+          {inProgressChallenges.map(userChallenge => (
+            <Card 
+              key={userChallenge.id} 
+              className="shadow-soft border-primary cursor-pointer hover:shadow-medium transition-all"
+              onClick={() => {
+                setActiveChallenge(userChallenge);
+                setViewMode("detail");
+              }}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Flame className="w-5 h-5 text-primary animate-pulse" />
+                    <h3 className="font-semibold">{userChallenge.challenge.title}</h3>
+                  </div>
+                  <Badge>Active</Badge>
+                </div>
+                <Progress value={getChallengeProgress(userChallenge)} className="h-2 mb-2" />
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <span>{Math.round(getChallengeProgress(userChallenge))}% complete</span>
+                  <Button size="sm" variant="ghost" className="gap-1">
+                    Continue <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {/* Available Challenges */}
-      {challenges.map((challenge) => {
-        const userChallenge = getUserChallengeStatus(challenge.id);
-        const isInProgress = userChallenge?.status === "in_progress";
-        const isCompleted = userChallenge?.status === "completed";
-
-        if (isInProgress) return null; // Already shown above
-
-        return (
-          <Card key={challenge.id} className="shadow-soft hover:shadow-medium transition-shadow">
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-foreground mb-1">{challenge.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-2">{challenge.description}</p>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
-                      <span>{challenge.duration_days} days</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Trophy className="w-3 h-3 text-warning" />
-                      <span>{challenge.reward_points} points</span>
+      {availableChallenges.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium text-muted-foreground">
+            {inProgressChallenges.length > 0 ? "More Challenges to Try" : "Available Challenges"}
+          </h3>
+          {availableChallenges.map((challenge) => (
+            <Card key={challenge.id} className="shadow-soft hover:shadow-medium transition-shadow">
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-foreground mb-1">{challenge.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-2">{challenge.description}</p>
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        <span>{challenge.duration_days} days</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Trophy className="w-3 h-3 text-warning" />
+                        <span>{challenge.reward_points} points</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div>{userChallenge && getStatusBadge(userChallenge.status)}</div>
-              </div>
-
-              {!userChallenge && (
                 <Button
                   onClick={() => startChallenge(challenge.id)}
                   size="sm"
@@ -432,18 +460,33 @@ export const EnhancedChallengesTab = ({ userId }: EnhancedChallengesTabProps) =>
                   <Play className="w-4 h-4 mr-2" />
                   Start Challenge
                 </Button>
-              )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
-              {isCompleted && (
-                <div className="flex items-center gap-2 text-success text-sm">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Completed! +{challenge.reward_points} points earned</span>
+      {/* Completed Challenges */}
+      {completedChallenges.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium text-muted-foreground">Completed</h3>
+          {completedChallenges.map(userChallenge => (
+            <Card key={userChallenge.id} className="shadow-soft bg-success/5 border-success/20">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-success" />
+                    <h3 className="font-semibold">{userChallenge.challenge.title}</h3>
+                  </div>
+                  <Badge className="bg-success text-white">
+                    +{userChallenge.challenge.reward_points} pts
+                  </Badge>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        );
-      })}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
