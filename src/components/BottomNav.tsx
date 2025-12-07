@@ -1,9 +1,50 @@
 import { Activity, Book, Home, ShoppingBag, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { toast } = useToast();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsLoggedIn(!!user);
+    };
+    
+    checkAuth();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsLoggedIn(!!session?.user);
+    });
+    
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleNavigation = (path: string) => {
+    // Home is always accessible
+    if (path === "/") {
+      navigate(path);
+      return;
+    }
+    
+    // Other routes require auth
+    if (!isLoggedIn) {
+      toast({
+        title: "Login Required",
+        description: "Please login to access this feature.",
+        variant: "destructive"
+      });
+      navigate("/auth");
+      return;
+    }
+    
+    navigate(path);
+  };
 
   const navItems = [
     { icon: Activity, label: "Tracker", path: "/tracker" },
@@ -22,7 +63,7 @@ export const BottomNav = () => {
           return (
             <button
               key={item.label}
-              onClick={() => navigate(item.path)}
+              onClick={() => handleNavigation(item.path)}
               className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all duration-300 ease-out ${
                 isActive
                   ? "text-foreground bg-primary/10"
