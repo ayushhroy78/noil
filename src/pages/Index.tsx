@@ -1,4 +1,5 @@
-import { User, Search, Settings, LogOut, Heart, Users, Activity, Gift, Calculator } from "lucide-react";
+import { useState, useEffect } from "react";
+import { User, Search, Settings, LogOut, Heart, Users, Activity, Gift, Calculator, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
 import Chatbot from "@/components/Chatbot";
@@ -13,11 +14,30 @@ import oilhubMainImg from "@/assets/oilhub-main.jpg";
 import discoverMainImg from "@/assets/discover-main.jpg";
 import logoImg from "@/assets/logo.jpg";
 import Autoplay from "embla-carousel-autoplay";
+
 const Index = () => {
   const navigate = useNavigate();
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+  const [userLocation, setUserLocation] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserLocation = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("user_profiles")
+          .select("full_name, state")
+          .eq("user_id", user.id)
+          .single();
+        
+        if (profile?.state) {
+          setUserLocation(profile.state);
+        }
+      }
+    };
+    
+    fetchUserLocation();
+  }, []);
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast({
@@ -80,8 +100,11 @@ const Index = () => {
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <img src={logoImg} alt="Noil Logo" className="h-10 w-10 object-contain" />
-            <div>
-              <p className="text-xs text-muted-foreground">Koramangala, Bangalore</p>
+            <div className="flex items-center gap-1">
+              <MapPin className="w-4 h-4 text-primary" />
+              <p className="text-sm font-medium text-foreground">
+                {userLocation || "Set your location"}
+              </p>
             </div>
           </div>
           <DropdownMenu>
