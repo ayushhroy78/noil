@@ -8,6 +8,7 @@ import { QuizzesTab } from "@/components/discover/QuizzesTab";
 import { HealthInfoTab } from "@/components/discover/HealthInfoTab";
 import { NudgesTab } from "@/components/discover/NudgesTab";
 import { LeaderboardTab } from "@/components/discover/LeaderboardTab";
+import { EnhancedChallengesTab } from "@/components/discover/EnhancedChallengesTab";
 import { supabase } from "@/integrations/supabase/client";
 
 const Discover = () => {
@@ -76,13 +77,24 @@ const Discover = () => {
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="quizzes" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
+        <Tabs defaultValue="challenges" className="w-full">
+          <TabsList className="grid w-full grid-cols-5 mb-6">
+            <TabsTrigger value="challenges" className="text-xs px-1">Challenges</TabsTrigger>
             <TabsTrigger value="quizzes" className="text-xs px-1" data-testid="tab-quizzes">Quizzes</TabsTrigger>
             <TabsTrigger value="info" className="text-xs px-1" data-testid="tab-info">Info</TabsTrigger>
             <TabsTrigger value="tips" className="text-xs px-1" data-testid="tab-tips">Tips</TabsTrigger>
             <TabsTrigger value="leaderboard" className="text-xs px-1" data-testid="tab-leaderboard">Leaders</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="challenges">
+            {userId ? (
+              <EnhancedChallengesTab userId={userId} />
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                Please log in to participate in challenges
+              </div>
+            )}
+          </TabsContent>
 
           <TabsContent value="quizzes">
             {userId ? (

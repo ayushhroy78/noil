@@ -170,6 +170,186 @@ export type Database = {
           },
         ]
       }
+      challenge_check_ins: {
+        Row: {
+          alternative_ingredients: string[] | null
+          check_in_date: string
+          cooking_method: string | null
+          cooking_notes: string | null
+          cravings_notes: string | null
+          created_at: string
+          energy_level: number | null
+          entry_timestamp: string
+          flag_reason: string | null
+          flagged_suspicious: boolean | null
+          id: string
+          ingredients_used: string[] | null
+          is_verified: boolean | null
+          meal_type: string
+          mood: string | null
+          oil_quantity_ml: number | null
+          oil_type: string | null
+          photo_exif_date: string | null
+          photo_uploaded_at: string | null
+          photo_url: string | null
+          user_challenge_id: string
+          user_id: string
+          verification_score: number | null
+        }
+        Insert: {
+          alternative_ingredients?: string[] | null
+          check_in_date?: string
+          cooking_method?: string | null
+          cooking_notes?: string | null
+          cravings_notes?: string | null
+          created_at?: string
+          energy_level?: number | null
+          entry_timestamp?: string
+          flag_reason?: string | null
+          flagged_suspicious?: boolean | null
+          id?: string
+          ingredients_used?: string[] | null
+          is_verified?: boolean | null
+          meal_type: string
+          mood?: string | null
+          oil_quantity_ml?: number | null
+          oil_type?: string | null
+          photo_exif_date?: string | null
+          photo_uploaded_at?: string | null
+          photo_url?: string | null
+          user_challenge_id: string
+          user_id: string
+          verification_score?: number | null
+        }
+        Update: {
+          alternative_ingredients?: string[] | null
+          check_in_date?: string
+          cooking_method?: string | null
+          cooking_notes?: string | null
+          cravings_notes?: string | null
+          created_at?: string
+          energy_level?: number | null
+          entry_timestamp?: string
+          flag_reason?: string | null
+          flagged_suspicious?: boolean | null
+          id?: string
+          ingredients_used?: string[] | null
+          is_verified?: boolean | null
+          meal_type?: string
+          mood?: string | null
+          oil_quantity_ml?: number | null
+          oil_type?: string | null
+          photo_exif_date?: string | null
+          photo_uploaded_at?: string | null
+          photo_url?: string | null
+          user_challenge_id?: string
+          user_id?: string
+          verification_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_check_ins_user_challenge_id_fkey"
+            columns: ["user_challenge_id"]
+            isOneToOne: false
+            referencedRelation: "user_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenge_daily_prompts: {
+        Row: {
+          created_at: string
+          expected_detail: string | null
+          id: string
+          prompt_date: string
+          prompt_text: string
+          response_verified: boolean | null
+          user_challenge_id: string
+          user_id: string
+          user_response: string | null
+        }
+        Insert: {
+          created_at?: string
+          expected_detail?: string | null
+          id?: string
+          prompt_date?: string
+          prompt_text: string
+          response_verified?: boolean | null
+          user_challenge_id: string
+          user_id: string
+          user_response?: string | null
+        }
+        Update: {
+          created_at?: string
+          expected_detail?: string | null
+          id?: string
+          prompt_date?: string
+          prompt_text?: string
+          response_verified?: boolean | null
+          user_challenge_id?: string
+          user_id?: string
+          user_response?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_daily_prompts_user_challenge_id_fkey"
+            columns: ["user_challenge_id"]
+            isOneToOne: false
+            referencedRelation: "user_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenge_streaks: {
+        Row: {
+          best_streak: number | null
+          created_at: string
+          current_streak: number | null
+          id: string
+          last_check_in_date: string | null
+          missed_days: number | null
+          streak_start_date: string | null
+          total_check_ins: number | null
+          updated_at: string
+          user_challenge_id: string
+          user_id: string
+        }
+        Insert: {
+          best_streak?: number | null
+          created_at?: string
+          current_streak?: number | null
+          id?: string
+          last_check_in_date?: string | null
+          missed_days?: number | null
+          streak_start_date?: string | null
+          total_check_ins?: number | null
+          updated_at?: string
+          user_challenge_id: string
+          user_id: string
+        }
+        Update: {
+          best_streak?: number | null
+          created_at?: string
+          current_streak?: number | null
+          id?: string
+          last_check_in_date?: string | null
+          missed_days?: number | null
+          streak_start_date?: string | null
+          total_check_ins?: number | null
+          updated_at?: string
+          user_challenge_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_streaks_user_challenge_id_fkey"
+            columns: ["user_challenge_id"]
+            isOneToOne: false
+            referencedRelation: "user_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       challenges: {
         Row: {
           challenge_type: string
