@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { usePoints } from "@/hooks/usePoints";
 import { useAchievements } from "@/hooks/useAchievements";
-import { RewardsStore } from "@/components/discover/RewardsStore";
+import { EnhancedRewardsStore } from "@/components/rewards/EnhancedRewardsStore";
 import { ReferralSection } from "@/components/discover/ReferralSection";
 import { BadgesSection } from "@/components/discover/BadgesSection";
 import { EnhancedChallengesTab } from "@/components/discover/EnhancedChallengesTab";
@@ -187,7 +187,7 @@ const Profile = () => {
           </TabsContent>
 
           <TabsContent value="rewards">
-            <RewardsStore userId={userId} />
+            <EnhancedRewardsStore userId={userId} />
           </TabsContent>
 
           <TabsContent value="challenges">
