@@ -77,11 +77,11 @@ export const EnhancedChallengesTab = ({ userId }: EnhancedChallengesTabProps) =>
   }, [userChallenges, activeChallenge]);
 
   useEffect(() => {
-    // Generate daily prompt when challenge loads
-    if (activeChallenge?.started_at && !dailyPrompt) {
+    // Generate daily prompt when active challenge is set
+    if (activeChallenge?.started_at) {
       generateDailyPrompt(activeChallenge.started_at);
     }
-  }, [activeChallenge, dailyPrompt, generateDailyPrompt]);
+  }, [activeChallenge?.id, activeChallenge?.started_at, generateDailyPrompt]);
 
   const fetchChallenges = async () => {
     try {
@@ -111,19 +111,34 @@ export const EnhancedChallengesTab = ({ userId }: EnhancedChallengesTabProps) =>
 
   const startChallenge = async (challengeId: string) => {
     try {
+      const startedAt = new Date().toISOString();
       const { data, error } = await supabase.from("user_challenges").insert({
         user_id: userId,
         challenge_id: challengeId,
         status: "in_progress",
-        started_at: new Date().toISOString(),
+        started_at: startedAt,
       }).select(`*, challenge:challenges(*)`).single();
 
       if (error) throw error;
 
+      // Initialize streak for the new challenge
+      const today = format(new Date(), "yyyy-MM-dd");
+      await supabase.from("challenge_streaks").insert({
+        user_id: userId,
+        user_challenge_id: data.id,
+        current_streak: 0,
+        best_streak: 0,
+        last_check_in_date: null,
+        streak_start_date: today,
+        total_check_ins: 0,
+        missed_days: 0,
+      });
+
       toast.success("Challenge started! Begin your daily check-ins.");
       setActiveChallenge(data);
       setViewMode("detail");
-      fetchChallenges();
+      await fetchChallenges();
+      await refetchTracking();
     } catch (error: any) {
       console.error("Error starting challenge:", error);
       toast.error(error.message || "Failed to start challenge");
