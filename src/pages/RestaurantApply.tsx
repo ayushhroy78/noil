@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
+import { ImageUploader } from "@/components/restaurant/ImageUploader";
 import {
   ArrowLeft,
   ArrowRight,
@@ -42,6 +43,8 @@ import {
   MapPin,
   Phone,
   Mail,
+  Image as ImageIcon,
+  LayoutDashboard,
 } from "lucide-react";
 
 const OIL_TYPES = [
@@ -123,8 +126,10 @@ const RestaurantApply = () => {
   const [dailyCustomers, setDailyCustomers] = useState<string>("50-100");
   const [yearsInBusiness, setYearsInBusiness] = useState<string>("1-3");
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [logoUrl, setLogoUrl] = useState<string>("");
+  const [foodPhotos, setFoodPhotos] = useState<string[]>([]);
 
-  const totalSteps = 4;
+  const totalSteps = 5;
   const progressPercentage = (currentStep / totalSteps) * 100;
   const [newMenuItem, setNewMenuItem] = useState<MenuItem>({
     name: "",
@@ -266,9 +271,15 @@ const RestaurantApply = () => {
         city: data.city,
         state: data.state,
         description: data.description || null,
+        logo_url: logoUrl || null,
+        food_photos: foodPhotos,
         menu_items: menuItems,
         oil_types: selectedOilTypes,
         cooking_methods: selectedCookingMethods,
+        cuisines: selectedCuisines,
+        certifications: selectedCertifications,
+        daily_customers: dailyCustomers,
+        years_in_business: yearsInBusiness,
         status: "pending",
       });
 
@@ -323,9 +334,15 @@ const RestaurantApply = () => {
           <p className="text-muted-foreground mb-6">
             Your restaurant application has been submitted successfully. Our team will review your application and get back to you within 3-5 business days.
           </p>
-          <Button onClick={() => navigate("/profile")} data-testid="button-back-profile">
-            Back to Profile
-          </Button>
+          <div className="flex flex-col gap-3">
+            <Button onClick={() => navigate("/restaurant-dashboard")} data-testid="button-view-dashboard">
+              <LayoutDashboard className="w-4 h-4 mr-2" />
+              View Partner Dashboard
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/")} data-testid="button-back-home">
+              Back to Home
+            </Button>
+          </div>
         </main>
 
         <BottomNav />
@@ -360,10 +377,10 @@ const RestaurantApply = () => {
           </div>
           <Progress value={progressPercentage} className="h-2" />
           <div className="flex justify-between mt-2">
-            {["Details", "Kitchen", "Menu", "Business"].map((step, index) => (
+            {["Details", "Kitchen", "Menu", "Business", "Photos"].map((step, index) => (
               <span 
                 key={step} 
-                className={`text-xs ${currentStep > index ? 'text-primary font-medium' : 'text-muted-foreground'}`}
+                className={`text-xs ${currentStep > index ? 'text-primary font-medium' : currentStep === index + 1 ? 'text-primary font-medium' : 'text-muted-foreground'}`}
               >
                 {step}
               </span>
@@ -718,7 +735,7 @@ const RestaurantApply = () => {
             )}
 
             {/* Step 4: Business Info & Certifications */}
-            {currentStep === 4 && (
+            {currentStep === 4 && userId && (
               <div className="space-y-6 animate-in fade-in duration-300">
                 <Card>
                   <CardHeader>
@@ -787,6 +804,49 @@ const RestaurantApply = () => {
                         </Badge>
                       ))}
                     </div>
+                  </CardContent>
+                </Card>
+
+              </div>
+            )}
+
+            {/* Step 5: Photos */}
+            {currentStep === 5 && userId && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Store className="w-4 h-4" />
+                      Restaurant Logo
+                    </CardTitle>
+                    <CardDescription>Upload your restaurant's logo (recommended: square image)</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ImageUploader
+                      userId={userId}
+                      type="logo"
+                      value={logoUrl}
+                      onChange={(val) => setLogoUrl(val as string)}
+                    />
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4" />
+                      Food Photos
+                    </CardTitle>
+                    <CardDescription>Upload photos of your signature dishes (up to 6)</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ImageUploader
+                      userId={userId}
+                      type="food"
+                      value={foodPhotos}
+                      onChange={(val) => setFoodPhotos(val as string[])}
+                      maxFiles={6}
+                    />
                   </CardContent>
                 </Card>
 
