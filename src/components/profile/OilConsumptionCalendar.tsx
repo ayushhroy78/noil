@@ -10,35 +10,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { useOilCalendar, DayData } from "@/hooks/useOilCalendar";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Droplets, 
-  Flame, 
-  Trophy, 
-  Target, 
-  TrendingDown, 
-  TrendingUp,
-  Calendar as CalendarIcon,
-  Sparkles,
-  Plus
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Droplets, Flame, Trophy, Target, TrendingDown, TrendingUp, Calendar as CalendarIcon, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-
 interface OilConsumptionCalendarProps {
   userId: string;
 }
-
-const motivationalMessages = [
-  "Small steps lead to big changes! Keep tracking your oil usage.",
-  "Consistency is key to a healthier lifestyle.",
-  "You're building great habits one day at a time!",
-  "Every drop counts towards your health goals.",
-  "Mindful cooking starts with mindful tracking.",
-];
-
-export const OilConsumptionCalendar = ({ userId }: OilConsumptionCalendarProps) => {
-  const { toast } = useToast();
+const motivationalMessages = ["Small steps lead to big changes! Keep tracking your oil usage.", "Consistency is key to a healthier lifestyle.", "You're building great habits one day at a time!", "Every drop counts towards your health goals.", "Mindful cooking starts with mindful tracking."];
+export const OilConsumptionCalendar = ({
+  userId
+}: OilConsumptionCalendarProps) => {
+  const {
+    toast
+  } = useToast();
   const {
     currentMonth,
     stats,
@@ -50,23 +33,22 @@ export const OilConsumptionCalendar = ({ userId }: OilConsumptionCalendarProps) 
     goToToday,
     dailyGoal,
     setDailyGoal,
-    refetch,
+    refetch
   } = useOilCalendar(userId);
-
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [entryDialogOpen, setEntryDialogOpen] = useState(false);
   const [newAmount, setNewAmount] = useState("");
   const [newNotes, setNewNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
   const calendarStart = startOfWeek(monthStart);
   const calendarEnd = endOfWeek(monthEnd);
-  const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
-
+  const calendarDays = eachDayOfInterval({
+    start: calendarStart,
+    end: calendarEnd
+  });
   const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
-
   const handleDayClick = (date: Date) => {
     setSelectedDate(date);
     const dayData = getDayData(date);
@@ -74,27 +56,24 @@ export const OilConsumptionCalendar = ({ userId }: OilConsumptionCalendarProps) 
     setNewNotes(dayData.notes || "");
     setEntryDialogOpen(true);
   };
-
   const handleAddEntry = async () => {
     if (!selectedDate || !newAmount) return;
-    
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from("daily_logs").insert({
+      const {
+        error
+      } = await supabase.from("daily_logs").insert({
         user_id: userId,
         log_date: format(selectedDate, "yyyy-MM-dd"),
         amount_ml: parseFloat(newAmount),
         notes: newNotes || null,
-        source: "calendar",
+        source: "calendar"
       });
-
       if (error) throw error;
-
       toast({
         title: "Entry added",
-        description: `Logged ${newAmount}ml for ${format(selectedDate, "MMM d, yyyy")}`,
+        description: `Logged ${newAmount}ml for ${format(selectedDate, "MMM d, yyyy")}`
       });
-
       setEntryDialogOpen(false);
       setNewAmount("");
       setNewNotes("");
@@ -103,13 +82,12 @@ export const OilConsumptionCalendar = ({ userId }: OilConsumptionCalendarProps) 
       toast({
         title: "Error",
         description: "Failed to add entry",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsSubmitting(false);
     }
   };
-
   const getColorClasses = (level: "optimal" | "moderate" | "high" | "none", hasData: boolean) => {
     if (!hasData) return "bg-muted/30 hover:bg-muted/50";
     switch (level) {
@@ -123,20 +101,14 @@ export const OilConsumptionCalendar = ({ userId }: OilConsumptionCalendarProps) 
         return "bg-muted/30 hover:bg-muted/50";
     }
   };
-
-  const trackingProgress = (stats.daysTracked / stats.daysInMonth) * 100;
-
+  const trackingProgress = stats.daysTracked / stats.daysInMonth * 100;
   if (isLoading) {
-    return (
-      <div className="space-y-4">
+    return <div className="space-y-4">
         <div className="h-48 bg-muted/50 animate-pulse rounded-lg" />
         <div className="h-64 bg-muted/50 animate-pulse rounded-lg" />
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="space-y-4">
+  return <div className="space-y-4">
       {/* Stats Dashboard */}
       <div className="grid grid-cols-2 gap-3">
         <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/50 dark:to-emerald-900/30 border-emerald-200/50">
@@ -169,18 +141,12 @@ export const OilConsumptionCalendar = ({ userId }: OilConsumptionCalendarProps) 
             </div>
             <p className="text-2xl font-bold text-purple-700 dark:text-purple-400">{stats.totalThisMonth}ml</p>
             <div className="flex items-center gap-1 text-xs">
-              {stats.comparisonWithLastMonth !== 0 && (
-                <>
-                  {stats.comparisonWithLastMonth < 0 ? (
-                    <TrendingDown className="h-3 w-3 text-emerald-600" />
-                  ) : (
-                    <TrendingUp className="h-3 w-3 text-rose-600" />
-                  )}
+              {stats.comparisonWithLastMonth !== 0 && <>
+                  {stats.comparisonWithLastMonth < 0 ? <TrendingDown className="h-3 w-3 text-emerald-600" /> : <TrendingUp className="h-3 w-3 text-rose-600" />}
                   <span className={stats.comparisonWithLastMonth < 0 ? "text-emerald-600" : "text-rose-600"}>
                     {Math.abs(stats.comparisonWithLastMonth)}% vs last month
                   </span>
-                </>
-              )}
+                </>}
             </div>
           </CardContent>
         </Card>
@@ -212,8 +178,7 @@ export const OilConsumptionCalendar = ({ userId }: OilConsumptionCalendarProps) 
 
       {/* Best Day & Motivation */}
       <div className="grid grid-cols-2 gap-3">
-        {stats.bestDay && (
-          <Card className="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30">
+        {stats.bestDay && <Card className="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30">
             <CardContent className="pt-4 pb-3">
               <div className="flex items-center gap-2 mb-2">
                 <Trophy className="h-4 w-4 text-yellow-600" />
@@ -222,13 +187,12 @@ export const OilConsumptionCalendar = ({ userId }: OilConsumptionCalendarProps) 
               <p className="text-sm font-bold">{format(stats.bestDay.date, "MMM d")}</p>
               <p className="text-xs text-muted-foreground">{stats.bestDay.amount}ml consumed</p>
             </CardContent>
-          </Card>
-        )}
+          </Card>}
 
         <Card className="bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-950/30 dark:to-rose-950/30">
           <CardContent className="pt-4 pb-3">
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="h-4 w-4 text-pink-600" />
+              
               <span className="text-xs font-medium">Daily Tip</span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">{randomMessage}</p>
@@ -259,41 +223,25 @@ export const OilConsumptionCalendar = ({ userId }: OilConsumptionCalendarProps) 
         <CardContent className="pb-4">
           {/* Day headers */}
           <div className="grid grid-cols-7 gap-1 mb-2">
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-              <div key={day} className="text-center text-xs font-medium text-muted-foreground py-1">
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => <div key={day} className="text-center text-xs font-medium text-muted-foreground py-1">
                 {day}
-              </div>
-            ))}
+              </div>)}
           </div>
 
           {/* Calendar grid */}
           <div className="grid grid-cols-7 gap-1">
-            {calendarDays.map((day) => {
-              const dayData = getDayData(day);
-              const level = getConsumptionLevel(dayData.amount_ml);
-              const isCurrentMonth = isSameMonth(day, currentMonth);
-              const isCurrentDay = isToday(day);
-
-              return (
-                <button
-                  key={day.toISOString()}
-                  onClick={() => handleDayClick(day)}
-                  className={cn(
-                    "aspect-square p-1 rounded-lg text-center transition-all relative",
-                    isCurrentMonth ? getColorClasses(level, dayData.hasData) : "opacity-30 bg-muted/20",
-                    isCurrentDay && "ring-2 ring-primary ring-offset-1",
-                    "hover:scale-105 active:scale-95"
-                  )}
-                >
+            {calendarDays.map(day => {
+            const dayData = getDayData(day);
+            const level = getConsumptionLevel(dayData.amount_ml);
+            const isCurrentMonth = isSameMonth(day, currentMonth);
+            const isCurrentDay = isToday(day);
+            return <button key={day.toISOString()} onClick={() => handleDayClick(day)} className={cn("aspect-square p-1 rounded-lg text-center transition-all relative", isCurrentMonth ? getColorClasses(level, dayData.hasData) : "opacity-30 bg-muted/20", isCurrentDay && "ring-2 ring-primary ring-offset-1", "hover:scale-105 active:scale-95")}>
                   <span className="text-xs font-medium">{format(day, "d")}</span>
-                  {dayData.hasData && isCurrentMonth && (
-                    <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2">
+                  {dayData.hasData && isCurrentMonth && <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2">
                       <Droplets className="h-2.5 w-2.5" />
-                    </div>
-                  )}
-                </button>
-              );
-            })}
+                    </div>}
+                </button>;
+          })}
           </div>
 
           {/* Legend */}
@@ -323,12 +271,7 @@ export const OilConsumptionCalendar = ({ userId }: OilConsumptionCalendarProps) 
               <p className="text-xs text-muted-foreground">Set your target oil consumption</p>
             </div>
             <div className="flex items-center gap-2">
-              <Input
-                type="number"
-                value={dailyGoal}
-                onChange={(e) => setDailyGoal(Number(e.target.value))}
-                className="w-20 h-8 text-center"
-              />
+              <Input type="number" value={dailyGoal} onChange={e => setDailyGoal(Number(e.target.value))} className="w-20 h-8 text-center" />
               <span className="text-sm text-muted-foreground">ml</span>
             </div>
           </div>
@@ -336,15 +279,12 @@ export const OilConsumptionCalendar = ({ userId }: OilConsumptionCalendarProps) 
       </Card>
 
       {/* Quick Add Button */}
-      <Button 
-        className="w-full" 
-        onClick={() => {
-          setSelectedDate(new Date());
-          setNewAmount("");
-          setNewNotes("");
-          setEntryDialogOpen(true);
-        }}
-      >
+      <Button className="w-full" onClick={() => {
+      setSelectedDate(new Date());
+      setNewAmount("");
+      setNewNotes("");
+      setEntryDialogOpen(true);
+    }}>
         <Plus className="h-4 w-4 mr-2" />
         Log Today's Oil Consumption
       </Button>
@@ -361,35 +301,17 @@ export const OilConsumptionCalendar = ({ userId }: OilConsumptionCalendarProps) 
             <div>
               <label className="text-sm font-medium mb-2 block">Amount (ml)</label>
               <div className="flex gap-2">
-                <Input
-                  type="number"
-                  value={newAmount}
-                  onChange={(e) => setNewAmount(e.target.value)}
-                  placeholder="Enter amount in ml"
-                />
+                <Input type="number" value={newAmount} onChange={e => setNewAmount(e.target.value)} placeholder="Enter amount in ml" />
               </div>
               <div className="flex gap-2 mt-2">
-                {[5, 10, 15, 20, 25].map((amt) => (
-                  <Button
-                    key={amt}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setNewAmount(amt.toString())}
-                  >
+                {[5, 10, 15, 20, 25].map(amt => <Button key={amt} type="button" variant="outline" size="sm" onClick={() => setNewAmount(amt.toString())}>
                     {amt}ml
-                  </Button>
-                ))}
+                  </Button>)}
               </div>
             </div>
             <div>
               <label className="text-sm font-medium mb-2 block">Notes (optional)</label>
-              <Textarea
-                value={newNotes}
-                onChange={(e) => setNewNotes(e.target.value)}
-                placeholder="e.g., Used for breakfast, mustard oil..."
-                rows={2}
-              />
+              <Textarea value={newNotes} onChange={e => setNewNotes(e.target.value)} placeholder="e.g., Used for breakfast, mustard oil..." rows={2} />
             </div>
           </div>
           <DialogFooter>
@@ -402,6 +324,5 @@ export const OilConsumptionCalendar = ({ userId }: OilConsumptionCalendarProps) 
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>;
 };
