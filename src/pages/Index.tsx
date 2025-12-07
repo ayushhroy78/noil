@@ -21,11 +21,13 @@ const Index = () => {
   const { toast } = useToast();
   const [userCity, setUserCity] = useState<string | null>(null);
   const [userState, setUserState] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchUserLocation = async () => {
+    const checkAuthAndFetchLocation = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        setIsLoggedIn(true);
         const { data: profile } = await supabase
           .from("user_profiles")
           .select("city, state")
@@ -36,11 +38,32 @@ const Index = () => {
           setUserCity(profile.city);
           setUserState(profile.state);
         }
+      } else {
+        setIsLoggedIn(false);
       }
     };
     
-    fetchUserLocation();
+    checkAuthAndFetchLocation();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsLoggedIn(!!session?.user);
+    });
+    
+    return () => subscription.unsubscribe();
   }, []);
+
+  const requireAuth = (callback: () => void) => {
+    if (!isLoggedIn) {
+      toast({
+        title: "Login Required",
+        description: "Please login to access this feature.",
+        variant: "destructive"
+      });
+      navigate("/auth");
+      return;
+    }
+    callback();
+  };
 
   const handleLocationUpdate = (city: string | null, state: string | null) => {
     setUserCity(city);
@@ -72,7 +95,7 @@ const Index = () => {
     buttonText: "Join Challenge",
     gradient: "bg-gradient-success",
     glowClass: "success-glow",
-    action: () => navigate("/profile?tab=challenges")
+    action: () => requireAuth(() => navigate("/profile?tab=challenges"))
   }, {
     id: "store-discount",
     badge: "🛍️ SMART STORE SALE",
@@ -81,7 +104,7 @@ const Index = () => {
     buttonText: "Shop Now",
     gradient: "bg-gradient-primary",
     glowClass: "primary-glow",
-    action: () => navigate("/oilhub")
+    action: () => requireAuth(() => navigate("/oilhub"))
   }, {
     id: "register-restaurant",
     badge: "🍴 PARTNER WITH US",
@@ -90,7 +113,7 @@ const Index = () => {
     buttonText: "Apply Now",
     gradient: "bg-gradient-to-br from-amber-500 to-orange-600",
     glowClass: "amber-glow",
-    action: () => navigate("/restaurant-apply")
+    action: () => requireAuth(() => navigate("/restaurant-apply"))
   }];
   const categories = [{
     id: "oil-tracker",
@@ -148,35 +171,44 @@ const Index = () => {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 bg-card border-border">
-              <DropdownMenuItem onClick={() => navigate("/profile?tab=health")} className="cursor-pointer">
-                <Heart className="w-4 h-4 mr-2" />
-                Health Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/restaurant-apply")} className="cursor-pointer">
-                <Store className="w-4 h-4 mr-2" />
-                Register Restaurant
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/restaurant-dashboard")} className="cursor-pointer">
-                <LayoutDashboard className="w-4 h-4 mr-2" />
-                Partner Dashboard
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
-                <Activity className="w-4 h-4 mr-2" />
-                Real Time Dashboard
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/profile?tab=rewards")} className="cursor-pointer">
-                <Gift className="w-4 h-4 mr-2" />
-                Rewards Store
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/oil-calculator")} className="cursor-pointer">
-                <Calculator className="w-4 h-4 mr-2" />
-                Oil Calculator
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </DropdownMenuItem>
+              {isLoggedIn ? (
+                <>
+                  <DropdownMenuItem onClick={() => navigate("/profile?tab=health")} className="cursor-pointer">
+                    <Heart className="w-4 h-4 mr-2" />
+                    Health Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/restaurant-apply")} className="cursor-pointer">
+                    <Store className="w-4 h-4 mr-2" />
+                    Register Restaurant
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/restaurant-dashboard")} className="cursor-pointer">
+                    <LayoutDashboard className="w-4 h-4 mr-2" />
+                    Partner Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
+                    <Activity className="w-4 h-4 mr-2" />
+                    Real Time Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/profile?tab=rewards")} className="cursor-pointer">
+                    <Gift className="w-4 h-4 mr-2" />
+                    Rewards Store
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/oil-calculator")} className="cursor-pointer">
+                    <Calculator className="w-4 h-4 mr-2" />
+                    Oil Calculator
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <DropdownMenuItem onClick={() => navigate("/auth")} className="cursor-pointer">
+                  <User className="w-4 h-4 mr-2" />
+                  Login / Sign Up
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -227,7 +259,7 @@ const Index = () => {
 
         {/* Categories Grid */}
         <div className="grid grid-cols-2 gap-4">
-          {categories.map((category, index) => <Card key={category.id} onClick={() => navigate(category.path)} className="group relative overflow-hidden bg-card shadow-medium border-0 cursor-pointer hover:shadow-lg transition-all duration-500 hover:-translate-y-1 animate-in fade-in duration-700 h-48" style={{
+          {categories.map((category, index) => <Card key={category.id} onClick={() => requireAuth(() => navigate(category.path))} className="group relative overflow-hidden bg-card shadow-medium border-0 cursor-pointer hover:shadow-lg transition-all duration-500 hover:-translate-y-1 animate-in fade-in duration-700 h-48" style={{
           animationDelay: `${index * 150}ms`
         }}>
               {/* Full Image Background */}
