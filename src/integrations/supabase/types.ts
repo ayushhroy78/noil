@@ -468,6 +468,7 @@ export type Database = {
           body: string
           created_at: string
           id: string
+          image_url: string | null
           is_deleted: boolean
           is_hidden: boolean
           post_type: string
@@ -480,6 +481,7 @@ export type Database = {
           body: string
           created_at?: string
           id?: string
+          image_url?: string | null
           is_deleted?: boolean
           is_hidden?: boolean
           post_type: string
@@ -492,6 +494,7 @@ export type Database = {
           body?: string
           created_at?: string
           id?: string
+          image_url?: string | null
           is_deleted?: boolean
           is_hidden?: boolean
           post_type?: string

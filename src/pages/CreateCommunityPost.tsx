@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Image, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -26,6 +25,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { toast } from "sonner";
 
 const postSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters").max(200, "Title too long"),
@@ -48,6 +48,9 @@ const CreateCommunityPost = () => {
   const [searchParams] = useSearchParams();
   const { createPost } = useCommunityActions();
   const [submitting, setSubmitting] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Get prefilled type from URL params (for context-aware shortcuts)
   const prefilledType = searchParams.get('type') as PostType | null;
@@ -72,6 +75,51 @@ const CreateCommunityPost = () => {
     checkAuth();
   }, [navigate]);
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image too large. Max size is 5MB");
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error("Not authenticated");
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.user.id}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('community-profiles')
+        .upload(`posts/${fileName}`, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from('community-profiles')
+        .getPublicUrl(`posts/${fileName}`);
+
+      setImageUrl(urlData.publicUrl);
+      toast.success("Image uploaded");
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload image");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const removeImage = () => {
+    setImageUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const onSubmit = async (data: PostFormData) => {
     setSubmitting(true);
     
@@ -84,6 +132,7 @@ const CreateCommunityPost = () => {
       body: data.body,
       post_type: data.post_type as PostType,
       tags,
+      image_url: imageUrl || undefined,
     });
 
     setSubmitting(false);
@@ -174,6 +223,55 @@ const CreateCommunityPost = () => {
               )}
             />
 
+            {/* Image Upload */}
+            <div className="space-y-2">
+              <FormLabel>Photo (optional)</FormLabel>
+              {imageUrl ? (
+                <div className="relative">
+                  <img 
+                    src={imageUrl} 
+                    alt="Post preview" 
+                    className="w-full max-h-64 object-cover rounded-lg"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-2 right-2"
+                    onClick={removeImage}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div
+                  className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {uploadingImage ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">Uploading...</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2">
+                      <Image className="w-8 h-8 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">Click to add a photo</p>
+                      <p className="text-xs text-muted-foreground">Max 5MB</p>
+                    </div>
+                  )}
+                </div>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageUpload}
+                disabled={uploadingImage}
+              />
+            </div>
+
             {/* Tags */}
             <FormField
               control={form.control}
@@ -195,7 +293,7 @@ const CreateCommunityPost = () => {
             <Button
               type="submit"
               className="w-full"
-              disabled={submitting}
+              disabled={submitting || uploadingImage}
             >
               {submitting ? "Creating..." : "Create Post"}
             </Button>

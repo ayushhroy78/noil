@@ -1,4 +1,4 @@
-import { ArrowUp, MessageSquare } from "lucide-react";
+import { ArrowUp, MessageSquare, Image as ImageIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CommunityPost, useCommunityActions } from "@/hooks/useCommunity";
@@ -39,45 +39,61 @@ const CommunityPostCard = ({ post, currentUserId, onClick }: CommunityPostCardPr
 
   return (
     <article
-      className="bg-card rounded-xl p-4 space-y-3 cursor-pointer hover:bg-card/80 transition-colors border border-border/50"
+      className="bg-card rounded-xl overflow-hidden cursor-pointer hover:bg-card/80 transition-colors border border-border/50"
       onClick={onClick}
     >
-      <div className="flex items-center gap-2">
-        <Badge className={`${postTypeBadgeStyles[post.post_type]} text-xs`}>
-          {postTypeLabels[post.post_type]}
-        </Badge>
-        <span className="text-xs text-muted-foreground">
-          {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
-        </span>
-      </div>
+      {/* Post Image */}
+      {post.image_url && (
+        <div className="relative aspect-video bg-muted">
+          <img 
+            src={post.image_url} 
+            alt={post.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+      
+      <div className="p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Badge className={`${postTypeBadgeStyles[post.post_type]} text-xs`}>
+            {postTypeLabels[post.post_type]}
+          </Badge>
+          {post.image_url && (
+            <ImageIcon className="w-3 h-3 text-muted-foreground" />
+          )}
+          <span className="text-xs text-muted-foreground">
+            {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
+          </span>
+        </div>
 
-      <h3 className="font-semibold text-foreground line-clamp-2">
-        {post.title}
-      </h3>
+        <h3 className="font-semibold text-foreground line-clamp-2">
+          {post.title}
+        </h3>
 
-      <p className="text-sm text-muted-foreground line-clamp-2">
-        {previewBody}
-      </p>
+        <p className="text-sm text-muted-foreground line-clamp-2">
+          {previewBody}
+        </p>
 
-      <div className="flex items-center gap-4 pt-2">
-        <Button
-          variant={post.user_voted ? "default" : "outline"}
-          size="sm"
-          onClick={handleVote}
-          className="gap-1 h-8"
-        >
-          <ArrowUp className="w-3 h-3" />
-          {post.vote_count}
-        </Button>
+        <div className="flex items-center gap-4 pt-2">
+          <Button
+            variant={post.user_voted ? "default" : "outline"}
+            size="sm"
+            onClick={handleVote}
+            className="gap-1 h-8"
+          >
+            <ArrowUp className="w-3 h-3" />
+            {post.vote_count}
+          </Button>
 
-        <span className="text-xs text-muted-foreground flex items-center gap-1">
-          <MessageSquare className="w-3 h-3" />
-          {post.comment_count}
-        </span>
+          <span className="text-xs text-muted-foreground flex items-center gap-1">
+            <MessageSquare className="w-3 h-3" />
+            {post.comment_count}
+          </span>
 
-        <span className="text-xs text-muted-foreground ml-auto">
-          by {post.author_name}
-        </span>
+          <span className="text-xs text-muted-foreground ml-auto">
+            by {post.author_name}
+          </span>
+        </div>
       </div>
     </article>
   );
