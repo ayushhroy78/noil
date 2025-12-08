@@ -15,6 +15,7 @@ import discoverMainImg from "@/assets/discover-main.jpg";
 import logoImg from "@/assets/logo.jpg";
 import Autoplay from "embla-carousel-autoplay";
 import LocationEditDialog from "@/components/LocationEditDialog";
+import { MealReminder } from "@/components/tracking/MealReminder";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -229,6 +230,9 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="px-4 py-6 space-y-6 max-w-md mx-auto pb-8">
+        {/* Meal Reminders */}
+        {isLoggedIn && <MealReminder />}
+
         {/* Offer Carousel */}
         <div className="relative">
           <Carousel opts={{
