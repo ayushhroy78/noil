@@ -22,6 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { BottomNav } from "@/components/BottomNav";
 
 interface OilGoal {
   id: string;
@@ -714,6 +715,8 @@ const OilCalculator = () => {
           </>
         )}
       </main>
+
+      <BottomNav />
     </div>
   );
 };
