@@ -16,6 +16,7 @@ import Profile from "./pages/Profile";
 import RestaurantApply from "./pages/RestaurantApply";
 import RestaurantDashboard from "./pages/RestaurantDashboard";
 import Restaurants from "./pages/Restaurants";
+import CertifiedRestaurants from "./pages/CertifiedRestaurants";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import OilCalculator from "./pages/OilCalculator";
@@ -53,6 +54,7 @@ const App = () => {
               <Route path="/restaurant-apply" element={<RestaurantApply />} />
               <Route path="/restaurant-dashboard" element={<RestaurantDashboard />} />
               <Route path="/restaurants" element={<Restaurants />} />
+              <Route path="/certified-restaurants" element={<CertifiedRestaurants />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/oil-calculator" element={<OilCalculator />} />
               <Route path="/dashboard" element={<Dashboard />} />
