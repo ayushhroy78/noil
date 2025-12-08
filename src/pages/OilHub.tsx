@@ -16,7 +16,7 @@ const OilHub = () => {
   const [userId, setUserId] = useState<string | undefined>();
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const { products, loading, getRecommendedProducts, getOilProducts, getIoTProducts } = useProducts();
-  const { addToCart } = useCart(userId);
+  const cart = useCart(userId);
 
   useEffect(() => {
     const getUser = async () => {
@@ -48,7 +48,7 @@ const OilHub = () => {
             </button>
             <h1 className="text-xl font-bold text-foreground">OilHub</h1>
           </div>
-          <CartSheet userId={userId} />
+          <CartSheet userId={userId} cart={cart} />
         </div>
       </header>
 
@@ -89,7 +89,7 @@ const OilHub = () => {
                     <ProductCard
                       key={product.id}
                       product={product}
-                      onAddToCart={addToCart}
+                      onAddToCart={cart.addToCart}
                     />
                   ))}
                 </div>
@@ -111,7 +111,7 @@ const OilHub = () => {
                     <ProductCard
                       key={product.id}
                       product={product}
-                      onAddToCart={addToCart}
+                      onAddToCart={cart.addToCart}
                     />
                   ))}
                 </div>
@@ -135,7 +135,7 @@ const OilHub = () => {
                     <ProductCard
                       key={product.id}
                       product={product}
-                      onAddToCart={addToCart}
+                      onAddToCart={cart.addToCart}
                     />
                   ))}
                 </div>
