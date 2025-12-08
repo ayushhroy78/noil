@@ -407,6 +407,60 @@ export type Database = {
         }
         Relationships: []
       }
+      consumption_audits: {
+        Row: {
+          audit_date: string
+          consumption_trend: string
+          created_at: string
+          daily_consumption: number | null
+          health_indicators: Json
+          health_score: number | null
+          id: string
+          insights: Json
+          monthly_consumption: number | null
+          overall_risk: string
+          recommendations: Json
+          risk_score: number
+          user_id: string
+          weekly_analysis: string | null
+          weekly_consumption: number | null
+        }
+        Insert: {
+          audit_date?: string
+          consumption_trend: string
+          created_at?: string
+          daily_consumption?: number | null
+          health_indicators?: Json
+          health_score?: number | null
+          id?: string
+          insights?: Json
+          monthly_consumption?: number | null
+          overall_risk: string
+          recommendations?: Json
+          risk_score: number
+          user_id: string
+          weekly_analysis?: string | null
+          weekly_consumption?: number | null
+        }
+        Update: {
+          audit_date?: string
+          consumption_trend?: string
+          created_at?: string
+          daily_consumption?: number | null
+          health_indicators?: Json
+          health_score?: number | null
+          id?: string
+          insights?: Json
+          monthly_consumption?: number | null
+          overall_risk?: string
+          recommendations?: Json
+          risk_score?: number
+          user_id?: string
+          weekly_analysis?: string | null
+          weekly_consumption?: number | null
+        }
+        Relationships: []
+      }
       daily_logs: {
         Row: {
           amount_ml: number
