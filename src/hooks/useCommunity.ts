@@ -12,6 +12,7 @@ export interface CommunityPost {
   body: string;
   post_type: PostType;
   tags: string[];
+  image_url?: string | null;
   created_at: string;
   updated_at: string;
   is_deleted: boolean;
@@ -37,6 +38,7 @@ export interface CreatePostData {
   body: string;
   post_type: PostType;
   tags?: string[];
+  image_url?: string;
 }
 
 export function useCommunityPosts(
@@ -315,7 +317,8 @@ export function useCommunityActions() {
           title: data.title,
           body: data.body,
           post_type: data.post_type,
-          tags: data.tags || []
+          tags: data.tags || [],
+          image_url: data.image_url || null
         })
         .select('id')
         .single();

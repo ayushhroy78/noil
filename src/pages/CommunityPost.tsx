@@ -175,46 +175,59 @@ const CommunityPost = () => {
 
       <main className="max-w-2xl mx-auto px-4 py-4 space-y-6">
         {/* Post content */}
-        <article className="bg-card rounded-xl p-4 space-y-4">
-          <Badge className={postTypeBadgeStyles[post.post_type]}>
-            {postTypeLabels[post.post_type]}
-          </Badge>
-          
-          <h1 className="text-xl font-bold text-foreground">{post.title}</h1>
-          
-          <p className="text-muted-foreground text-sm">
-            by {post.author_name} • {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
-          </p>
-          
-          <div className="prose prose-sm max-w-none text-foreground whitespace-pre-wrap">
-            {post.body}
-          </div>
-
-          {post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {post.tags.map((tag, i) => (
-                <Badge key={i} variant="outline" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
+        <article className="bg-card rounded-xl overflow-hidden space-y-4">
+          {/* Post Image */}
+          {post.image_url && (
+            <div className="relative aspect-video bg-muted">
+              <img 
+                src={post.image_url} 
+                alt={post.title}
+                className="w-full h-full object-cover"
+              />
             </div>
           )}
+          
+          <div className="p-4 space-y-4">
+            <Badge className={postTypeBadgeStyles[post.post_type]}>
+              {postTypeLabels[post.post_type]}
+            </Badge>
+            
+            <h1 className="text-xl font-bold text-foreground">{post.title}</h1>
+            
+            <p className="text-muted-foreground text-sm">
+              by {post.author_name} • {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
+            </p>
+            
+            <div className="prose prose-sm max-w-none text-foreground whitespace-pre-wrap">
+              {post.body}
+            </div>
 
-          {/* Vote button */}
-          <div className="flex items-center gap-4 pt-2 border-t border-border">
-            <Button
-              variant={post.user_voted ? "default" : "outline"}
-              size="sm"
-              onClick={handleVote}
-              className="gap-1"
-            >
-              <ArrowUp className="w-4 h-4" />
-              {post.vote_count}
-            </Button>
-            <span className="text-sm text-muted-foreground flex items-center gap-1">
-              <MessageSquare className="w-4 h-4" />
-              {post.comment_count} comments
-            </span>
+            {post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {post.tags.map((tag, i) => (
+                  <Badge key={i} variant="outline" className="text-xs">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
+
+            {/* Vote button */}
+            <div className="flex items-center gap-4 pt-2 border-t border-border">
+              <Button
+                variant={post.user_voted ? "default" : "outline"}
+                size="sm"
+                onClick={handleVote}
+                className="gap-1"
+              >
+                <ArrowUp className="w-4 h-4" />
+                {post.vote_count}
+              </Button>
+              <span className="text-sm text-muted-foreground flex items-center gap-1">
+                <MessageSquare className="w-4 h-4" />
+                {post.comment_count} comments
+              </span>
+            </div>
           </div>
         </article>
 
