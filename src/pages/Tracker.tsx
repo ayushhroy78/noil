@@ -12,6 +12,7 @@ import { BarcodeScanner } from "@/components/tracking/BarcodeScanner";
 import { ProgressCharts } from "@/components/tracking/ProgressCharts";
 import { DailyGoalTracker } from "@/components/tracking/DailyGoalTracker";
 import { IoTDeviceManager } from "@/components/tracking/IoTDeviceManager";
+import { OilTypeChart } from "@/components/tracking/OilTypeChart";
 import { useTracking } from "@/hooks/useTracking";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -68,6 +69,9 @@ const Tracker = () => {
 
         {/* Insights */}
         <InsightsSection insights={data.insights} />
+
+        {/* Oil Type Breakdown */}
+        {userId && <OilTypeChart userId={userId} />}
 
         {/* Progress Charts */}
         {userId && <ProgressCharts userId={userId} />}
