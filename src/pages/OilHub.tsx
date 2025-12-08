@@ -1,21 +1,18 @@
-import { ArrowLeft, Package } from "lucide-react";
+import { ArrowLeft, Cpu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { BottomNav } from "@/components/BottomNav";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/hooks/useCart";
 import { ProductCard } from "@/components/oilhub/ProductCard";
 import { CartSheet } from "@/components/oilhub/CartSheet";
-import { RegionSelector } from "@/components/oilhub/RegionSelector";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const OilHub = () => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState<string | undefined>();
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
-  const { products, loading, getRecommendedProducts, getOilProducts, getIoTProducts } = useProducts();
+  const { loading, getIoTProducts } = useProducts();
   const cart = useCart(userId);
 
   useEffect(() => {
@@ -30,8 +27,6 @@ const OilHub = () => {
     getUser();
   }, [navigate]);
 
-  const recommendedProducts = getRecommendedProducts(selectedRegion);
-  const allOils = getOilProducts();
   const iotProducts = getIoTProducts();
 
   return (
@@ -54,95 +49,37 @@ const OilHub = () => {
 
       {/* Main Content */}
       <main className="px-4 py-6 space-y-6 max-w-4xl mx-auto">
-        <div className="text-center mb-4">
-          <h2 className="text-2xl font-bold text-foreground mb-1">Healthy Oils & IoT Devices</h2>
-          <p className="text-muted-foreground">Certified quality oils for your wellness journey</p>
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-foreground mb-1">Smart Oil Tracking Devices</h2>
+          <p className="text-muted-foreground">Automatically track your oil usage with our IoT devices</p>
         </div>
 
-        <RegionSelector userId={userId} onRegionChange={setSelectedRegion} />
-
-        <Tabs defaultValue="recommended" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger value="recommended">Recommended</TabsTrigger>
-            <TabsTrigger value="all">All Oils</TabsTrigger>
-            <TabsTrigger value="iot">IoT Devices</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="recommended" className="space-y-4">
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <Package className="w-5 h-5 text-primary" />
-                Recommended for You
-              </h3>
-              {loading ? (
-                <div className="grid gap-4">
-                  <Skeleton className="h-48 w-full" />
-                  <Skeleton className="h-48 w-full" />
-                </div>
-              ) : recommendedProducts.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
-                  <p>Select your region to see personalized recommendations</p>
-                </div>
-              ) : (
-                <div className="grid gap-4 md:grid-cols-2">
-                  {recommendedProducts.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onAddToCart={cart.addToCart}
-                    />
-                  ))}
-                </div>
-              )}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Cpu className="w-5 h-5 text-primary" />
+            IoT Devices
+          </h3>
+          {loading ? (
+            <div className="grid gap-4">
+              <Skeleton className="h-48 w-full" />
+              <Skeleton className="h-48 w-full" />
             </div>
-          </TabsContent>
-
-          <TabsContent value="all" className="space-y-4">
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-foreground">All Healthy Oils</h3>
-              {loading ? (
-                <div className="grid gap-4">
-                  <Skeleton className="h-48 w-full" />
-                  <Skeleton className="h-48 w-full" />
-                </div>
-              ) : (
-                <div className="grid gap-4 md:grid-cols-2">
-                  {allOils.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onAddToCart={cart.addToCart}
-                    />
-                  ))}
-                </div>
-              )}
+          ) : iotProducts.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <p>No IoT devices available at the moment</p>
             </div>
-          </TabsContent>
-
-          <TabsContent value="iot" className="space-y-4">
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-foreground">Smart Oil Tracking Devices</h3>
-              <p className="text-sm text-muted-foreground">
-                Automatically track your oil usage with our IoT devices
-              </p>
-              {loading ? (
-                <div className="grid gap-4">
-                  <Skeleton className="h-48 w-full" />
-                </div>
-              ) : (
-                <div className="grid gap-4 md:grid-cols-2">
-                  {iotProducts.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onAddToCart={cart.addToCart}
-                    />
-                  ))}
-                </div>
-              )}
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2">
+              {iotProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={cart.addToCart}
+                />
+              ))}
             </div>
-          </TabsContent>
-        </Tabs>
+          )}
+        </div>
       </main>
 
       {/* Bottom Navigation */}
