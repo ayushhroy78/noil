@@ -23,6 +23,7 @@ import OilCalculator from "./pages/OilCalculator";
 import Dashboard from "./pages/Dashboard";
 import CompleteProfile from "./pages/CompleteProfile";
 import ResetPassword from "./pages/ResetPassword";
+import Milestones from "./pages/Milestones";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,7 @@ const App = () => {
               <Route path="/oil-calculator" element={<OilCalculator />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/complete-profile" element={<CompleteProfile />} />
+              <Route path="/milestones" element={<Milestones />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
