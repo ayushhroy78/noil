@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, MessageSquare, TrendingUp, Clock, Filter } from "lucide-react";
+import { Plus, MessageSquare, TrendingUp, Clock, User, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BottomNav } from "@/components/BottomNav";
@@ -8,13 +8,19 @@ import { useCommunityPosts, PostType, SortOption } from "@/hooks/useCommunity";
 import CommunityPostCard from "@/components/community/CommunityPostCard";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UserDiscovery } from "@/components/community/UserDiscovery";
+import { useCommunityProfile } from "@/hooks/useCommunityProfile";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const Community = () => {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<PostType | 'all'>('all');
   const [sort, setSort] = useState<SortOption>('new');
   const [userId, setUserId] = useState<string | null>(null);
+  const [showDiscovery, setShowDiscovery] = useState(false);
   const { posts, loading } = useCommunityPosts(filter, sort);
+  const { profile } = useCommunityProfile(userId || undefined);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -46,14 +52,40 @@ const Community = () => {
               <MessageSquare className="w-6 h-6 text-primary" />
               <h1 className="text-xl font-bold text-foreground">Community</h1>
             </div>
-            <Button
-              size="sm"
-              onClick={() => navigate("/community/new")}
-              className="gap-1"
-            >
-              <Plus className="w-4 h-4" />
-              Post
-            </Button>
+            <div className="flex items-center gap-2">
+              <Sheet open={showDiscovery} onOpenChange={setShowDiscovery}>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Users className="w-4 h-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-full sm:w-96 p-0">
+                  <div className="p-4">
+                    <UserDiscovery />
+                  </div>
+                </SheetContent>
+              </Sheet>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate(profile ? `/community/user/${userId}` : '/community/profile')}
+              >
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src={profile?.avatar_url || undefined} />
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                    <User className="w-4 h-4" />
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => navigate("/community/new")}
+                className="gap-1"
+              >
+                <Plus className="w-4 h-4" />
+                Post
+              </Button>
+            </div>
           </div>
 
           {/* Filter tabs */}

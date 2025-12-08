@@ -27,6 +27,7 @@ import Milestones from "./pages/Milestones";
 import Community from "./pages/Community";
 import CommunityPost from "./pages/CommunityPost";
 import CreateCommunityPost from "./pages/CreateCommunityPost";
+import CommunityUserProfile from "./pages/CommunityUserProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -66,6 +67,8 @@ const App = () => {
               <Route path="/milestones" element={<Milestones />} />
               <Route path="/community" element={<Community />} />
               <Route path="/community/new" element={<CreateCommunityPost />} />
+              <Route path="/community/profile" element={<CommunityUserProfile />} />
+              <Route path="/community/user/:userId" element={<CommunityUserProfile />} />
               <Route path="/community/:postId" element={<CommunityPost />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
