@@ -19,6 +19,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { BlockchainBadge } from "@/components/BlockchainBadge";
 import { BlockchainStats } from "@/components/admin/BlockchainStats";
+import { CommunityModeration } from "@/components/community/CommunityModeration";
 import {
   ArrowLeft,
   Shield,
@@ -355,6 +356,11 @@ const Admin = () => {
 
         {/* Blockchain Certification Stats */}
         <BlockchainStats applications={applications} />
+
+        {/* Community Moderation */}
+        <div className="mb-6">
+          <CommunityModeration />
+        </div>
 
         <Tabs defaultValue="pending" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
