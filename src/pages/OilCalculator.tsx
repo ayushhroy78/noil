@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Calculator, Target, DollarSign, Heart, Leaf, Lightbulb, Calendar, TreePine, Info, Plus, Trash2, Check, Edit2 } from "lucide-react";
+import { ArrowLeft, Calculator, Target, DollarSign, Heart, Leaf, Lightbulb, Calendar, TreePine, Info, Plus, Trash2, Check, Edit2, Scale, Wallet, Droplets } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { BottomNav } from "@/components/BottomNav";
+import { Badge } from "@/components/ui/badge";
 
 interface OilGoal {
   id: string;
@@ -34,6 +35,17 @@ interface OilGoal {
   is_active: boolean;
   created_at: string;
 }
+
+const oilTypes = [
+  { value: "mustard", label: "Mustard Oil", price: 180, healthScore: 85, emoji: "🌿", benefits: ["Heart-healthy", "High Omega-3", "Anti-inflammatory"] },
+  { value: "groundnut", label: "Groundnut Oil", price: 200, healthScore: 80, emoji: "🥜", benefits: ["High smoke point", "Vitamin E rich", "Good for frying"] },
+  { value: "coconut", label: "Coconut Oil", price: 220, healthScore: 75, emoji: "🥥", benefits: ["MCT content", "Antimicrobial", "Good for skin"] },
+  { value: "olive", label: "Olive Oil", price: 450, healthScore: 95, emoji: "🫒", benefits: ["Best for heart", "Antioxidants", "Mediterranean diet"] },
+  { value: "sunflower", label: "Sunflower Oil", price: 140, healthScore: 65, emoji: "🌻", benefits: ["Affordable", "Light taste", "Vitamin E"] },
+  { value: "rice_bran", label: "Rice Bran Oil", price: 160, healthScore: 82, emoji: "🌾", benefits: ["Balanced fats", "High smoke point", "Heart-healthy"] },
+  { value: "sesame", label: "Sesame Oil", price: 280, healthScore: 88, emoji: "🫘", benefits: ["Rich flavor", "Antioxidants", "Good for Asian cuisine"] },
+  { value: "refined", label: "Refined Oil", price: 120, healthScore: 40, emoji: "🛢️", benefits: ["Cheap", "Neutral taste", "High smoke point"] },
+];
 
 const OilCalculator = () => {
   const navigate = useNavigate();
@@ -47,10 +59,12 @@ const OilCalculator = () => {
   const [currentAnnualOil, setCurrentAnnualOil] = useState("45");
   const [targetReduction, setTargetReduction] = useState("10");
   const [oilPrice, setOilPrice] = useState("150");
+  const [selectedOilType, setSelectedOilType] = useState("mustard");
   const [calculated, setCalculated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [compareOils, setCompareOils] = useState<string[]>(["mustard", "olive"]);
 
   // Fetch user and saved goals
   useEffect(() => {
@@ -98,14 +112,15 @@ const OilCalculator = () => {
   const reductionPercent = parseFloat(targetReduction) || 0;
   const targetDailyMl = Math.round(currentDailyMl * (1 - reductionPercent / 100));
   const annualSavingsKg = (currentAnnualKg * reductionPercent) / 100;
-  const pricePerLiter = parseFloat(oilPrice) || 150;
+  const selectedOil = oilTypes.find(o => o.value === selectedOilType) || oilTypes[0];
+  const pricePerLiter = selectedOil.price;
   const annualSavingsRupees = Math.round(annualSavingsKg * pricePerLiter);
   const monthlySavingsRupees = Math.round(annualSavingsRupees / 12);
   
   // Health calculations
   const caloriesPerMl = 9;
   const calorieReduction = Math.round(annualSavingsKg * 1000 * caloriesPerMl);
-  const healthScore = Math.min(100, Math.max(0, 100 - Math.round(currentDailyMl / 3)));
+  const healthScore = Math.min(100, Math.max(0, Math.round(selectedOil.healthScore - (currentDailyMl / 5))));
   
   // Environmental impact
   const carbonFootprintKg = Math.round(annualSavingsKg * 2.7 * 10) / 10;
@@ -117,6 +132,10 @@ const OilCalculator = () => {
     saved: Math.round((annualSavingsKg / 12) * (i + 1) * 10) / 10,
     progress: ((i + 1) / 6) * 100,
   }));
+
+  // Monthly budget calculation
+  const monthlyOilNeededLiters = (currentAnnualKg * (1 - reductionPercent / 100)) / 12;
+  const monthlyBudget = Math.round(monthlyOilNeededLiters * pricePerLiter);
 
   const getHealthScoreColor = (score: number) => {
     if (score >= 80) return "text-success";
@@ -135,6 +154,7 @@ const OilCalculator = () => {
     "Use spray bottles for even oil distribution - reduces usage by 30%.",
     "Try non-stick cookware to minimize oil requirements.",
     currentDailyMl > 25 && "Consider steaming vegetables instead of sautéing.",
+    selectedOil.healthScore < 70 && `Consider switching to ${oilTypes.find(o => o.healthScore > 80)?.label} for better health benefits.`,
   ].filter(Boolean);
 
   const handleCalculate = () => {
@@ -443,15 +463,32 @@ const OilCalculator = () => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Oil Price (₹/L)</Label>
-                <Input
-                  type="number"
-                  value={oilPrice}
-                  onChange={(e) => setOilPrice(e.target.value)}
-                  className="bg-secondary border-0"
-                  placeholder="150"
-                />
+                <Label className="text-sm font-medium">Primary Oil Type</Label>
+                <Select value={selectedOilType} onValueChange={setSelectedOilType}>
+                  <SelectTrigger className="bg-secondary border-0">
+                    <SelectValue placeholder="Select oil" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border-border">
+                    {oilTypes.map((oil) => (
+                      <SelectItem key={oil.value} value={oil.value}>
+                        {oil.emoji} {oil.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
+            </div>
+
+            {/* Selected Oil Info */}
+            <div className="bg-secondary/50 rounded-xl p-3 flex items-center gap-3">
+              <span className="text-2xl">{selectedOil.emoji}</span>
+              <div className="flex-1">
+                <p className="font-medium text-foreground">{selectedOil.label}</p>
+                <p className="text-xs text-muted-foreground">₹{selectedOil.price}/L • Health Score: {selectedOil.healthScore}/100</p>
+              </div>
+              <Badge variant={selectedOil.healthScore >= 80 ? "default" : selectedOil.healthScore >= 60 ? "secondary" : "destructive"}>
+                {selectedOil.healthScore >= 80 ? "Excellent" : selectedOil.healthScore >= 60 ? "Good" : "Poor"}
+              </Badge>
             </div>
 
             <Button 
@@ -623,11 +660,138 @@ const OilCalculator = () => {
               </Card>
             </div>
 
+            {/* Oil Comparison Tool */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Scale className="w-5 h-5 text-primary" />
+                <h2 className="text-lg font-semibold text-foreground">Oil Comparison Tool</h2>
+              </div>
+              <Card className="border-0 shadow-soft">
+                <CardContent className="p-4 space-y-4">
+                  <p className="text-sm text-muted-foreground">Compare health benefits and costs of different oils</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Select value={compareOils[0]} onValueChange={(v) => setCompareOils([v, compareOils[1]])}>
+                      <SelectTrigger className="bg-secondary border-0">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-card border-border">
+                        {oilTypes.map((oil) => (
+                          <SelectItem key={oil.value} value={oil.value}>
+                            {oil.emoji} {oil.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select value={compareOils[1]} onValueChange={(v) => setCompareOils([compareOils[0], v])}>
+                      <SelectTrigger className="bg-secondary border-0">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-card border-border">
+                        {oilTypes.map((oil) => (
+                          <SelectItem key={oil.value} value={oil.value}>
+                            {oil.emoji} {oil.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {compareOils.map((oilValue) => {
+                      const oil = oilTypes.find(o => o.value === oilValue)!;
+                      return (
+                        <div key={oilValue} className="bg-secondary/50 rounded-xl p-3 space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl">{oil.emoji}</span>
+                            <span className="font-medium text-sm text-foreground">{oil.label}</span>
+                          </div>
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-xs">
+                              <span className="text-muted-foreground">Health Score</span>
+                              <span className={oil.healthScore >= 80 ? "text-success font-medium" : oil.healthScore >= 60 ? "text-warning font-medium" : "text-destructive font-medium"}>
+                                {oil.healthScore}/100
+                              </span>
+                            </div>
+                            <Progress value={oil.healthScore} className="h-1.5" />
+                          </div>
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">Price</span>
+                            <span className="text-foreground font-medium">₹{oil.price}/L</span>
+                          </div>
+                          <div className="space-y-1">
+                            {oil.benefits.map((benefit, i) => (
+                              <div key={i} className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <span className="text-success">✓</span>
+                                {benefit}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Smart Oil Budget Planner */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Wallet className="w-5 h-5 text-warning" />
+                <h2 className="text-lg font-semibold text-foreground">Smart Oil Budget Planner</h2>
+              </div>
+              <Card className="bg-gradient-to-br from-warning/10 to-warning/5 border-0">
+                <CardContent className="p-4 space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-card/50 rounded-xl p-3">
+                      <p className="text-xs text-muted-foreground">Monthly Oil Needed</p>
+                      <p className="text-xl font-bold text-foreground">{monthlyOilNeededLiters.toFixed(1)} L</p>
+                      <p className="text-xs text-muted-foreground">After {targetReduction}% reduction</p>
+                    </div>
+                    <div className="bg-card/50 rounded-xl p-3">
+                      <p className="text-xs text-muted-foreground">Monthly Budget</p>
+                      <p className="text-xl font-bold text-warning">₹{monthlyBudget}</p>
+                      <p className="text-xs text-muted-foreground">For {selectedOil.label}</p>
+                    </div>
+                  </div>
+                  <div className="bg-card/50 rounded-xl p-3 space-y-2">
+                    <p className="text-sm font-medium text-foreground">Budget Comparison by Oil Type</p>
+                    <div className="space-y-2">
+                      {oilTypes.slice(0, 5).map((oil) => {
+                        const budget = Math.round(monthlyOilNeededLiters * oil.price);
+                        const isSelected = oil.value === selectedOilType;
+                        return (
+                          <div key={oil.value} className={`flex items-center justify-between p-2 rounded-lg ${isSelected ? 'bg-primary/10' : ''}`}>
+                            <div className="flex items-center gap-2">
+                              <span>{oil.emoji}</span>
+                              <span className={`text-sm ${isSelected ? 'font-medium text-primary' : 'text-muted-foreground'}`}>{oil.label}</span>
+                            </div>
+                            <span className={`text-sm font-medium ${isSelected ? 'text-primary' : 'text-foreground'}`}>₹{budget}/mo</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 bg-success/10 rounded-lg p-3">
+                    <Droplets className="w-4 h-4 text-success" />
+                    <p className="text-sm text-success">
+                      Switching to {oilTypes.find(o => o.healthScore === Math.max(...oilTypes.map(t => t.healthScore)))?.label} could improve your health score by up to {Math.max(...oilTypes.map(t => t.healthScore)) - selectedOil.healthScore} points!
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             {/* Key Health Benefits */}
             <Card className="border-0 shadow-soft">
               <CardContent className="p-4">
-                <h3 className="font-semibold text-foreground mb-3">Key Health Benefits:</h3>
+                <h3 className="font-semibold text-foreground mb-3">Benefits of {selectedOil.label}:</h3>
                 <ul className="space-y-2">
+                  {selectedOil.benefits.map((benefit, index) => (
+                    <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <span className="text-primary mt-1">•</span>
+                      {benefit}
+                    </li>
+                  ))}
                   <li className="flex items-start gap-2 text-sm text-muted-foreground">
                     <span className="text-primary mt-1">•</span>
                     Reduced risk of heart disease and obesity
@@ -635,14 +799,6 @@ const OilCalculator = () => {
                   <li className="flex items-start gap-2 text-sm text-muted-foreground">
                     <span className="text-primary mt-1">•</span>
                     Better cholesterol levels and blood pressure
-                  </li>
-                  <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <span className="text-primary mt-1">•</span>
-                    Improved overall cardiovascular health
-                  </li>
-                  <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <span className="text-primary mt-1">•</span>
-                    More nutritious, balanced meals
                   </li>
                 </ul>
               </CardContent>
