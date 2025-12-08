@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, MessageSquare, TrendingUp, Clock, User, Users, Mail } from "lucide-react";
+import { Plus, MessageSquare, TrendingUp, Clock, User, Users, Mail, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BottomNav } from "@/components/BottomNav";
@@ -49,6 +49,12 @@ const Community = () => {
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
+              <button 
+                onClick={() => navigate(-1)}
+                className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5 text-foreground" />
+              </button>
               <MessageSquare className="w-6 h-6 text-primary" />
               <h1 className="text-xl font-bold text-foreground">Community</h1>
             </div>
