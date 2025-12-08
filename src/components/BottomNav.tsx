@@ -1,4 +1,4 @@
-import { Activity, Book, Home, ShoppingBag, MessageSquare } from "lucide-react";
+import { Activity, Book, Home, ShoppingBag, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -51,7 +51,7 @@ export const BottomNav = () => {
     { icon: Book, label: "Recipes", path: "/fit-meal" },
     { icon: Home, label: "Home", path: "/" },
     { icon: ShoppingBag, label: "Store", path: "/oilhub" },
-    { icon: MessageSquare, label: "Community", path: "/community" },
+    { icon: User, label: "Profile", path: "/profile" },
   ];
 
   return (
