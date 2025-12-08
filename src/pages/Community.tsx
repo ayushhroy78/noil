@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, MessageSquare, TrendingUp, Clock, User, Users } from "lucide-react";
+import { Plus, MessageSquare, TrendingUp, Clock, User, Users, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BottomNav } from "@/components/BottomNav";
@@ -53,6 +53,13 @@ const Community = () => {
               <h1 className="text-xl font-bold text-foreground">Community</h1>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => navigate('/messages')}
+              >
+                <Mail className="w-4 h-4" />
+              </Button>
               <Sheet open={showDiscovery} onOpenChange={setShowDiscovery}>
                 <SheetTrigger asChild>
                   <Button variant="outline" size="icon">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, MapPin, Calendar, Settings, Loader2 } from 'lucide-react';
+import { ArrowLeft, User, Calendar, Settings, Loader2, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
@@ -171,15 +171,24 @@ const CommunityUserProfile = () => {
           </Avatar>
           
           {!isOwnProfile && (
-            <Button
-              variant={isFollowing ? "outline" : "default"}
-              disabled={actionLoading}
-              onClick={handleFollowToggle}
-            >
-              {actionLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : isFollowing ? 'Following' : 'Follow'}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => navigate(`/messages?to=${targetUserId}`)}
+              >
+                <MessageCircle className="w-4 h-4" />
+              </Button>
+              <Button
+                variant={isFollowing ? "outline" : "default"}
+                disabled={actionLoading}
+                onClick={handleFollowToggle}
+              >
+                {actionLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : isFollowing ? 'Following' : 'Follow'}
+              </Button>
+            </div>
           )}
         </div>
 

@@ -28,6 +28,7 @@ import Community from "./pages/Community";
 import CommunityPost from "./pages/CommunityPost";
 import CreateCommunityPost from "./pages/CreateCommunityPost";
 import CommunityUserProfile from "./pages/CommunityUserProfile";
+import Messages from "./pages/Messages";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -70,6 +71,7 @@ const App = () => {
               <Route path="/community/profile" element={<CommunityUserProfile />} />
               <Route path="/community/user/:userId" element={<CommunityUserProfile />} />
               <Route path="/community/:postId" element={<CommunityPost />} />
+              <Route path="/messages" element={<Messages />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
