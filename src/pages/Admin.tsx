@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { BlockchainBadge } from "@/components/BlockchainBadge";
+import { BlockchainStats } from "@/components/admin/BlockchainStats";
 import {
   ArrowLeft,
   Shield,
@@ -167,6 +168,7 @@ const Admin = () => {
       });
 
       // Trigger blockchain certification (non-blocking)
+      let certificationData = null;
       try {
         const { data: certResult, error: certError } = await supabase.functions.invoke('certify-restaurant', {
           body: {
@@ -186,6 +188,7 @@ const Admin = () => {
             variant: "default",
           });
         } else if (certResult?.success) {
+          certificationData = certResult.certification;
           toast({
             title: "Blockchain Verified",
             description: `${application.restaurant_name} is now blockchain certified!`,
@@ -194,6 +197,26 @@ const Admin = () => {
       } catch (certError) {
         console.error("Blockchain certification failed:", certError);
         // Don't block approval if certification fails
+      }
+
+      // Send approval email notification (non-blocking)
+      try {
+        await supabase.functions.invoke('send-approval-email', {
+          body: {
+            restaurantName: application.restaurant_name,
+            ownerName: application.owner_name,
+            email: application.email,
+            approvedAt: approvedAt,
+            blockchainCertified: !!certificationData,
+            blockchainHash: certificationData?.hash,
+            blockchainTxHash: certificationData?.txHash,
+            blockchainNetwork: certificationData?.network,
+          },
+        });
+        console.log("Approval email sent");
+      } catch (emailError) {
+        console.error("Email notification failed:", emailError);
+        // Don't block approval if email fails
       }
 
       setSelectedApplication(null);
@@ -308,6 +331,7 @@ const Admin = () => {
       </header>
 
       <main className="px-4 py-6 max-w-4xl mx-auto">
+        {/* Application Stats */}
         <div className="grid grid-cols-3 gap-4 mb-6">
           <Card>
             <CardContent className="pt-4 pb-4 text-center">
@@ -328,6 +352,9 @@ const Admin = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Blockchain Certification Stats */}
+        <BlockchainStats applications={applications} />
 
         <Tabs defaultValue="pending" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
