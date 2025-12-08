@@ -79,17 +79,15 @@ export const WhatsAppCheckout = ({
     
     const message = formatOrderMessage();
     
-    // Direct redirect to WhatsApp using wa.me
+    // Use window.open instead of location.href to keep the app running
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+    window.open(whatsappUrl, '_blank');
     
-    // Redirect to WhatsApp
-    window.location.href = whatsappUrl;
-    
-    // Show confirmation after redirect initiated
+    // Call the callback after opening WhatsApp
     setTimeout(() => {
       setIsSubmitting(false);
       onOrderPlaced(customerName);
-    }, 300);
+    }, 500);
   };
 
   return (

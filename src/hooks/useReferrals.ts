@@ -81,6 +81,8 @@ export const useReferrals = () => {
           referral_code: referralCode.toUpperCase(),
           status: "completed",
           completed_at: new Date().toISOString(),
+          referrer_rewarded: true,
+          referred_rewarded: true,
         });
 
       if (insertError) throw insertError;
@@ -90,6 +92,37 @@ export const useReferrals = () => {
         .from("user_profiles")
         .update({ referred_by: referrer.user_id })
         .eq("user_id", user.id);
+
+      // Award points to the referrer as well
+      const referrerCurrentPoints = await supabase
+        .from("user_points")
+        .select("total_points, points_this_week, points_this_month, lifetime_points_earned")
+        .eq("user_id", referrer.user_id)
+        .maybeSingle();
+      
+      if (referrerCurrentPoints.data) {
+        await supabase
+          .from("user_points")
+          .upsert({
+            user_id: referrer.user_id,
+            total_points: (referrerCurrentPoints.data.total_points || 0) + REFERRAL_REWARD_POINTS,
+            points_this_week: (referrerCurrentPoints.data.points_this_week || 0) + REFERRAL_REWARD_POINTS,
+            points_this_month: (referrerCurrentPoints.data.points_this_month || 0) + REFERRAL_REWARD_POINTS,
+            lifetime_points_earned: (referrerCurrentPoints.data.lifetime_points_earned || 0) + REFERRAL_REWARD_POINTS,
+          }, { onConflict: 'user_id' });
+
+        // Log the transaction for referrer
+        await supabase
+          .from("point_transactions")
+          .insert({
+            user_id: referrer.user_id,
+            points: REFERRAL_REWARD_POINTS,
+            transaction_type: 'earned',
+            source: 'referral',
+            description: 'Earned points for successful referral',
+            balance_after: (referrerCurrentPoints.data.total_points || 0) + REFERRAL_REWARD_POINTS,
+          });
+      }
 
       return { referrerId: referrer.user_id };
     },
