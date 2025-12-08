@@ -1125,6 +1125,11 @@ export type Database = {
           address: string
           admin_notes: string | null
           approved_at: string | null
+          blockchain_certified: boolean | null
+          blockchain_certified_at: string | null
+          blockchain_hash: string | null
+          blockchain_network: string | null
+          blockchain_tx_hash: string | null
           certifications: string[] | null
           city: string
           cooking_methods: string[] | null
@@ -1152,6 +1157,11 @@ export type Database = {
           address: string
           admin_notes?: string | null
           approved_at?: string | null
+          blockchain_certified?: boolean | null
+          blockchain_certified_at?: string | null
+          blockchain_hash?: string | null
+          blockchain_network?: string | null
+          blockchain_tx_hash?: string | null
           certifications?: string[] | null
           city: string
           cooking_methods?: string[] | null
@@ -1179,6 +1189,11 @@ export type Database = {
           address?: string
           admin_notes?: string | null
           approved_at?: string | null
+          blockchain_certified?: boolean | null
+          blockchain_certified_at?: string | null
+          blockchain_hash?: string | null
+          blockchain_network?: string | null
+          blockchain_tx_hash?: string | null
           certifications?: string[] | null
           city?: string
           cooking_methods?: string[] | null

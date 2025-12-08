@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { BlockchainBadge } from "@/components/BlockchainBadge";
 import {
   ArrowLeft,
   Store,
@@ -30,6 +31,7 @@ import {
 
 interface Restaurant {
   id: string;
+  application_id?: string;
   name: string;
   description: string | null;
   address: string;
@@ -41,6 +43,11 @@ interface Restaurant {
   oil_types: string[];
   cooking_methods: string[];
   is_featured: boolean;
+  blockchain_certified?: boolean;
+  blockchain_tx_hash?: string | null;
+  blockchain_network?: string | null;
+  blockchain_hash?: string | null;
+  blockchain_certified_at?: string | null;
 }
 
 const Restaurants = () => {
@@ -63,17 +70,41 @@ const Restaurants = () => {
   const fetchRestaurants = async () => {
     setLoading(true);
     try {
-      const { data, error } = await (supabase as any)
+      // Fetch restaurants with their application data for blockchain info
+      const { data: restaurantsData, error } = await (supabase as any)
         .from("restaurants")
-        .select("*")
+        .select("*, restaurant_applications!application_id(blockchain_certified, blockchain_tx_hash, blockchain_network, blockchain_hash, blockchain_certified_at)")
         .eq("is_active", true)
         .order("is_featured", { ascending: false });
 
       if (error) throw error;
-      setRestaurants(data || []);
-      setFilteredRestaurants(data || []);
+      
+      // Flatten the data to include blockchain fields
+      const processedData = (restaurantsData || []).map((r: any) => ({
+        ...r,
+        blockchain_certified: r.restaurant_applications?.blockchain_certified || false,
+        blockchain_tx_hash: r.restaurant_applications?.blockchain_tx_hash,
+        blockchain_network: r.restaurant_applications?.blockchain_network,
+        blockchain_hash: r.restaurant_applications?.blockchain_hash,
+        blockchain_certified_at: r.restaurant_applications?.blockchain_certified_at,
+      }));
+      
+      setRestaurants(processedData);
+      setFilteredRestaurants(processedData);
     } catch (error) {
       console.error("Error fetching restaurants:", error);
+      // Fallback: fetch without blockchain data
+      try {
+        const { data } = await (supabase as any)
+          .from("restaurants")
+          .select("*")
+          .eq("is_active", true)
+          .order("is_featured", { ascending: false });
+        setRestaurants(data || []);
+        setFilteredRestaurants(data || []);
+      } catch (e) {
+        console.error("Fallback fetch also failed:", e);
+      }
     } finally {
       setLoading(false);
     }
@@ -195,8 +226,15 @@ const Restaurants = () => {
                       <Store className="h-6 w-6 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <h3 className="font-medium truncate">{restaurant.name}</h3>
+                        {restaurant.blockchain_certified && (
+                          <BlockchainBadge
+                            certified={true}
+                            txHash={restaurant.blockchain_tx_hash}
+                            network={restaurant.blockchain_network}
+                          />
+                        )}
                         {restaurant.is_featured && (
                           <Badge className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 shrink-0">
                             <Star className="w-3 h-3 mr-1" />
@@ -244,11 +282,32 @@ const Restaurants = () => {
 
           {selectedRestaurant && (
             <div className="space-y-4">
-              {selectedRestaurant.is_featured && (
-                <Badge className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
-                  <Star className="w-3 h-3 mr-1" />
-                  Featured Restaurant
-                </Badge>
+              <div className="flex flex-wrap gap-2">
+                {selectedRestaurant.is_featured && (
+                  <Badge className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
+                    <Star className="w-3 h-3 mr-1" />
+                    Featured Restaurant
+                  </Badge>
+                )}
+                <BlockchainBadge
+                  certified={selectedRestaurant.blockchain_certified || false}
+                  txHash={selectedRestaurant.blockchain_tx_hash}
+                  network={selectedRestaurant.blockchain_network}
+                  hash={selectedRestaurant.blockchain_hash}
+                  certifiedAt={selectedRestaurant.blockchain_certified_at}
+                />
+              </div>
+
+              {/* Detailed blockchain info for certified restaurants */}
+              {selectedRestaurant.blockchain_certified && (
+                <BlockchainBadge
+                  certified={true}
+                  txHash={selectedRestaurant.blockchain_tx_hash}
+                  network={selectedRestaurant.blockchain_network}
+                  hash={selectedRestaurant.blockchain_hash}
+                  certifiedAt={selectedRestaurant.blockchain_certified_at}
+                  showDetails={true}
+                />
               )}
 
               <div>

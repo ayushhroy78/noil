@@ -17,6 +17,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { BlockchainBadge } from "@/components/BlockchainBadge";
 import {
   ArrowLeft,
   Shield,
@@ -31,6 +32,7 @@ import {
   Droplet,
   Utensils,
   Eye,
+  Loader2,
 } from "lucide-react";
 
 interface RestaurantApplication {
@@ -50,6 +52,12 @@ interface RestaurantApplication {
   status: string;
   admin_notes: string | null;
   created_at: string;
+  approved_at?: string | null;
+  blockchain_certified?: boolean;
+  blockchain_hash?: string | null;
+  blockchain_tx_hash?: string | null;
+  blockchain_network?: string | null;
+  blockchain_certified_at?: string | null;
 }
 
 const Admin = () => {
@@ -123,13 +131,14 @@ const Admin = () => {
   const handleApprove = async (application: RestaurantApplication) => {
     setProcessing(true);
     try {
+      const approvedAt = new Date().toISOString();
+      
       const { error: updateError } = await (supabase as any)
         .from("restaurant_applications")
         .update({
           status: "approved",
           admin_notes: adminNotes || null,
-          reviewed_by: userId,
-          reviewed_at: new Date().toISOString(),
+          approved_at: approvedAt,
         })
         .eq("id", application.id);
 
@@ -154,8 +163,38 @@ const Admin = () => {
 
       toast({
         title: "Application Approved",
-        description: `${application.restaurant_name} has been approved and listed.`,
+        description: `${application.restaurant_name} has been approved. Initiating blockchain certification...`,
       });
+
+      // Trigger blockchain certification (non-blocking)
+      try {
+        const { data: certResult, error: certError } = await supabase.functions.invoke('certify-restaurant', {
+          body: {
+            restaurantId: application.id,
+            restaurantData: {
+              ...application,
+              approved_at: approvedAt,
+            },
+          },
+        });
+
+        if (certError) {
+          console.error("Blockchain certification error:", certError);
+          toast({
+            title: "Certification Notice",
+            description: "Restaurant approved but blockchain certification failed. Can be retried later.",
+            variant: "default",
+          });
+        } else if (certResult?.success) {
+          toast({
+            title: "Blockchain Verified",
+            description: `${application.restaurant_name} is now blockchain certified!`,
+          });
+        }
+      } catch (certError) {
+        console.error("Blockchain certification failed:", certError);
+        // Don't block approval if certification fails
+      }
 
       setSelectedApplication(null);
       setAdminNotes("");
@@ -351,9 +390,28 @@ const Admin = () => {
 
           {selectedApplication && (
             <div className="space-y-4">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 {getStatusBadge(selectedApplication.status)}
+                <BlockchainBadge
+                  certified={selectedApplication.blockchain_certified || false}
+                  txHash={selectedApplication.blockchain_tx_hash}
+                  network={selectedApplication.blockchain_network}
+                  hash={selectedApplication.blockchain_hash}
+                  certifiedAt={selectedApplication.blockchain_certified_at}
+                />
               </div>
+
+              {/* Show detailed blockchain info for approved applications */}
+              {selectedApplication.status === "approved" && selectedApplication.blockchain_certified && (
+                <BlockchainBadge
+                  certified={true}
+                  txHash={selectedApplication.blockchain_tx_hash}
+                  network={selectedApplication.blockchain_network}
+                  hash={selectedApplication.blockchain_hash}
+                  certifiedAt={selectedApplication.blockchain_certified_at}
+                  showDetails={true}
+                />
+              )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
@@ -461,6 +519,12 @@ const Admin = () => {
                       disabled={processing}
                       data-testid="button-approve"
                     >
+                      {processing ? (
+                        <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                      ) : (
+                        <CheckCircle className="w-4 h-4 mr-1" />
+                      )}
+                      {processing ? "Processing..." : "Approve"}
                       <CheckCircle className="w-4 h-4 mr-1" />
                       Approve
                     </Button>

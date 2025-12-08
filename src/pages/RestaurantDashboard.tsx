@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { BlockchainBadge } from "@/components/BlockchainBadge";
 import {
   ArrowLeft,
   Store,
@@ -55,6 +56,11 @@ interface RestaurantApplication {
   rejected_at: string | null;
   created_at: string;
   updated_at: string;
+  blockchain_certified?: boolean;
+  blockchain_hash?: string | null;
+  blockchain_tx_hash?: string | null;
+  blockchain_network?: string | null;
+  blockchain_certified_at?: string | null;
 }
 
 const statusConfig = {
@@ -239,7 +245,14 @@ const RestaurantDashboard = () => {
                             <h2 className="text-xl font-bold">{selectedApp.restaurant_name}</h2>
                             <p className="text-sm text-muted-foreground">{selectedApp.owner_name}</p>
                           </div>
-                          {getStatusBadge(selectedApp.status)}
+                          <div className="flex flex-col items-end gap-1">
+                            {getStatusBadge(selectedApp.status)}
+                            <BlockchainBadge
+                              certified={selectedApp.blockchain_certified || false}
+                              txHash={selectedApp.blockchain_tx_hash}
+                              network={selectedApp.blockchain_network}
+                            />
+                          </div>
                         </div>
                         <p className="text-sm text-muted-foreground mt-2 flex items-center gap-1">
                           <MapPin className="w-3 h-3" />
@@ -271,7 +284,7 @@ const RestaurantDashboard = () => {
                       {selectedApp.status === 'approved' && (
                         <div className="flex items-start gap-3">
                           <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                          <div>
+                          <div className="flex-1">
                             <p className="font-medium text-green-800 dark:text-green-200">Congratulations! You're Approved</p>
                             <p className="text-sm text-green-700 dark:text-green-300 mt-1">
                               Your restaurant is now live on the Noil platform. Customers can discover you in our healthy dining listings.
@@ -280,6 +293,18 @@ const RestaurantDashboard = () => {
                               <p className="text-xs text-green-600 dark:text-green-400 mt-2">
                                 Approved on {format(new Date(selectedApp.approved_at), "MMM d, yyyy")}
                               </p>
+                            )}
+                            {selectedApp.blockchain_certified && (
+                              <div className="mt-3">
+                                <BlockchainBadge
+                                  certified={true}
+                                  txHash={selectedApp.blockchain_tx_hash}
+                                  network={selectedApp.blockchain_network}
+                                  hash={selectedApp.blockchain_hash}
+                                  certifiedAt={selectedApp.blockchain_certified_at}
+                                  showDetails={true}
+                                />
+                              </div>
                             )}
                           </div>
                         </div>
