@@ -61,8 +61,19 @@ const FitMeal = () => {
   };
 
   const handleOrderNow = (recipe: any) => {
-    const message = `Hi! I would like to order the "${recipe.name}" recipe meal.\n\nDetails:\n- Cuisine: ${recipe.cuisine}\n- Meal Type: ${recipe.meal_type}\n- Oil Used: ${recipe.oil_estimate_ml}ml\n${recipe.calories ? `- Calories: ${recipe.calories}` : ''}\n\nPlease let me know about pricing and delivery options.`;
-    const whatsappUrl = `https://wa.me/917892583384?text=${encodeURIComponent(message)}`;
+    const details = [
+      `Hi! I would like to order the "${recipe.name}" recipe meal.`,
+      '',
+      'Details:',
+      `- Cuisine: ${recipe.cuisine}`,
+      `- Meal Type: ${recipe.meal_type}`,
+      `- Oil Used: ${recipe.oil_estimate_ml}ml`,
+      recipe.calories ? `- Calories: ${recipe.calories}` : '',
+      '',
+      'Please let me know about pricing and delivery options.'
+    ].filter(Boolean).join('\n');
+    
+    const whatsappUrl = `https://wa.me/917892583384?text=${encodeURIComponent(details)}`;
     window.open(whatsappUrl, '_blank');
   };
 

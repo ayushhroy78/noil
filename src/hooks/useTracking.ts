@@ -300,7 +300,9 @@ export const useTracking = (userId: string | undefined) => {
   };
 
   useEffect(() => {
-    fetchData();
+    if (userId) {
+      fetchData();
+    }
   }, [userId]);
 
   return { data, loading, refetch: fetchData };
