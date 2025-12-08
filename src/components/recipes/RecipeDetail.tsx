@@ -1,4 +1,4 @@
-import { ArrowLeft, Droplet, Clock, Flame, Plus } from "lucide-react";
+import { ArrowLeft, Droplet, Clock, Flame, Plus, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -81,6 +81,12 @@ const RecipeDetail = ({ recipe, onBack, isGenerated = false }: RecipeDetailProps
     } finally {
       setIsLogging(false);
     }
+  };
+
+  const handleOrderNow = () => {
+    const message = `Hi! I would like to order the "${recipe.name}" recipe meal.\n\nDetails:\n- Cuisine: ${recipe.cuisine || 'N/A'}\n- Meal Type: ${recipe.meal_type || 'N/A'}\n- Oil Used: ${recipe.oil_estimate_ml}ml\n${displayCalories ? `- Calories: ${displayCalories}` : ''}\n\nPlease let me know about pricing and delivery options.`;
+    const whatsappUrl = `https://wa.me/917892583384?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   return (
@@ -174,6 +180,26 @@ const RecipeDetail = ({ recipe, onBack, isGenerated = false }: RecipeDetailProps
               ))}
             </ol>
           </div>
+        </Card>
+
+        {/* Order Now Card */}
+        <Card className="p-4 bg-green-600/10 border-green-600/30">
+          <div className="flex items-start gap-3 mb-3">
+            <ShoppingCart className="w-5 h-5 text-green-600 mt-0.5" />
+            <div>
+              <h4 className="font-semibold text-foreground mb-1">Order This Meal</h4>
+              <p className="text-sm text-muted-foreground">
+                Don't feel like cooking? Order this healthy meal prepared fresh for you
+              </p>
+            </div>
+          </div>
+          <Button
+            onClick={handleOrderNow}
+            className="w-full bg-green-600 hover:bg-green-700 text-white"
+          >
+            <ShoppingCart className="w-4 h-4 mr-2" />
+            Order Now via WhatsApp
+          </Button>
         </Card>
 
         <Card className="p-4 bg-primary/5 border-primary/20">
