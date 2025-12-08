@@ -185,10 +185,6 @@ const Index = () => {
                     <Shield className="w-4 h-4 mr-2" />
                     Verified Restaurants
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/restaurant-dashboard")} className="cursor-pointer">
-                    <LayoutDashboard className="w-4 h-4 mr-2" />
-                    Partner Dashboard
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
                     <Activity className="w-4 h-4 mr-2" />
                     Real Time Dashboard
