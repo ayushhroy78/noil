@@ -682,6 +682,7 @@ export type Database = {
           id: string
           log_date: string
           notes: string | null
+          oil_type: string | null
           source: string | null
           user_id: string
         }
@@ -691,6 +692,7 @@ export type Database = {
           id?: string
           log_date?: string
           notes?: string | null
+          oil_type?: string | null
           source?: string | null
           user_id: string
         }
@@ -700,6 +702,7 @@ export type Database = {
           id?: string
           log_date?: string
           notes?: string | null
+          oil_type?: string | null
           source?: string | null
           user_id?: string
         }
