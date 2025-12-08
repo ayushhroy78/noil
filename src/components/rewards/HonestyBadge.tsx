@@ -6,14 +6,26 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useHabitIntegrity } from "@/hooks/useHabitIntegrity";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface HonestyBadgeProps {
-  userId: string;
+  userId?: string;
   variant?: 'compact' | 'full';
   showNudge?: boolean;
 }
 
-export function HonestyBadge({ userId, variant = 'compact', showNudge = true }: HonestyBadgeProps) {
+export function HonestyBadge({ userId: propUserId, variant = 'compact', showNudge = true }: HonestyBadgeProps) {
+  const [userId, setUserId] = useState<string | undefined>(propUserId);
+  
+  useEffect(() => {
+    if (!propUserId) {
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) setUserId(user.id);
+      });
+    }
+  }, [propUserId]);
+
   const { 
     habitIntegrity, 
     isLoading, 

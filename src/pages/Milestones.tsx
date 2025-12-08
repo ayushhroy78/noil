@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Award, MapPin, Home, ChefHat, Trophy, Flame, TrendingDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
