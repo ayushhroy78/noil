@@ -15,6 +15,7 @@ import { EnhancedChallengesTab } from "@/components/discover/EnhancedChallengesT
 import { OilConsumptionCalendar } from "@/components/profile/OilConsumptionCalendar";
 import { HealthProfileForm } from "@/components/profile/HealthProfileForm";
 import { FamilyMembersManager } from "@/components/profile/FamilyMembersManager";
+import { AIConsumptionAudit } from "@/components/profile/AIConsumptionAudit";
 import {
   ArrowLeft,
   User,
@@ -31,6 +32,7 @@ import {
   CalendarDays,
   Heart,
   Users,
+  Brain,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -150,9 +152,12 @@ const Profile = () => {
         </Card>
 
         <Tabs defaultValue={defaultTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-7 mb-6">
+          <TabsList className="grid w-full grid-cols-8 mb-6">
             <TabsTrigger value="health" className="text-xs px-1" data-testid="tab-health">
               <Heart className="w-4 h-4" />
+            </TabsTrigger>
+            <TabsTrigger value="audit" className="text-xs px-1" data-testid="tab-audit">
+              <Brain className="w-4 h-4" />
             </TabsTrigger>
             <TabsTrigger value="family" className="text-xs px-1" data-testid="tab-family">
               <Users className="w-4 h-4" />
@@ -176,6 +181,10 @@ const Profile = () => {
 
           <TabsContent value="health">
             <HealthProfileForm userId={userId} />
+          </TabsContent>
+
+          <TabsContent value="audit">
+            <AIConsumptionAudit userId={userId} />
           </TabsContent>
 
           <TabsContent value="family">
