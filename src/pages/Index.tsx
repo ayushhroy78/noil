@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User, Search, LogOut, Heart, Store, Activity, Gift, Calculator, MapPin, ChevronDown, LayoutDashboard, Shield, Award, MessageSquare } from "lucide-react";
+import { User, Search, LogOut, Heart, Store, Activity, Gift, Calculator, MapPin, ChevronDown, LayoutDashboard, Shield, Award, MessageSquare, Landmark } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
 import Chatbot from "@/components/Chatbot";
@@ -188,6 +188,10 @@ const Index = () => {
                   <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
                     <Activity className="w-4 h-4 mr-2" />
                     Real Time Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/policy-dashboard")} className="cursor-pointer">
+                    <Landmark className="w-4 h-4 mr-2" />
+                    Policy Maker Dashboard
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/milestones")} className="cursor-pointer">
                     <Award className="w-4 h-4 mr-2" />
