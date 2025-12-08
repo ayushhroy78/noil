@@ -60,6 +60,12 @@ const FitMeal = () => {
     setGeneratedRecipe(recipe);
   };
 
+  const handleOrderNow = (recipe: any) => {
+    const message = `Hi! I would like to order the "${recipe.name}" recipe meal.\n\nDetails:\n- Cuisine: ${recipe.cuisine}\n- Meal Type: ${recipe.meal_type}\n- Oil Used: ${recipe.oil_estimate_ml}ml\n${recipe.calories ? `- Calories: ${recipe.calories}` : ''}\n\nPlease let me know about pricing and delivery options.`;
+    const whatsappUrl = `https://wa.me/917892583384?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   if (selectedRecipe) {
     return <RecipeDetail recipe={selectedRecipe} onBack={() => setSelectedRecipe(null)} />;
   }
@@ -203,6 +209,7 @@ const FitMeal = () => {
                     calories={recipe.calories}
                     prepTimeMinutes={recipe.prep_time_minutes}
                     onClick={() => handleRecipeClick(recipe)}
+                    onOrderNow={() => handleOrderNow(recipe)}
                   />
                 ))}
               </div>

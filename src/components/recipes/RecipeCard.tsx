@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Droplet, Flame, ChefHat, Sparkles } from "lucide-react";
-
+import { Button } from "@/components/ui/button";
+import { Clock, Droplet, Flame, ChefHat, Sparkles, ShoppingCart } from "lucide-react";
 interface RecipeCardProps {
   id: string;
   name: string;
@@ -12,6 +12,7 @@ interface RecipeCardProps {
   calories?: number;
   prepTimeMinutes?: number;
   onClick: () => void;
+  onOrderNow?: () => void;
 }
 
 const RecipeCard = ({
@@ -23,6 +24,7 @@ const RecipeCard = ({
   calories,
   prepTimeMinutes,
   onClick,
+  onOrderNow,
 }: RecipeCardProps) => {
   const getOilTag = (ml: number) => {
     if (ml <= 5) return { 
@@ -133,6 +135,21 @@ const RecipeCard = ({
             View Recipe →
           </span>
         </div>
+
+        {/* Order Now Button */}
+        {onOrderNow && (
+          <Button
+            size="sm"
+            className="w-full gap-2 bg-green-600 hover:bg-green-700 text-white"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOrderNow();
+            }}
+          >
+            <ShoppingCart className="w-4 h-4" />
+            Order Now
+          </Button>
+        )}
       </div>
     </Card>
   );
