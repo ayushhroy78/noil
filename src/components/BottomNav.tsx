@@ -56,19 +56,20 @@ export const BottomNav = () => {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-card shadow-nav border-t border-border z-50">
-      <div className="max-w-md mx-auto flex items-center justify-around px-4 py-3">
+      <div className="max-w-md mx-auto grid grid-cols-5 items-center px-2 py-3">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
+          const isHome = item.path === "/";
           return (
             <button
               key={item.label}
               onClick={() => handleNavigation(item.path)}
-              className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all duration-300 ease-out ${
+              className={`flex flex-col items-center justify-center gap-1 py-1.5 rounded-xl transition-all duration-300 ease-out ${
                 isActive
                   ? "text-foreground bg-primary/10"
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-              }`}
+              } ${isHome ? "mx-auto" : ""}`}
             >
               <Icon className="w-6 h-6 transition-colors duration-300 ease-out" />
               <span className="text-xs font-medium transition-colors duration-300 ease-out">{item.label}</span>
