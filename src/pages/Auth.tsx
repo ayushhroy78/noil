@@ -73,7 +73,18 @@ const Auth = () => {
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        navigate("/");
+        // Check if profile is complete
+        const { data: profile } = await supabase
+          .from("user_profiles")
+          .select("full_name, state")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (!profile || (!profile.full_name && !profile.state)) {
+          navigate("/complete-profile");
+        } else {
+          navigate("/home");
+        }
       }
     };
     checkUser();
@@ -267,7 +278,7 @@ const Auth = () => {
         description: "You've successfully signed in.",
       });
 
-      navigate("/");
+      navigate("/home");
     } catch (error: any) {
       toast({
         title: "Error",
