@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { User, Search, LogOut, Heart, Store, Activity, Gift, Calculator, MapPin, ChevronDown, LayoutDashboard, Shield, Award, MessageSquare, Landmark } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
@@ -16,8 +17,10 @@ import logoImg from "@/assets/logo.jpg";
 import Autoplay from "embla-carousel-autoplay";
 import LocationEditDialog from "@/components/LocationEditDialog";
 import { MealReminder } from "@/components/tracking/MealReminder";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 const Index = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [userCity, setUserCity] = useState<string | null>(null);
@@ -165,11 +168,13 @@ const Index = () => {
               </button>
             </LocationEditDialog>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors">
-                <User className="w-5 h-5 text-primary" />
-              </button>
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors">
+                  <User className="w-5 h-5 text-primary" />
+                </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 bg-card border-border">
               {isLoggedIn ? (
@@ -218,8 +223,9 @@ const Index = () => {
                   Login / Sign Up
                 </DropdownMenuItem>
               )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
         
         <div className="relative">
