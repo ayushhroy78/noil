@@ -2,13 +2,22 @@ import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Plus, Minus, Trash2, ArrowLeft, CheckCircle2, Package, Phone } from "lucide-react";
-import { useCart, CartItem } from "@/hooks/useCart";
+import { CartItem } from "@/hooks/useCart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { WhatsAppCheckout } from "./WhatsAppCheckout";
 import { Button } from "@/components/ui/button";
 
 interface CartSheetProps {
   userId: string | undefined;
+  cart?: {
+    cartItems: CartItem[];
+    loading: boolean;
+    updateQuantity: (itemId: string, quantity: number) => Promise<void>;
+    removeFromCart: (itemId: string) => Promise<void>;
+    clearCart: () => Promise<void>;
+    getCartTotal: () => number;
+    getCartCount: () => number;
+  };
 }
 
 interface OrderConfirmation {
@@ -93,9 +102,15 @@ const OrderConfirmationScreen = ({
   );
 };
 
-export const CartSheet = ({ userId }: CartSheetProps) => {
-  const { cartItems, loading, updateQuantity, removeFromCart, clearCart, getCartTotal, getCartCount } =
-    useCart(userId);
+export const CartSheet = ({ userId, cart }: CartSheetProps) => {
+  const cartItems = cart?.cartItems ?? [];
+  const loading = cart?.loading ?? false;
+  const updateQuantity = cart?.updateQuantity ?? (async () => {});
+  const removeFromCart = cart?.removeFromCart ?? (async () => {});
+  const clearCart = cart?.clearCart ?? (async () => {});
+  const getCartTotal = cart?.getCartTotal ?? (() => 0);
+  const getCartCount = cart?.getCartCount ?? (() => 0);
+
   const [showCheckout, setShowCheckout] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [orderConfirmation, setOrderConfirmation] = useState<OrderConfirmation | null>(null);

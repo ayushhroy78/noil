@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { CartSheet } from "@/components/oilhub/CartSheet";
 import { BottomNav } from "@/components/BottomNav";
+import { useCart } from "@/hooks/useCart";
 
 const Cart = () => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState<string | undefined>();
+  const cart = useCart(userId);
 
   useEffect(() => {
     const getUser = async () => {
@@ -36,7 +38,7 @@ const Cart = () => {
       </header>
 
       <main className="px-4 py-6">
-        <CartSheet userId={userId} />
+        <CartSheet userId={userId} cart={cart} />
       </main>
 
       <BottomNav />
