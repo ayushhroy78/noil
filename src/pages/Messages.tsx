@@ -104,7 +104,7 @@ const Messages = () => {
 
   if (selectedConversation) {
     return (
-      <div className="min-h-screen bg-background flex flex-col pb-20">
+      <div className="min-h-screen bg-background flex flex-col pb-24">
         {/* Chat Header */}
         <header className="sticky top-0 z-40 bg-card border-b border-border px-4 py-3">
           <div className="flex items-center gap-3">
@@ -198,7 +198,7 @@ const Messages = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-card border-b border-border px-4 py-3">
         <div className="flex items-center gap-3">

@@ -78,7 +78,7 @@ const CommunityUserProfile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background pb-20">
+      <div className="min-h-screen bg-background pb-24">
         <div className="h-32 bg-muted" />
         <div className="px-4 -mt-10">
           <Skeleton className="w-20 h-20 rounded-full border-4 border-background" />
@@ -93,7 +93,7 @@ const CommunityUserProfile = () => {
   // Show profile setup if viewing own profile and no profile exists
   if (isOwnProfile && !profile) {
     return (
-      <div className="min-h-screen bg-background pb-20 pt-4 px-4">
+      <div className="min-h-screen bg-background pb-24 pt-4 px-4">
         <CommunityProfileSetup onComplete={refetch} />
         <BottomNav />
       </div>
@@ -102,7 +102,7 @@ const CommunityUserProfile = () => {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-background pb-20 flex items-center justify-center">
+      <div className="min-h-screen bg-background pb-24 flex items-center justify-center">
         <Card className="p-8 text-center">
           <User className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
           <p className="text-lg font-medium">User not found</p>
@@ -117,7 +117,7 @@ const CommunityUserProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-24">
       {/* Banner */}
       <div className="relative h-32 bg-gradient-to-r from-primary/20 to-primary/40">
         {profile.banner_url && (
