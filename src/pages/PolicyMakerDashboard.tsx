@@ -5,7 +5,9 @@ import {
   CheckCircle2, Clock, Zap, Heart, Brain, Leaf, FileCheck, Bell, 
   Calendar, Globe, Award, BookOpen, Settings, RefreshCw, Eye, 
   ThumbsUp, ThumbsDown, AlertCircle, Info, ChevronRight, Sparkles,
-  GitCompare, Plus, X, ArrowUpDown, Minus, Equal
+  GitCompare, Plus, X, ArrowUpDown, Minus, Equal, Lightbulb, LineChart as LineChartIcon,
+  Flame, Droplets, Scale, Timer, Play, Pause, SkipForward, SkipBack, 
+  Cpu, BrainCircuit, CircleDollarSign, HandCoins, Layers, RotateCcw
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -151,6 +153,102 @@ const POLICY_PROTOCOLS: PolicyProtocol[] = [
   }
 ];
 
+// Enhanced Demographic Data
+const DEMOGRAPHIC_DATA = {
+  ageGroups: [
+    { group: "18-25", consumption: 22, users: 3200, reduction: 18 },
+    { group: "26-35", consumption: 28, users: 4800, reduction: 12 },
+    { group: "36-45", consumption: 32, users: 3600, reduction: 8 },
+    { group: "46-55", consumption: 35, users: 2400, reduction: 5 },
+    { group: "55+", consumption: 30, users: 1800, reduction: 10 }
+  ],
+  incomeSegments: [
+    { segment: "Low Income", percentage: 35, avgConsumption: 38, oilType: "Refined" },
+    { segment: "Middle Income", percentage: 45, avgConsumption: 28, oilType: "Mixed" },
+    { segment: "High Income", percentage: 20, avgConsumption: 22, oilType: "Premium" }
+  ],
+  urbanRural: { urban: 62, rural: 38, urbanConsumption: 26, ruralConsumption: 34 }
+};
+
+// Predictive Analytics Data
+const PREDICTION_DATA = {
+  nextMonth: { predicted: 23.5, confidence: 87, trend: "decreasing" },
+  nextQuarter: { predicted: 21.8, confidence: 72, trend: "decreasing" },
+  yearEnd: { predicted: 20.2, confidence: 58, trend: "target_achievable" },
+  riskFactors: [
+    { factor: "Festival Season (Diwali)", impact: +15, probability: 95 },
+    { factor: "Summer Heat Wave", impact: +8, probability: 65 },
+    { factor: "New Policy Implementation", impact: -12, probability: 80 },
+    { factor: "Restaurant Certification Drive", impact: -5, probability: 90 }
+  ]
+};
+
+// Intervention Strategies
+const INTERVENTION_STRATEGIES = [
+  {
+    id: "1",
+    name: "Community Kitchen Campaign",
+    description: "Establish community kitchens demonstrating low-oil cooking techniques",
+    targetRegions: ["Bihar", "Uttar Pradesh", "Madhya Pradesh"],
+    estimatedCost: 2500000,
+    expectedImpact: 15,
+    timeframe: "6 months",
+    status: "proposed",
+    roi: 340
+  },
+  {
+    id: "2",
+    name: "School Nutrition Program",
+    description: "Integrate healthy cooking education in school curriculum",
+    targetRegions: ["All States"],
+    estimatedCost: 5000000,
+    expectedImpact: 22,
+    timeframe: "12 months",
+    status: "active",
+    roi: 480
+  },
+  {
+    id: "3",
+    name: "Restaurant Incentive Scheme",
+    description: "Tax benefits for certified low-oil restaurants",
+    targetRegions: ["Karnataka", "Maharashtra", "Tamil Nadu"],
+    estimatedCost: 1800000,
+    expectedImpact: 18,
+    timeframe: "Ongoing",
+    status: "active",
+    roi: 520
+  },
+  {
+    id: "4",
+    name: "Digital Health Nudge System",
+    description: "AI-powered personalized health nudges via mobile app",
+    targetRegions: ["Metro Cities"],
+    estimatedCost: 800000,
+    expectedImpact: 12,
+    timeframe: "3 months",
+    status: "completed",
+    roi: 680
+  }
+];
+
+// Historical Timeline Data (12 months)
+const TIMELINE_DATA = Array.from({ length: 12 }, (_, i) => {
+  const date = new Date();
+  date.setMonth(date.getMonth() - (11 - i));
+  return {
+    month: date.toLocaleDateString("en-IN", { month: "short", year: "2-digit" }),
+    fullDate: date,
+    states: Object.keys(STATE_DISTRICTS).reduce((acc, state) => {
+      acc[state] = {
+        consumption: 25 + Math.random() * 15 - (i * 0.3),
+        users: 500 + Math.floor(i * 150 + Math.random() * 100),
+        healthIndex: 55 + (i * 2) + Math.floor(Math.random() * 10)
+      };
+      return acc;
+    }, {} as Record<string, { consumption: number; users: number; healthIndex: number }>)
+  };
+});
+
 // Generate sample alerts
 const generateAlerts = (): PolicyAlert[] => [
   {
@@ -188,6 +286,33 @@ const generateAlerts = (): PolicyAlert[] => [
     region: "Tamil Nadu",
     timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
     isRead: true
+  },
+  {
+    id: "5",
+    type: "critical",
+    title: "Policy Compliance Breach",
+    description: "3 certified restaurants in Delhi found violating trans-fat limits",
+    region: "Delhi",
+    timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000),
+    isRead: false
+  },
+  {
+    id: "6",
+    type: "success",
+    title: "Milestone Achieved",
+    description: "100,000 active users milestone reached across India",
+    region: "All India",
+    timestamp: new Date(Date.now() - 36 * 60 * 60 * 1000),
+    isRead: true
+  },
+  {
+    id: "7",
+    type: "warning",
+    title: "Seasonal Risk Alert",
+    description: "Predicted 15% consumption increase during upcoming festival season",
+    region: "North India",
+    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
+    isRead: false
   }
 ];
 
@@ -221,6 +346,13 @@ const PolicyMakerDashboard = () => {
   const [compareRegion2, setCompareRegion2] = useState<string>("");
   const [compareRegion3, setCompareRegion3] = useState<string>("");
   const [compareParentState, setCompareParentState] = useState<string>("");
+  
+  // Timeline animation state
+  const [timelineIndex, setTimelineIndex] = useState(TIMELINE_DATA.length - 1);
+  const [isTimelinePlaying, setIsTimelinePlaying] = useState(false);
+  
+  // Intervention planner state
+  const [selectedIntervention, setSelectedIntervention] = useState<typeof INTERVENTION_STRATEGIES[0] | null>(null);
 
   useEffect(() => {
     checkAccess();
@@ -231,6 +363,23 @@ const PolicyMakerDashboard = () => {
       fetchDashboardData();
     }
   }, [hasAccess, selectedState, selectedDistrict]);
+
+  // Timeline animation effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isTimelinePlaying) {
+      interval = setInterval(() => {
+        setTimelineIndex(prev => {
+          if (prev >= TIMELINE_DATA.length - 1) {
+            setIsTimelinePlaying(false);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 1500);
+    }
+    return () => clearInterval(interval);
+  }, [isTimelinePlaying]);
 
   const checkAccess = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -740,29 +889,36 @@ const PolicyMakerDashboard = () => {
   };
 
   const oilTypeDistribution = [
-    { name: "Mustard", value: 35 },
-    { name: "Groundnut", value: 25 },
-    { name: "Coconut", value: 20 },
-    { name: "Refined", value: 15 },
-    { name: "Olive", value: 5 }
+    { name: "Mustard", value: 32, region: "North/East", healthRating: "A", avgPrice: 180 },
+    { name: "Groundnut", value: 24, region: "West/Central", healthRating: "A", avgPrice: 165 },
+    { name: "Coconut", value: 18, region: "South/Coastal", healthRating: "A+", avgPrice: 195 },
+    { name: "Sunflower", value: 14, region: "All India", healthRating: "B+", avgPrice: 145 },
+    { name: "Refined", value: 8, region: "Urban", healthRating: "C", avgPrice: 120 },
+    { name: "Olive", value: 4, region: "Metro Cities", healthRating: "A+", avgPrice: 650 }
   ];
 
   const healthImpactData = [
-    { subject: "Heart Health", A: 78, fullMark: 100 },
-    { subject: "Diabetes Risk", A: 65, fullMark: 100 },
-    { subject: "Obesity", A: 72, fullMark: 100 },
-    { subject: "Cholesterol", A: 68, fullMark: 100 },
-    { subject: "Blood Pressure", A: 74, fullMark: 100 },
-    { subject: "Overall Wellness", A: 70, fullMark: 100 }
+    { subject: "Heart Health", A: 78, B: 65, fullMark: 100 },
+    { subject: "Diabetes Risk", A: 65, B: 52, fullMark: 100 },
+    { subject: "Obesity", A: 72, B: 58, fullMark: 100 },
+    { subject: "Cholesterol", A: 68, B: 55, fullMark: 100 },
+    { subject: "Blood Pressure", A: 74, B: 62, fullMark: 100 },
+    { subject: "Overall Wellness", A: 70, B: 58, fullMark: 100 }
   ];
 
   const monthlyTrendData = [
-    { month: "Jul", consumption: 32, target: 25, users: 1200 },
-    { month: "Aug", consumption: 30, target: 25, users: 1450 },
-    { month: "Sep", consumption: 28, target: 25, users: 1680 },
-    { month: "Oct", consumption: 27, target: 25, users: 1920 },
-    { month: "Nov", consumption: 25, target: 25, users: 2100 },
-    { month: "Dec", consumption: 24, target: 25, users: 2350 }
+    { month: "Jan", consumption: 35, target: 25, users: 850, restaurants: 12, challenges: 45 },
+    { month: "Feb", consumption: 34, target: 25, users: 920, restaurants: 15, challenges: 62 },
+    { month: "Mar", consumption: 33, target: 25, users: 1050, restaurants: 18, challenges: 78 },
+    { month: "Apr", consumption: 32, target: 25, users: 1180, restaurants: 22, challenges: 95 },
+    { month: "May", consumption: 31, target: 25, users: 1350, restaurants: 28, challenges: 120 },
+    { month: "Jun", consumption: 30, target: 25, users: 1520, restaurants: 35, challenges: 145 },
+    { month: "Jul", consumption: 29, target: 25, users: 1720, restaurants: 42, challenges: 178 },
+    { month: "Aug", consumption: 28, target: 25, users: 1950, restaurants: 52, challenges: 210 },
+    { month: "Sep", consumption: 27, target: 25, users: 2180, restaurants: 65, challenges: 248 },
+    { month: "Oct", consumption: 26, target: 25, users: 2450, restaurants: 78, challenges: 285 },
+    { month: "Nov", consumption: 25, target: 25, users: 2720, restaurants: 92, challenges: 320 },
+    { month: "Dec", consumption: 24, target: 25, users: 2980, restaurants: 108, challenges: 358 }
   ];
 
   const unreadAlertsCount = alerts.filter(a => !a.isRead).length;
@@ -1081,16 +1237,28 @@ const PolicyMakerDashboard = () => {
 
         {/* Main Tabs */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-6 h-auto">
-            <TabsTrigger value="overview" className="text-xs py-2">Overview</TabsTrigger>
-            <TabsTrigger value="compare" className="text-xs py-2">
+          <TabsList className="w-full flex flex-wrap h-auto gap-1 bg-secondary/50 p-1">
+            <TabsTrigger value="overview" className="text-xs py-2 flex-1">Overview</TabsTrigger>
+            <TabsTrigger value="predictions" className="text-xs py-2 flex-1">
+              <BrainCircuit className="w-3 h-3 mr-1" />
+              AI Predict
+            </TabsTrigger>
+            <TabsTrigger value="timeline" className="text-xs py-2 flex-1">
+              <Timer className="w-3 h-3 mr-1" />
+              Timeline
+            </TabsTrigger>
+            <TabsTrigger value="interventions" className="text-xs py-2 flex-1">
+              <Lightbulb className="w-3 h-3 mr-1" />
+              Planner
+            </TabsTrigger>
+            <TabsTrigger value="compare" className="text-xs py-2 flex-1">
               <GitCompare className="w-3 h-3 mr-1" />
               Compare
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="text-xs py-2">Analytics</TabsTrigger>
-            <TabsTrigger value="health" className="text-xs py-2">Health</TabsTrigger>
-            <TabsTrigger value="protocols" className="text-xs py-2">Protocols</TabsTrigger>
-            <TabsTrigger value="alerts" className="text-xs py-2 relative">
+            <TabsTrigger value="analytics" className="text-xs py-2 flex-1">Analytics</TabsTrigger>
+            <TabsTrigger value="health" className="text-xs py-2 flex-1">Health</TabsTrigger>
+            <TabsTrigger value="protocols" className="text-xs py-2 flex-1">Protocols</TabsTrigger>
+            <TabsTrigger value="alerts" className="text-xs py-2 flex-1 relative">
               Alerts
               {unreadAlertsCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-destructive text-destructive-foreground text-[10px] rounded-full flex items-center justify-center">
@@ -1252,6 +1420,482 @@ const PolicyMakerDashboard = () => {
                       No data available for the selected filters
                     </p>
                   )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* AI Predictions Tab */}
+          <TabsContent value="predictions" className="space-y-4 mt-4">
+            {/* Prediction Summary */}
+            <div className="grid sm:grid-cols-3 gap-4">
+              <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+                <CardContent className="p-4 text-center">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/20 mb-3">
+                    <BrainCircuit className="w-6 h-6 text-primary" />
+                  </div>
+                  <p className="text-3xl font-bold text-primary">{PREDICTION_DATA.nextMonth.predicted} ml</p>
+                  <p className="text-sm text-muted-foreground mb-2">Next Month Prediction</p>
+                  <Badge variant="secondary" className="text-xs">
+                    {PREDICTION_DATA.nextMonth.confidence}% Confidence
+                  </Badge>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-to-br from-success/10 to-success/5 border-success/20">
+                <CardContent className="p-4 text-center">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-success/20 mb-3">
+                    <TrendingDown className="w-6 h-6 text-success" />
+                  </div>
+                  <p className="text-3xl font-bold text-success">{PREDICTION_DATA.nextQuarter.predicted} ml</p>
+                  <p className="text-sm text-muted-foreground mb-2">Q1 2025 Forecast</p>
+                  <Badge variant="secondary" className="text-xs">
+                    {PREDICTION_DATA.nextQuarter.confidence}% Confidence
+                  </Badge>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-to-br from-warning/10 to-warning/5 border-warning/20">
+                <CardContent className="p-4 text-center">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-warning/20 mb-3">
+                    <Target className="w-6 h-6 text-warning" />
+                  </div>
+                  <p className="text-3xl font-bold text-warning">{PREDICTION_DATA.yearEnd.predicted} ml</p>
+                  <p className="text-sm text-muted-foreground mb-2">Year-End Target</p>
+                  <Badge className="text-xs bg-success/20 text-success border-0">
+                    Target Achievable
+                  </Badge>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Risk Factors */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-warning" />
+                  Predicted Risk Factors & Opportunities
+                </CardTitle>
+                <CardDescription>AI-identified factors that may impact consumption trends</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {PREDICTION_DATA.riskFactors.map((factor, index) => (
+                    <div 
+                      key={index}
+                      className={`p-4 rounded-lg border ${
+                        factor.impact > 0 
+                          ? 'bg-destructive/5 border-destructive/20' 
+                          : 'bg-success/5 border-success/20'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={`p-2 rounded-full ${
+                            factor.impact > 0 ? 'bg-destructive/10' : 'bg-success/10'
+                          }`}>
+                            {factor.impact > 0 
+                              ? <TrendingUp className="w-4 h-4 text-destructive" />
+                              : <TrendingDown className="w-4 h-4 text-success" />
+                            }
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm">{factor.factor}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Probability: {factor.probability}%
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className={`text-lg font-bold ${
+                            factor.impact > 0 ? 'text-destructive' : 'text-success'
+                          }`}>
+                            {factor.impact > 0 ? '+' : ''}{factor.impact}%
+                          </p>
+                          <p className="text-xs text-muted-foreground">Expected Impact</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Demographic Predictions */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Users className="w-4 h-4 text-primary" />
+                  Demographic Consumption Patterns
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={DEMOGRAPHIC_DATA.ageGroups}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                      <XAxis dataKey="group" className="text-xs" />
+                      <YAxis className="text-xs" />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--card))', 
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px'
+                        }}
+                      />
+                      <Legend />
+                      <Bar dataKey="consumption" name="Avg Consumption (ml)" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="reduction" name="Reduction %" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="grid sm:grid-cols-3 gap-4 mt-4">
+                  {DEMOGRAPHIC_DATA.incomeSegments.map((segment, index) => (
+                    <div key={index} className="p-3 bg-secondary/30 rounded-lg text-center">
+                      <p className="text-sm font-medium">{segment.segment}</p>
+                      <p className="text-xs text-muted-foreground">{segment.percentage}% of users</p>
+                      <p className="text-lg font-bold text-primary">{segment.avgConsumption} ml</p>
+                      <Badge variant="outline" className="text-xs mt-1">{segment.oilType}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Urban vs Rural */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  Urban vs Rural Consumption Analysis
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid sm:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Urban Population</span>
+                      <span className="text-sm text-primary font-bold">{DEMOGRAPHIC_DATA.urbanRural.urban}%</span>
+                    </div>
+                    <Progress value={DEMOGRAPHIC_DATA.urbanRural.urban} className="h-3" />
+                    <div className="p-4 bg-primary/5 rounded-lg text-center">
+                      <p className="text-2xl font-bold text-primary">{DEMOGRAPHIC_DATA.urbanRural.urbanConsumption} ml</p>
+                      <p className="text-xs text-muted-foreground">Avg Daily Consumption</p>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Rural Population</span>
+                      <span className="text-sm text-warning font-bold">{DEMOGRAPHIC_DATA.urbanRural.rural}%</span>
+                    </div>
+                    <Progress value={DEMOGRAPHIC_DATA.urbanRural.rural} className="h-3" />
+                    <div className="p-4 bg-warning/5 rounded-lg text-center">
+                      <p className="text-2xl font-bold text-warning">{DEMOGRAPHIC_DATA.urbanRural.ruralConsumption} ml</p>
+                      <p className="text-xs text-muted-foreground">Avg Daily Consumption</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Timeline Tab */}
+          <TabsContent value="timeline" className="space-y-4 mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Timer className="w-4 h-4 text-primary" />
+                  Historical Timeline Analysis
+                </CardTitle>
+                <CardDescription>
+                  Watch consumption patterns evolve over 12 months
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {/* Timeline Controls */}
+                <div className="flex items-center justify-center gap-4 mb-6">
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    onClick={() => setTimelineIndex(0)}
+                    disabled={timelineIndex === 0}
+                  >
+                    <SkipBack className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="icon"
+                    onClick={() => {
+                      if (timelineIndex === TIMELINE_DATA.length - 1) {
+                        setTimelineIndex(0);
+                      }
+                      setIsTimelinePlaying(!isTimelinePlaying);
+                    }}
+                  >
+                    {isTimelinePlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    onClick={() => setTimelineIndex(TIMELINE_DATA.length - 1)}
+                    disabled={timelineIndex === TIMELINE_DATA.length - 1}
+                  >
+                    <SkipForward className="w-4 h-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => {
+                      setTimelineIndex(0);
+                      setIsTimelinePlaying(false);
+                    }}
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                {/* Timeline Slider */}
+                <div className="mb-6">
+                  <div className="flex justify-between text-xs text-muted-foreground mb-2">
+                    <span>{TIMELINE_DATA[0].month}</span>
+                    <span className="font-bold text-primary text-sm">{TIMELINE_DATA[timelineIndex].month}</span>
+                    <span>{TIMELINE_DATA[TIMELINE_DATA.length - 1].month}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={TIMELINE_DATA.length - 1}
+                    value={timelineIndex}
+                    onChange={(e) => setTimelineIndex(Number(e.target.value))}
+                    className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                  />
+                </div>
+
+                {/* State Heat Map Grid */}
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                  {Object.keys(STATE_DISTRICTS).slice(0, 15).map((state) => {
+                    const stateInfo = TIMELINE_DATA[timelineIndex].states[state];
+                    const consumption = stateInfo?.consumption || 25;
+                    const healthIndex = stateInfo?.healthIndex || 60;
+                    
+                    const getColor = () => {
+                      if (consumption <= 22) return 'bg-success/80 text-success-foreground';
+                      if (consumption <= 28) return 'bg-warning/80 text-warning-foreground';
+                      return 'bg-destructive/80 text-destructive-foreground';
+                    };
+                    
+                    return (
+                      <div 
+                        key={state}
+                        className={`p-3 rounded-lg ${getColor()} transition-all duration-500`}
+                      >
+                        <p className="text-xs font-medium truncate">{state.slice(0, 10)}</p>
+                        <p className="text-lg font-bold">{consumption.toFixed(0)}ml</p>
+                        <p className="text-xs opacity-80">HI: {healthIndex}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Timeline Stats */}
+                <div className="grid sm:grid-cols-3 gap-4 mt-6">
+                  <div className="p-4 bg-secondary/30 rounded-lg text-center">
+                    <p className="text-2xl font-bold text-primary">
+                      {Object.values(TIMELINE_DATA[timelineIndex].states).reduce((sum, s) => sum + s.users, 0).toLocaleString()}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Total Active Users</p>
+                  </div>
+                  <div className="p-4 bg-secondary/30 rounded-lg text-center">
+                    <p className="text-2xl font-bold text-success">
+                      {(Object.values(TIMELINE_DATA[timelineIndex].states).reduce((sum, s) => sum + s.consumption, 0) / 15).toFixed(1)} ml
+                    </p>
+                    <p className="text-xs text-muted-foreground">National Average</p>
+                  </div>
+                  <div className="p-4 bg-secondary/30 rounded-lg text-center">
+                    <p className="text-2xl font-bold text-warning">
+                      {Math.round(Object.values(TIMELINE_DATA[timelineIndex].states).reduce((sum, s) => sum + s.healthIndex, 0) / 15)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Avg Health Index</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Intervention Planner Tab */}
+          <TabsContent value="interventions" className="space-y-4 mt-4">
+            {/* Budget Summary */}
+            <div className="grid sm:grid-cols-4 gap-3">
+              <Card className="bg-gradient-to-br from-primary/10 to-transparent">
+                <CardContent className="p-4 text-center">
+                  <CircleDollarSign className="w-6 h-6 text-primary mx-auto mb-2" />
+                  <p className="text-xl font-bold">₹1.01 Cr</p>
+                  <p className="text-xs text-muted-foreground">Total Budget</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-to-br from-success/10 to-transparent">
+                <CardContent className="p-4 text-center">
+                  <HandCoins className="w-6 h-6 text-success mx-auto mb-2" />
+                  <p className="text-xl font-bold">₹68L</p>
+                  <p className="text-xs text-muted-foreground">Spent</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-to-br from-warning/10 to-transparent">
+                <CardContent className="p-4 text-center">
+                  <Layers className="w-6 h-6 text-warning mx-auto mb-2" />
+                  <p className="text-xl font-bold">4</p>
+                  <p className="text-xs text-muted-foreground">Active Programs</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-to-br from-destructive/10 to-transparent">
+                <CardContent className="p-4 text-center">
+                  <TrendingDown className="w-6 h-6 text-destructive mx-auto mb-2" />
+                  <p className="text-xl font-bold">16.8%</p>
+                  <p className="text-xs text-muted-foreground">Avg Impact</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Intervention Cards */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Lightbulb className="w-4 h-4 text-primary" />
+                  Strategic Intervention Programs
+                </CardTitle>
+                <CardDescription>Plan and track policy interventions with projected ROI</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {INTERVENTION_STRATEGIES.map((intervention) => (
+                    <div 
+                      key={intervention.id}
+                      className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                        selectedIntervention?.id === intervention.id 
+                          ? 'border-primary bg-primary/5' 
+                          : 'hover:bg-secondary/30'
+                      }`}
+                      onClick={() => setSelectedIntervention(
+                        selectedIntervention?.id === intervention.id ? null : intervention
+                      )}
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="font-medium text-sm">{intervention.name}</p>
+                            <Badge 
+                              variant={
+                                intervention.status === "active" ? "default" : 
+                                intervention.status === "completed" ? "secondary" : "outline"
+                              } 
+                              className="text-[10px]"
+                            >
+                              {intervention.status}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground mb-2">{intervention.description}</p>
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <MapPin className="w-3 h-3" />
+                              {intervention.targetRegions.slice(0, 2).join(", ")}
+                              {intervention.targetRegions.length > 2 && ` +${intervention.targetRegions.length - 2}`}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Timer className="w-3 h-3" />
+                              {intervention.timeframe}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-right space-y-1">
+                          <p className="text-lg font-bold text-success">ROI {intervention.roi}%</p>
+                          <p className="text-xs text-muted-foreground">
+                            ₹{(intervention.estimatedCost / 100000).toFixed(1)}L budget
+                          </p>
+                          <p className="text-xs font-medium text-primary">
+                            -{intervention.expectedImpact}% impact
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Expanded Details */}
+                      {selectedIntervention?.id === intervention.id && (
+                        <div className="mt-4 pt-4 border-t space-y-4">
+                          <div className="grid sm:grid-cols-4 gap-3">
+                            <div className="p-3 bg-secondary/50 rounded-lg text-center">
+                              <p className="text-sm font-bold">₹{(intervention.estimatedCost / 100000).toFixed(1)}L</p>
+                              <p className="text-xs text-muted-foreground">Total Cost</p>
+                            </div>
+                            <div className="p-3 bg-success/10 rounded-lg text-center">
+                              <p className="text-sm font-bold text-success">{intervention.expectedImpact}%</p>
+                              <p className="text-xs text-muted-foreground">Oil Reduction</p>
+                            </div>
+                            <div className="p-3 bg-primary/10 rounded-lg text-center">
+                              <p className="text-sm font-bold text-primary">{intervention.roi}%</p>
+                              <p className="text-xs text-muted-foreground">Projected ROI</p>
+                            </div>
+                            <div className="p-3 bg-warning/10 rounded-lg text-center">
+                              <p className="text-sm font-bold text-warning">{intervention.timeframe}</p>
+                              <p className="text-xs text-muted-foreground">Duration</p>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium mb-2">Target Regions:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {intervention.targetRegions.map((region) => (
+                                <Badge key={region} variant="outline" className="text-xs">
+                                  {region}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button size="sm" className="flex-1">
+                              <FileText className="w-3 h-3 mr-1" />
+                              View Report
+                            </Button>
+                            <Button size="sm" variant="outline" className="flex-1">
+                              <Download className="w-3 h-3 mr-1" />
+                              Export Data
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* ROI Comparison Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-primary" />
+                  Intervention ROI Comparison
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={INTERVENTION_STRATEGIES} layout="vertical">
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                      <XAxis type="number" className="text-xs" />
+                      <YAxis dataKey="name" type="category" width={120} className="text-xs" tick={{ fontSize: 10 }} />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--card))', 
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px'
+                        }}
+                        formatter={(value: number, name: string) => {
+                          if (name === "roi") return [`${value}%`, "ROI"];
+                          if (name === "expectedImpact") return [`${value}%`, "Impact"];
+                          return [value, name];
+                        }}
+                      />
+                      <Legend />
+                      <Bar dataKey="roi" name="ROI %" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+                      <Bar dataKey="expectedImpact" name="Impact %" fill="hsl(var(--success))" radius={[0, 4, 4, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
