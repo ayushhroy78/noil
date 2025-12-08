@@ -512,6 +512,220 @@ const PolicyMakerDashboard = () => {
     toast({ title: "PDF exported successfully" });
   };
 
+  // Export Comparison to PDF
+  const exportComparisonToPDF = () => {
+    if (comparisonData.length < 2) {
+      toast({ title: "Select at least 2 regions to export", variant: "destructive" });
+      return;
+    }
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Title
+    doc.setFontSize(22);
+    doc.setTextColor(0, 128, 128);
+    doc.text("Region Comparison Report", 14, 22);
+    
+    // Subtitle
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+    doc.text(`Generated on: ${new Date().toLocaleDateString("en-IN", { 
+      day: "numeric", 
+      month: "long", 
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    })}`, 14, 30);
+    doc.text(`Comparison Type: ${compareMode === "states" ? "State-wise" : `District-wise (${compareParentState})`}`, 14, 36);
+    doc.text(`Regions: ${comparisonData.map(r => r.name).join(" vs ")}`, 14, 42);
+
+    // Executive Summary Box
+    doc.setFillColor(240, 248, 248);
+    doc.rect(14, 48, pageWidth - 28, 30, 'F');
+    doc.setFontSize(12);
+    doc.setTextColor(0, 100, 100);
+    doc.text("Executive Summary", 18, 58);
+    doc.setFontSize(10);
+    doc.setTextColor(60);
+    
+    const bestHealth = comparisonData.reduce((a, b) => a.healthIndex > b.healthIndex ? a : b);
+    const lowestConsumption = comparisonData.reduce((a, b) => a.avgConsumption < b.avgConsumption ? a : b);
+    const bestCompliance = comparisonData.reduce((a, b) => a.complianceRate > b.complianceRate ? a : b);
+    
+    doc.text(`Best Health Performance: ${bestHealth.name} (Health Index: ${bestHealth.healthIndex})`, 18, 66);
+    doc.text(`Lowest Oil Consumption: ${lowestConsumption.name} (${lowestConsumption.avgConsumption} ml/day)`, 18, 72);
+
+    // Comparison Table
+    doc.setFontSize(14);
+    doc.setTextColor(0);
+    doc.text("Detailed Metrics Comparison", 14, 92);
+    
+    const tableHeaders = ["Metric", ...comparisonData.map(r => r.name)];
+    if (comparisonData.length === 2) {
+      tableHeaders.push("Difference");
+    }
+    
+    const calcDiff = (val1: number, val2: number, higherBetter: boolean = true) => {
+      const diff = val1 - val2;
+      const pct = val2 !== 0 ? ((diff / val2) * 100).toFixed(1) : "0";
+      const sign = diff > 0 ? "+" : "";
+      const indicator = higherBetter ? (diff > 0 ? "↑" : "↓") : (diff < 0 ? "↑" : "↓");
+      return `${sign}${pct}% ${indicator}`;
+    };
+    
+    const tableBody = [
+      ["Total Users", ...comparisonData.map(r => r.userCount.toLocaleString()), 
+        comparisonData.length === 2 ? calcDiff(comparisonData[0].userCount, comparisonData[1].userCount) : ""].filter(Boolean),
+      ["Avg Consumption (ml)", ...comparisonData.map(r => r.avgConsumption.toString()),
+        comparisonData.length === 2 ? calcDiff(comparisonData[0].avgConsumption, comparisonData[1].avgConsumption, false) : ""].filter(Boolean),
+      ["Health Index", ...comparisonData.map(r => r.healthIndex.toString()),
+        comparisonData.length === 2 ? calcDiff(comparisonData[0].healthIndex, comparisonData[1].healthIndex) : ""].filter(Boolean),
+      ["Compliance Rate (%)", ...comparisonData.map(r => `${r.complianceRate}%`),
+        comparisonData.length === 2 ? calcDiff(comparisonData[0].complianceRate, comparisonData[1].complianceRate) : ""].filter(Boolean),
+      ["Certified Restaurants", ...comparisonData.map(r => r.restaurantCount.toString()),
+        comparisonData.length === 2 ? calcDiff(comparisonData[0].restaurantCount, comparisonData[1].restaurantCount) : ""].filter(Boolean),
+      ["Trend", ...comparisonData.map(r => `${r.trend > 0 ? "+" : ""}${r.trend.toFixed(1)}%`),
+        comparisonData.length === 2 ? calcDiff(comparisonData[1].trend, comparisonData[0].trend, false) : ""].filter(Boolean)
+    ];
+
+    autoTable(doc, {
+      startY: 98,
+      head: [tableHeaders],
+      body: tableBody,
+      theme: "grid",
+      headStyles: { 
+        fillColor: [0, 128, 128],
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: { fillColor: [245, 250, 250] },
+      styles: { fontSize: 10, cellPadding: 4 },
+      columnStyles: comparisonData.length === 2 ? {
+        0: { fontStyle: 'bold', cellWidth: 45 },
+        3: { fontStyle: 'italic', textColor: [80, 80, 80] }
+      } : {
+        0: { fontStyle: 'bold', cellWidth: 45 }
+      }
+    });
+
+    // Analysis Section
+    const afterTableY = (doc as any).lastAutoTable.finalY + 15;
+    
+    doc.setFontSize(14);
+    doc.setTextColor(0);
+    doc.text("Comparative Analysis", 14, afterTableY);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(60);
+    
+    let analysisY = afterTableY + 10;
+    
+    // Health Analysis
+    doc.setFontSize(11);
+    doc.setTextColor(0, 100, 100);
+    doc.text("Health Performance:", 14, analysisY);
+    doc.setFontSize(10);
+    doc.setTextColor(60);
+    analysisY += 6;
+    doc.text(`${bestHealth.name} leads with a Health Index of ${bestHealth.healthIndex}, indicating stronger health outcomes.`, 14, analysisY);
+    analysisY += 6;
+    
+    if (comparisonData.length === 2) {
+      const healthDiff = Math.abs(comparisonData[0].healthIndex - comparisonData[1].healthIndex);
+      doc.text(`The health index gap between regions is ${healthDiff} points.`, 14, analysisY);
+      analysisY += 10;
+    } else {
+      analysisY += 4;
+    }
+    
+    // Consumption Analysis
+    doc.setFontSize(11);
+    doc.setTextColor(0, 100, 100);
+    doc.text("Oil Consumption Patterns:", 14, analysisY);
+    doc.setFontSize(10);
+    doc.setTextColor(60);
+    analysisY += 6;
+    doc.text(`${lowestConsumption.name} has the lowest average daily consumption at ${lowestConsumption.avgConsumption} ml.`, 14, analysisY);
+    analysisY += 6;
+    
+    const icmrTarget = 25;
+    const aboveTarget = comparisonData.filter(r => r.avgConsumption > icmrTarget);
+    if (aboveTarget.length > 0) {
+      doc.text(`Regions exceeding ICMR target (25ml): ${aboveTarget.map(r => r.name).join(", ")}`, 14, analysisY);
+      analysisY += 10;
+    } else {
+      doc.text(`All regions are within ICMR recommended limits.`, 14, analysisY);
+      analysisY += 10;
+    }
+    
+    // Compliance Analysis
+    doc.setFontSize(11);
+    doc.setTextColor(0, 100, 100);
+    doc.text("Policy Compliance:", 14, analysisY);
+    doc.setFontSize(10);
+    doc.setTextColor(60);
+    analysisY += 6;
+    doc.text(`${bestCompliance.name} shows highest policy compliance at ${bestCompliance.complianceRate}%.`, 14, analysisY);
+    analysisY += 6;
+    
+    const lowCompliance = comparisonData.filter(r => r.complianceRate < 70);
+    if (lowCompliance.length > 0) {
+      doc.text(`Regions needing compliance improvement (<70%): ${lowCompliance.map(r => r.name).join(", ")}`, 14, analysisY);
+    }
+
+    // Recommendations Section (new page if needed)
+    if (analysisY > 240) {
+      doc.addPage();
+      analysisY = 20;
+    } else {
+      analysisY += 15;
+    }
+    
+    doc.setFontSize(14);
+    doc.setTextColor(0);
+    doc.text("Recommendations", 14, analysisY);
+    analysisY += 10;
+    
+    const recommendations: string[] = [];
+    
+    // Generate dynamic recommendations
+    if (comparisonData.some(r => r.avgConsumption > 25)) {
+      recommendations.push("• Launch targeted awareness campaigns in high-consumption regions");
+    }
+    if (comparisonData.some(r => r.complianceRate < 70)) {
+      recommendations.push("• Increase policy enforcement and restaurant certification in low-compliance areas");
+    }
+    if (comparisonData.some(r => r.healthIndex < 65)) {
+      recommendations.push("• Implement intensive health intervention programs in low health index regions");
+    }
+    if (comparisonData.some(r => r.trend > 0)) {
+      recommendations.push("• Address rising consumption trends with community engagement initiatives");
+    }
+    recommendations.push("• Continue monitoring and expand best practices from high-performing regions");
+    recommendations.push("• Establish quarterly review meetings to track progress across all regions");
+    
+    doc.setFontSize(10);
+    doc.setTextColor(60);
+    recommendations.forEach((rec, idx) => {
+      doc.text(rec, 14, analysisY + (idx * 7));
+    });
+
+    // Footer
+    const pageCount = doc.internal.pages.length - 1;
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150);
+      doc.text(`Page ${i} of ${pageCount}`, pageWidth / 2, 290, { align: 'center' });
+      doc.text("Noil Policy Maker Dashboard - Confidential Report", 14, 290);
+    }
+
+    const regionNames = comparisonData.map(r => r.name.replace(/\s+/g, "_")).join("_vs_");
+    doc.save(`comparison_report_${regionNames}_${new Date().toISOString().split("T")[0]}.pdf`);
+    toast({ title: "Comparison report exported successfully" });
+  };
+
   const markAlertAsRead = (alertId: string) => {
     setAlerts(prev => prev.map(a => a.id === alertId ? { ...a, isRead: true } : a));
   };
@@ -1202,6 +1416,14 @@ const PolicyMakerDashboard = () => {
             {/* Comparison Results */}
             {comparisonData.length >= 2 ? (
               <>
+                {/* Export Button */}
+                <div className="flex justify-end">
+                  <Button onClick={exportComparisonToPDF} className="gap-2">
+                    <Download className="w-4 h-4" />
+                    Export Comparison Report
+                  </Button>
+                </div>
+
                 {/* Side-by-Side Metrics Cards */}
                 <div className={`grid gap-4 ${comparisonData.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
                   {comparisonData.map((region, index) => (
