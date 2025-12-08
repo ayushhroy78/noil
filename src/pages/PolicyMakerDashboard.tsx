@@ -4,7 +4,8 @@ import {
   BarChart3, PieChart, Download, FileText, Lock, Shield, AlertTriangle, 
   CheckCircle2, Clock, Zap, Heart, Brain, Leaf, FileCheck, Bell, 
   Calendar, Globe, Award, BookOpen, Settings, RefreshCw, Eye, 
-  ThumbsUp, ThumbsDown, AlertCircle, Info, ChevronRight, Sparkles
+  ThumbsUp, ThumbsDown, AlertCircle, Info, ChevronRight, Sparkles,
+  GitCompare, Plus, X, ArrowUpDown, Minus, Equal
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -213,6 +214,13 @@ const PolicyMakerDashboard = () => {
   const [alerts, setAlerts] = useState<PolicyAlert[]>(generateAlerts());
   const [selectedProtocol, setSelectedProtocol] = useState<PolicyProtocol | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState(new Date());
+  
+  // Comparison state
+  const [compareMode, setCompareMode] = useState<"states" | "districts">("states");
+  const [compareRegion1, setCompareRegion1] = useState<string>("");
+  const [compareRegion2, setCompareRegion2] = useState<string>("");
+  const [compareRegion3, setCompareRegion3] = useState<string>("");
+  const [compareParentState, setCompareParentState] = useState<string>("");
 
   useEffect(() => {
     checkAccess();
@@ -545,6 +553,87 @@ const PolicyMakerDashboard = () => {
 
   const unreadAlertsCount = alerts.filter(a => !a.isRead).length;
 
+  // Get comparison data for selected regions
+  const getComparisonData = () => {
+    const regions = [compareRegion1, compareRegion2, compareRegion3].filter(Boolean);
+    
+    if (compareMode === "states") {
+      return regions.map(regionName => {
+        const data = stateData.find(s => s.state === regionName);
+        return data ? { name: regionName, ...data } : null;
+      }).filter(Boolean) as (StateData & { name: string })[];
+    } else {
+      if (!compareParentState) return [];
+      const parentState = stateData.find(s => s.state === compareParentState);
+      if (!parentState) return [];
+      
+      return regions.map(districtName => {
+        const data = parentState.districts.find(d => d.district === districtName);
+        return data ? { name: districtName, ...data } : null;
+      }).filter(Boolean) as (DistrictData & { name: string })[];
+    }
+  };
+
+  const comparisonData = getComparisonData();
+
+  // Generate comparison chart data
+  const getComparisonChartData = () => {
+    const metrics = ["Users", "Avg Consumption", "Health Index", "Compliance %", "Restaurants"];
+    return metrics.map(metric => {
+      const dataPoint: any = { metric };
+      comparisonData.forEach((region, index) => {
+        switch (metric) {
+          case "Users":
+            dataPoint[region.name] = region.userCount;
+            break;
+          case "Avg Consumption":
+            dataPoint[region.name] = region.avgConsumption;
+            break;
+          case "Health Index":
+            dataPoint[region.name] = region.healthIndex;
+            break;
+          case "Compliance %":
+            dataPoint[region.name] = region.complianceRate;
+            break;
+          case "Restaurants":
+            dataPoint[region.name] = region.restaurantCount;
+            break;
+        }
+      });
+      return dataPoint;
+    });
+  };
+
+  const comparisonChartData = getComparisonChartData();
+
+  const getAvailableCompareRegions = () => {
+    if (compareMode === "states") {
+      return Object.keys(STATE_DISTRICTS).sort();
+    } else {
+      return compareParentState ? STATE_DISTRICTS[compareParentState] || [] : [];
+    }
+  };
+
+  const getDifferenceIndicator = (val1: number, val2: number, higherIsBetter: boolean = true) => {
+    const diff = val1 - val2;
+    const percentage = val2 !== 0 ? ((diff / val2) * 100).toFixed(1) : "0";
+    
+    if (Math.abs(diff) < 0.1) {
+      return <span className="text-muted-foreground flex items-center gap-1"><Equal className="w-3 h-3" /> Same</span>;
+    }
+    
+    const isPositive = higherIsBetter ? diff > 0 : diff < 0;
+    
+    return (
+      <span className={`flex items-center gap-1 ${isPositive ? 'text-success' : 'text-destructive'}`}>
+        {diff > 0 ? <Plus className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
+        {Math.abs(Number(percentage))}%
+      </span>
+    );
+  };
+
+  const COMPARE_COLORS = ['hsl(var(--primary))', 'hsl(var(--success))', 'hsl(var(--warning))'];
+
   // Access denied screen
   if (hasAccess === false) {
     return (
@@ -778,10 +867,14 @@ const PolicyMakerDashboard = () => {
 
         {/* Main Tabs */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 h-auto">
+          <TabsList className="grid w-full grid-cols-6 h-auto">
             <TabsTrigger value="overview" className="text-xs py-2">Overview</TabsTrigger>
+            <TabsTrigger value="compare" className="text-xs py-2">
+              <GitCompare className="w-3 h-3 mr-1" />
+              Compare
+            </TabsTrigger>
             <TabsTrigger value="analytics" className="text-xs py-2">Analytics</TabsTrigger>
-            <TabsTrigger value="health" className="text-xs py-2">Health Impact</TabsTrigger>
+            <TabsTrigger value="health" className="text-xs py-2">Health</TabsTrigger>
             <TabsTrigger value="protocols" className="text-xs py-2">Protocols</TabsTrigger>
             <TabsTrigger value="alerts" className="text-xs py-2 relative">
               Alerts
@@ -948,6 +1041,448 @@ const PolicyMakerDashboard = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Compare Tab */}
+          <TabsContent value="compare" className="space-y-4 mt-4">
+            {/* Mode Selection */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <GitCompare className="w-4 h-4 text-primary" />
+                  Region Comparison Tool
+                </CardTitle>
+                <CardDescription>Select up to 3 regions to compare side-by-side</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Compare Mode Toggle */}
+                <div className="flex gap-2">
+                  <Button
+                    variant={compareMode === "states" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      setCompareMode("states");
+                      setCompareRegion1("");
+                      setCompareRegion2("");
+                      setCompareRegion3("");
+                      setCompareParentState("");
+                    }}
+                    className="flex-1"
+                  >
+                    <Globe className="w-4 h-4 mr-2" />
+                    Compare States
+                  </Button>
+                  <Button
+                    variant={compareMode === "districts" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      setCompareMode("districts");
+                      setCompareRegion1("");
+                      setCompareRegion2("");
+                      setCompareRegion3("");
+                    }}
+                    className="flex-1"
+                  >
+                    <MapPin className="w-4 h-4 mr-2" />
+                    Compare Districts
+                  </Button>
+                </div>
+
+                {/* Parent State Selection (for district mode) */}
+                {compareMode === "districts" && (
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-1 block">Select State</label>
+                    <Select value={compareParentState} onValueChange={(value) => {
+                      setCompareParentState(value);
+                      setCompareRegion1("");
+                      setCompareRegion2("");
+                      setCompareRegion3("");
+                    }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose a state first" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.keys(STATE_DISTRICTS).sort().map(state => (
+                          <SelectItem key={state} value={state}>{state}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {/* Region Selectors */}
+                <div className="grid sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-1 block flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-primary" />
+                      {compareMode === "states" ? "State" : "District"} 1
+                    </label>
+                    <Select 
+                      value={compareRegion1} 
+                      onValueChange={setCompareRegion1}
+                      disabled={compareMode === "districts" && !compareParentState}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {getAvailableCompareRegions()
+                          .filter(r => r !== compareRegion2 && r !== compareRegion3)
+                          .map(region => (
+                            <SelectItem key={region} value={region}>{region}</SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-1 block flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-success" />
+                      {compareMode === "states" ? "State" : "District"} 2
+                    </label>
+                    <Select 
+                      value={compareRegion2} 
+                      onValueChange={setCompareRegion2}
+                      disabled={compareMode === "districts" && !compareParentState}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {getAvailableCompareRegions()
+                          .filter(r => r !== compareRegion1 && r !== compareRegion3)
+                          .map(region => (
+                            <SelectItem key={region} value={region}>{region}</SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-1 block flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-warning" />
+                      {compareMode === "states" ? "State" : "District"} 3 (Optional)
+                    </label>
+                    <Select 
+                      value={compareRegion3} 
+                      onValueChange={setCompareRegion3}
+                      disabled={compareMode === "districts" && !compareParentState}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {getAvailableCompareRegions()
+                          .filter(r => r !== compareRegion1 && r !== compareRegion2)
+                          .map(region => (
+                            <SelectItem key={region} value={region}>{region}</SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Clear Selection */}
+                {(compareRegion1 || compareRegion2 || compareRegion3) && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => {
+                      setCompareRegion1("");
+                      setCompareRegion2("");
+                      setCompareRegion3("");
+                    }}
+                    className="w-full text-muted-foreground"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Clear Selection
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Comparison Results */}
+            {comparisonData.length >= 2 ? (
+              <>
+                {/* Side-by-Side Metrics Cards */}
+                <div className={`grid gap-4 ${comparisonData.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                  {comparisonData.map((region, index) => (
+                    <Card key={region.name} className="border-2" style={{ borderColor: COMPARE_COLORS[index] }}>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-sm flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COMPARE_COLORS[index] }} />
+                          {region.name}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-muted-foreground">Users</span>
+                          <span className="font-bold">{region.userCount.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-muted-foreground">Avg Consumption</span>
+                          <span className="font-bold">{region.avgConsumption} ml</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-muted-foreground">Health Index</span>
+                          <span className={`font-bold ${
+                            region.healthIndex >= 75 ? 'text-success' :
+                            region.healthIndex >= 60 ? 'text-warning' : 'text-destructive'
+                          }`}>{region.healthIndex}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-muted-foreground">Compliance</span>
+                          <span className="font-bold">{region.complianceRate}%</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-muted-foreground">Restaurants</span>
+                          <span className="font-bold">{region.restaurantCount}</span>
+                        </div>
+                        <Separator />
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-muted-foreground">Trend</span>
+                          <span className={`font-bold flex items-center gap-1 ${region.trend < 0 ? 'text-success' : 'text-destructive'}`}>
+                            {region.trend < 0 ? <TrendingDown className="w-3 h-3" /> : <TrendingUp className="w-3 h-3" />}
+                            {Math.abs(region.trend).toFixed(1)}%
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Comparison Bar Chart */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4 text-primary" />
+                      Metric Comparison Chart
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-72">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={comparisonChartData} layout="vertical">
+                          <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                          <XAxis type="number" className="text-xs" />
+                          <YAxis dataKey="metric" type="category" width={110} className="text-xs" />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: 'hsl(var(--card))', 
+                              border: '1px solid hsl(var(--border))',
+                              borderRadius: '8px'
+                            }} 
+                          />
+                          <Legend />
+                          {comparisonData.map((region, index) => (
+                            <Bar 
+                              key={region.name}
+                              dataKey={region.name} 
+                              fill={COMPARE_COLORS[index]}
+                              radius={[0, 4, 4, 0]}
+                            />
+                          ))}
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Detailed Comparison Table */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <ArrowUpDown className="w-4 h-4 text-primary" />
+                      Detailed Comparison Analysis
+                    </CardTitle>
+                    <CardDescription>
+                      {comparisonData.length === 2 
+                        ? `Comparing ${comparisonData[0].name} vs ${comparisonData[1].name}`
+                        : `Comparing ${comparisonData.map(r => r.name).join(', ')}`
+                      }
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left py-3 px-2 font-medium">Metric</th>
+                            {comparisonData.map((region, index) => (
+                              <th key={region.name} className="text-center py-3 px-2 font-medium">
+                                <div className="flex items-center justify-center gap-2">
+                                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COMPARE_COLORS[index] }} />
+                                  {region.name}
+                                </div>
+                              </th>
+                            ))}
+                            {comparisonData.length === 2 && (
+                              <th className="text-center py-3 px-2 font-medium">Difference</th>
+                            )}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-b">
+                            <td className="py-3 px-2 text-muted-foreground">Total Users</td>
+                            {comparisonData.map(region => (
+                              <td key={region.name} className="text-center py-3 px-2 font-medium">
+                                {region.userCount.toLocaleString()}
+                              </td>
+                            ))}
+                            {comparisonData.length === 2 && (
+                              <td className="text-center py-3 px-2 text-xs">
+                                {getDifferenceIndicator(comparisonData[0].userCount, comparisonData[1].userCount)}
+                              </td>
+                            )}
+                          </tr>
+                          <tr className="border-b">
+                            <td className="py-3 px-2 text-muted-foreground">Avg Consumption (ml)</td>
+                            {comparisonData.map(region => (
+                              <td key={region.name} className="text-center py-3 px-2 font-medium">
+                                {region.avgConsumption}
+                              </td>
+                            ))}
+                            {comparisonData.length === 2 && (
+                              <td className="text-center py-3 px-2 text-xs">
+                                {getDifferenceIndicator(comparisonData[0].avgConsumption, comparisonData[1].avgConsumption, false)}
+                              </td>
+                            )}
+                          </tr>
+                          <tr className="border-b">
+                            <td className="py-3 px-2 text-muted-foreground">Health Index</td>
+                            {comparisonData.map(region => (
+                              <td key={region.name} className={`text-center py-3 px-2 font-medium ${
+                                region.healthIndex >= 75 ? 'text-success' :
+                                region.healthIndex >= 60 ? 'text-warning' : 'text-destructive'
+                              }`}>
+                                {region.healthIndex}
+                              </td>
+                            ))}
+                            {comparisonData.length === 2 && (
+                              <td className="text-center py-3 px-2 text-xs">
+                                {getDifferenceIndicator(comparisonData[0].healthIndex, comparisonData[1].healthIndex)}
+                              </td>
+                            )}
+                          </tr>
+                          <tr className="border-b">
+                            <td className="py-3 px-2 text-muted-foreground">Compliance Rate</td>
+                            {comparisonData.map(region => (
+                              <td key={region.name} className="text-center py-3 px-2 font-medium">
+                                {region.complianceRate}%
+                              </td>
+                            ))}
+                            {comparisonData.length === 2 && (
+                              <td className="text-center py-3 px-2 text-xs">
+                                {getDifferenceIndicator(comparisonData[0].complianceRate, comparisonData[1].complianceRate)}
+                              </td>
+                            )}
+                          </tr>
+                          <tr className="border-b">
+                            <td className="py-3 px-2 text-muted-foreground">Restaurants</td>
+                            {comparisonData.map(region => (
+                              <td key={region.name} className="text-center py-3 px-2 font-medium">
+                                {region.restaurantCount}
+                              </td>
+                            ))}
+                            {comparisonData.length === 2 && (
+                              <td className="text-center py-3 px-2 text-xs">
+                                {getDifferenceIndicator(comparisonData[0].restaurantCount, comparisonData[1].restaurantCount)}
+                              </td>
+                            )}
+                          </tr>
+                          <tr>
+                            <td className="py-3 px-2 text-muted-foreground">Trend</td>
+                            {comparisonData.map(region => (
+                              <td key={region.name} className={`text-center py-3 px-2 font-medium ${region.trend < 0 ? 'text-success' : 'text-destructive'}`}>
+                                {region.trend > 0 ? '+' : ''}{region.trend.toFixed(1)}%
+                              </td>
+                            ))}
+                            {comparisonData.length === 2 && (
+                              <td className="text-center py-3 px-2 text-xs">
+                                {getDifferenceIndicator(comparisonData[1].trend, comparisonData[0].trend, false)}
+                              </td>
+                            )}
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Winner Summary (for 2 regions) */}
+                {comparisonData.length === 2 && (
+                  <Card className="bg-gradient-to-r from-primary/5 to-success/5">
+                    <CardHeader>
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <Award className="w-4 h-4 text-warning" />
+                        Comparison Summary
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div className="p-4 bg-card rounded-lg border">
+                          <p className="text-sm text-muted-foreground mb-2">Better Health Performance</p>
+                          <p className="font-bold text-lg">
+                            {comparisonData[0].healthIndex >= comparisonData[1].healthIndex 
+                              ? comparisonData[0].name 
+                              : comparisonData[1].name
+                            }
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Health Index: {Math.max(comparisonData[0].healthIndex, comparisonData[1].healthIndex)}
+                          </p>
+                        </div>
+                        <div className="p-4 bg-card rounded-lg border">
+                          <p className="text-sm text-muted-foreground mb-2">Lower Oil Consumption</p>
+                          <p className="font-bold text-lg">
+                            {comparisonData[0].avgConsumption <= comparisonData[1].avgConsumption 
+                              ? comparisonData[0].name 
+                              : comparisonData[1].name
+                            }
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Avg: {Math.min(comparisonData[0].avgConsumption, comparisonData[1].avgConsumption)} ml/day
+                          </p>
+                        </div>
+                        <div className="p-4 bg-card rounded-lg border">
+                          <p className="text-sm text-muted-foreground mb-2">Higher Compliance</p>
+                          <p className="font-bold text-lg">
+                            {comparisonData[0].complianceRate >= comparisonData[1].complianceRate 
+                              ? comparisonData[0].name 
+                              : comparisonData[1].name
+                            }
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Rate: {Math.max(comparisonData[0].complianceRate, comparisonData[1].complianceRate)}%
+                          </p>
+                        </div>
+                        <div className="p-4 bg-card rounded-lg border">
+                          <p className="text-sm text-muted-foreground mb-2">Better Trend</p>
+                          <p className="font-bold text-lg">
+                            {comparisonData[0].trend <= comparisonData[1].trend 
+                              ? comparisonData[0].name 
+                              : comparisonData[1].name
+                            }
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Trend: {Math.min(comparisonData[0].trend, comparisonData[1].trend).toFixed(1)}%
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
+            ) : (
+              <Card className="border-dashed">
+                <CardContent className="p-12 text-center">
+                  <GitCompare className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="font-semibold mb-2">Select Regions to Compare</h3>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                    Choose at least 2 {compareMode === "states" ? "states" : "districts"} from the selectors above 
+                    to see a detailed side-by-side comparison of their performance metrics.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* Analytics Tab */}
