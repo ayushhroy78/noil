@@ -20,6 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { BlockchainBadge } from "@/components/BlockchainBadge";
 import { BlockchainStats } from "@/components/admin/BlockchainStats";
 import { CommunityModeration } from "@/components/community/CommunityModeration";
+import { UserRoleManagement } from "@/components/admin/UserRoleManagement";
 import {
   ArrowLeft,
   Shield,
@@ -353,6 +354,9 @@ const Admin = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* User Role Management */}
+        <UserRoleManagement />
 
         {/* Blockchain Certification Stats */}
         <BlockchainStats applications={applications} />
