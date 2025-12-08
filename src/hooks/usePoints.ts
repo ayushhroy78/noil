@@ -7,6 +7,7 @@ interface AddPointsParams {
   source: string;
   source_id?: string;
   description: string;
+  applyMultiplier?: boolean; // Apply HSS reward multiplier
 }
 
 export const usePoints = () => {
@@ -49,16 +50,36 @@ export const usePoints = () => {
   });
 
   const addPointsMutation = useMutation({
-    mutationFn: async ({ points, source, source_id, description }: AddPointsParams) => {
+    mutationFn: async ({ points, source, source_id, description, applyMultiplier = true }: AddPointsParams) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
+
+      // Fetch habit integrity for reward multiplier
+      let multiplier = 1.0;
+      let honestyBoost = false;
+      
+      if (applyMultiplier) {
+        const { data: integrity } = await supabase
+          .from("habit_integrity")
+          .select("reward_multiplier, honesty_level")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        
+        if (integrity?.reward_multiplier) {
+          multiplier = Number(integrity.reward_multiplier);
+          honestyBoost = integrity.honesty_level === 'high';
+        }
+      }
+
+      // Apply multiplier to points
+      const adjustedPoints = Math.round(points * multiplier);
 
       const currentPoints = userPoints?.total_points || 0;
       const currentWeekPoints = userPoints?.points_this_week || 0;
       const currentMonthPoints = userPoints?.points_this_month || 0;
       const currentLifetimeEarned = (userPoints as any)?.lifetime_points_earned || 0;
 
-      const newBalance = currentPoints + points;
+      const newBalance = currentPoints + adjustedPoints;
 
       // Update user points
       const { data, error } = await supabase
@@ -66,38 +87,40 @@ export const usePoints = () => {
         .upsert({
           user_id: user.id,
           total_points: newBalance,
-          points_this_week: currentWeekPoints + points,
-          points_this_month: currentMonthPoints + points,
-          lifetime_points_earned: currentLifetimeEarned + points,
+          points_this_week: currentWeekPoints + adjustedPoints,
+          points_this_month: currentMonthPoints + adjustedPoints,
+          lifetime_points_earned: currentLifetimeEarned + adjustedPoints,
         }, { onConflict: 'user_id' })
         .select()
         .single();
 
       if (error) throw error;
 
-      // Record transaction
+      // Record transaction with multiplier info
       const { error: txError } = await supabase
         .from("point_transactions")
         .insert({
           user_id: user.id,
-          points,
+          points: adjustedPoints,
           transaction_type: 'earned',
           source,
           source_id: source_id || null,
-          description,
+          description: honestyBoost ? `${description} (+20% Honesty Boost)` : description,
           balance_after: newBalance,
         });
 
       if (txError) console.error("Transaction logging failed:", txError);
 
-      return { data, points };
+      return { data, points: adjustedPoints, honestyBoost, originalPoints: points };
     },
-    onSuccess: ({ points }) => {
+    onSuccess: ({ points, honestyBoost, originalPoints }) => {
       queryClient.invalidateQueries({ queryKey: ["user-points"] });
       queryClient.invalidateQueries({ queryKey: ["point-transactions"] });
       toast({
-        title: "Points Earned! 🎉",
-        description: `You earned ${points} points!`,
+        title: honestyBoost ? "Points Earned + Honesty Boost! 🎉" : "Points Earned! 🎉",
+        description: honestyBoost 
+          ? `You earned ${points} points (${originalPoints} + 20% boost)!`
+          : `You earned ${points} points!`,
       });
     },
   });

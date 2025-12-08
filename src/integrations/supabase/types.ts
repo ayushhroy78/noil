@@ -569,6 +569,48 @@ export type Database = {
         }
         Relationships: []
       }
+      habit_integrity: {
+        Row: {
+          created_at: string
+          feature_vector: Json | null
+          flags: Json | null
+          habit_stability_score: number
+          honesty_level: string
+          id: string
+          last_computed_at: string
+          reward_multiplier: number
+          signals: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feature_vector?: Json | null
+          flags?: Json | null
+          habit_stability_score?: number
+          honesty_level?: string
+          id?: string
+          last_computed_at?: string
+          reward_multiplier?: number
+          signals?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feature_vector?: Json | null
+          flags?: Json | null
+          habit_stability_score?: number
+          honesty_level?: string
+          id?: string
+          last_computed_at?: string
+          reward_multiplier?: number
+          signals?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       health_content: {
         Row: {
           category: string
@@ -1431,6 +1473,7 @@ export type Database = {
           gender: string | null
           health_conditions: string[] | null
           height_cm: number | null
+          household_size: number | null
           id: string
           referral_code: string | null
           referred_by: string | null
@@ -1449,6 +1492,7 @@ export type Database = {
           gender?: string | null
           health_conditions?: string[] | null
           height_cm?: number | null
+          household_size?: number | null
           id?: string
           referral_code?: string | null
           referred_by?: string | null
@@ -1467,6 +1511,7 @@ export type Database = {
           gender?: string | null
           health_conditions?: string[] | null
           height_cm?: number | null
+          household_size?: number | null
           id?: string
           referral_code?: string | null
           referred_by?: string | null
