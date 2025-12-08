@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { supabase } from "@/integrations/supabase/client";
 import { useTracking } from "@/hooks/useTracking";
 import { useHealthProfile } from "@/hooks/useHealthProfile";
@@ -27,6 +28,7 @@ import {
   BarChart3,
   Calendar,
   Trash2,
+  Info,
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -644,18 +646,62 @@ export const AIConsumptionAudit = ({ userId }: AIConsumptionAuditProps) => {
                 </p>
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={runAIAudit}
-              disabled={isAnalyzing}
-            >
-              {isAnalyzing ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <RefreshCw className="w-4 h-4" />
-              )}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <Info className="w-4 h-4 text-primary" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 bg-card border-border" align="end">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Lightbulb className="w-5 h-5 text-warning" />
+                      <h4 className="font-semibold text-foreground">How to Maintain Your Score</h4>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-success mt-0.5 flex-shrink-0" />
+                        <p className="text-muted-foreground">Keep daily oil intake under 20-25ml for optimal health</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-success mt-0.5 flex-shrink-0" />
+                        <p className="text-muted-foreground">Use healthier oils like olive, mustard, or groundnut</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-success mt-0.5 flex-shrink-0" />
+                        <p className="text-muted-foreground">Reduce packaged foods with hidden oils</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-success mt-0.5 flex-shrink-0" />
+                        <p className="text-muted-foreground">Log meals consistently to track progress</p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-success mt-0.5 flex-shrink-0" />
+                        <p className="text-muted-foreground">Try air frying or steaming instead of deep frying</p>
+                      </div>
+                    </div>
+                    <div className="pt-2 border-t border-border">
+                      <p className="text-xs text-muted-foreground">
+                        💡 <span className="font-medium">Pro tip:</span> Running weekly audits helps identify patterns and improve your score faster!
+                      </p>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={runAIAudit}
+                disabled={isAnalyzing}
+              >
+                {isAnalyzing ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="w-4 h-4" />
+                )}
+              </Button>
+            </div>
           </div>
         </CardHeader>
       </Card>
