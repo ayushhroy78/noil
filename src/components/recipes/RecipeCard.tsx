@@ -1,7 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Clock, Droplet, Flame, ChefHat, Sparkles, ShoppingCart } from "lucide-react";
+import { Clock, Droplet, Flame, ChefHat, Sparkles } from "lucide-react";
+import swiggyLogo from "@/assets/swiggy-logo.png";
+import zomatoLogo from "@/assets/zomato-logo.svg";
+import eatclubLogo from "@/assets/eatclub-logo.png";
 interface RecipeCardProps {
   id: string;
   name: string;
@@ -136,19 +138,40 @@ const RecipeCard = ({
           </span>
         </div>
 
-        {/* Order Now Button */}
+        {/* Order Now Logos */}
         {onOrderNow && (
-          <Button
-            size="sm"
-            className="w-full gap-2 bg-green-600 hover:bg-green-700 text-white"
-            onClick={(e) => {
-              e.stopPropagation();
-              onOrderNow();
-            }}
-          >
-            <ShoppingCart className="w-4 h-4" />
-            Order Now
-          </Button>
+          <div className="pt-3 border-t border-border/50">
+            <p className="text-xs text-muted-foreground mb-2 text-center">Order via</p>
+            <div className="flex items-center justify-center gap-3">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open('https://www.swiggy.com', '_blank');
+                }}
+                className="w-12 h-12 rounded-lg bg-white p-1.5 hover:scale-110 transition-transform shadow-sm border border-border"
+              >
+                <img src={swiggyLogo} alt="Swiggy" className="w-full h-full object-contain" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open('https://www.zomato.com', '_blank');
+                }}
+                className="w-12 h-12 rounded-lg bg-white p-1.5 hover:scale-110 transition-transform shadow-sm border border-border"
+              >
+                <img src={zomatoLogo} alt="Zomato" className="w-full h-full object-contain" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open('https://www.eatclub.com', '_blank');
+                }}
+                className="w-12 h-12 rounded-lg bg-white p-1.5 hover:scale-110 transition-transform shadow-sm border border-border"
+              >
+                <img src={eatclubLogo} alt="EatClub" className="w-full h-full object-contain" />
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </Card>
