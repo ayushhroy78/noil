@@ -768,6 +768,42 @@ export type Database = {
           },
         ]
       }
+      milestones: {
+        Row: {
+          code: string
+          created_at: string
+          description: string
+          icon: string | null
+          id: string
+          points_reward: number | null
+          threshold_value: number | null
+          title: string
+          type: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description: string
+          icon?: string | null
+          id?: string
+          points_reward?: number | null
+          threshold_value?: number | null
+          title: string
+          type: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string
+          icon?: string | null
+          id?: string
+          points_reward?: number | null
+          threshold_value?: number | null
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
       nudge_templates: {
         Row: {
           created_at: string
@@ -1423,6 +1459,44 @@ export type Database = {
             columns: ["challenge_id"]
             isOneToOne: false
             referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_milestones: {
+        Row: {
+          achieved_at: string
+          created_at: string
+          id: string
+          is_shared: boolean | null
+          meta: Json | null
+          milestone_id: string
+          user_id: string
+        }
+        Insert: {
+          achieved_at?: string
+          created_at?: string
+          id?: string
+          is_shared?: boolean | null
+          meta?: Json | null
+          milestone_id: string
+          user_id: string
+        }
+        Update: {
+          achieved_at?: string
+          created_at?: string
+          id?: string
+          is_shared?: boolean | null
+          meta?: Json | null
+          milestone_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_milestones_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "milestones"
             referencedColumns: ["id"]
           },
         ]
