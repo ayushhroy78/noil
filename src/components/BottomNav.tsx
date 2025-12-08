@@ -27,7 +27,7 @@ export const BottomNav = () => {
 
   const handleNavigation = (path: string) => {
     // Home is always accessible
-    if (path === "/") {
+    if (path === "/home") {
       navigate(path);
       return;
     }
@@ -49,7 +49,7 @@ export const BottomNav = () => {
   const navItems = [
     { icon: Activity, label: "Tracker", path: "/tracker" },
     { icon: Book, label: "Recipes", path: "/fit-meal" },
-    { icon: Home, label: "Home", path: "/" },
+    { icon: Home, label: "Home", path: "/home" },
     { icon: ShoppingBag, label: "Store", path: "/oilhub" },
     { icon: User, label: "Profile", path: "/profile" },
   ];
@@ -59,8 +59,8 @@ export const BottomNav = () => {
       <div className="max-w-md mx-auto grid grid-cols-5 items-center px-2 py-3">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location.pathname === item.path;
-          const isHome = item.path === "/";
+          const isActive = location.pathname === item.path || (item.path === "/home" && location.pathname === "/");
+          const isHome = item.path === "/home";
           return (
             <button
               key={item.label}
