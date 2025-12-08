@@ -13,6 +13,8 @@ import { ProgressCharts } from "@/components/tracking/ProgressCharts";
 import { DailyGoalTracker } from "@/components/tracking/DailyGoalTracker";
 import { IoTDeviceManager } from "@/components/tracking/IoTDeviceManager";
 import { OilTypeChart } from "@/components/tracking/OilTypeChart";
+import { WeeklyOilTrends } from "@/components/tracking/WeeklyOilTrends";
+import { OilRecommendations } from "@/components/tracking/OilRecommendations";
 import { useTracking } from "@/hooks/useTracking";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -72,6 +74,12 @@ const Tracker = () => {
 
         {/* Oil Type Breakdown */}
         {userId && <OilTypeChart userId={userId} />}
+
+        {/* Weekly Oil Type Trends */}
+        {userId && <WeeklyOilTrends userId={userId} />}
+
+        {/* Oil Recommendations */}
+        {userId && <OilRecommendations userId={userId} />}
 
         {/* Progress Charts */}
         {userId && <ProgressCharts userId={userId} />}
