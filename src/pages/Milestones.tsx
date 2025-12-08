@@ -75,7 +75,9 @@ const Milestones = () => {
       <div className="px-4 py-6 space-y-6">
         {/* Summary Row */}
         <div className="grid grid-cols-3 gap-3">
-          <Card className="p-3 text-center">
+          <Card className="p-3 flex flex-col items-center justify-center gap-1">
+            <Award className="w-6 h-6 text-primary" />
+            <p className="text-xs text-muted-foreground">Logging Status</p>
             <HonestyBadge variant="compact" />
           </Card>
           {ranking ? (
