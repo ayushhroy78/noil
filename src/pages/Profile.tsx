@@ -33,7 +33,16 @@ import {
   Heart,
   Users,
   Brain,
+  Award,
 } from "lucide-react";
+import { useMilestones } from "@/hooks/useMilestones";
+import { MilestoneCard } from "@/components/social/MilestoneCard";
+import { HonestyBadge } from "@/components/rewards/HonestyBadge";
+import { RegionalRankBadge } from "@/components/social/RegionalRankBadge";
+import { HouseholdScoreCard } from "@/components/social/HouseholdScoreCard";
+import { useHouseholdScore } from "@/hooks/useHouseholdScore";
+import { useRegionalRanking } from "@/hooks/useRegionalRanking";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
@@ -46,6 +55,9 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const { userPoints, isLoading: pointsLoading } = usePoints();
   const { userAchievements } = useAchievements();
+  const { userMilestones, isLoading: milestonesLoading } = useMilestones();
+  const { data: householdScore } = useHouseholdScore();
+  const { data: ranking } = useRegionalRanking();
   
   const defaultTab = searchParams.get("tab") || "health";
 
@@ -152,7 +164,7 @@ const Profile = () => {
         </Card>
 
         <Tabs defaultValue={defaultTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-8 mb-6">
+          <TabsList className="grid w-full grid-cols-9 mb-6">
             <TabsTrigger value="health" className="text-xs px-1" data-testid="tab-health">
               <Heart className="w-4 h-4" />
             </TabsTrigger>
@@ -164,6 +176,9 @@ const Profile = () => {
             </TabsTrigger>
             <TabsTrigger value="calendar" className="text-xs px-1" data-testid="tab-calendar">
               <CalendarDays className="w-4 h-4" />
+            </TabsTrigger>
+            <TabsTrigger value="milestones" className="text-xs px-1" data-testid="tab-milestones">
+              <Award className="w-4 h-4" />
             </TabsTrigger>
             <TabsTrigger value="rewards" className="text-xs px-1" data-testid="tab-rewards">
               <Gift className="w-4 h-4" />
@@ -193,6 +208,70 @@ const Profile = () => {
 
           <TabsContent value="calendar">
             <OilConsumptionCalendar userId={userId} />
+          </TabsContent>
+
+          <TabsContent value="milestones">
+            <div className="space-y-6">
+              {/* Summary Row */}
+              <div className="flex items-center gap-3 overflow-x-auto pb-2">
+                <HonestyBadge />
+                {ranking && (
+                  <Badge variant="outline" className="shrink-0">
+                    Top {ranking.rankPercent}% in {ranking.regionLabel}
+                  </Badge>
+                )}
+                {householdScore && (
+                  <Badge variant="outline" className="shrink-0">
+                    Household: {householdScore.grade}
+                  </Badge>
+                )}
+              </div>
+
+              {/* Milestones Grid */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Your Milestones</h3>
+                {milestonesLoading ? (
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {[1, 2, 3].map((i) => (
+                      <Skeleton key={i} className="h-48 rounded-xl" />
+                    ))}
+                  </div>
+                ) : userMilestones && userMilestones.length > 0 ? (
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {userMilestones.map((um) => (
+                      <MilestoneCard
+                        key={um.id}
+                        title={um.milestone?.title || "Milestone"}
+                        description={um.milestone?.description || ""}
+                        type={um.milestone?.type || "streak"}
+                        icon={um.milestone?.icon}
+                        achievedAt={um.achieved_at}
+                        meta={um.meta as Record<string, any> || {}}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <Card className="p-8 text-center">
+                    <Award className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground">
+                      Complete challenges and track consistently to unlock milestones!
+                    </p>
+                  </Card>
+                )}
+              </div>
+
+              {/* Regional Ranking */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Regional Ranking</h3>
+                <RegionalRankBadge />
+              </div>
+
+              {/* Household Score */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">Household Score</h3>
+                <HouseholdScoreCard />
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="rewards">

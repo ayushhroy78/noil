@@ -193,10 +193,6 @@ const Index = () => {
                     <Landmark className="w-4 h-4 mr-2" />
                     Policy Maker Dashboard
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/milestones")} className="cursor-pointer">
-                    <Award className="w-4 h-4 mr-2" />
-                    Milestones
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/community")} className="cursor-pointer">
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Community
