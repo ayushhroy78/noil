@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -17,13 +17,7 @@ export const useCart = (userId: string | undefined) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (userId) {
-      fetchCart();
-    }
-  }, [userId]);
-
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
     if (!userId) return;
 
     try {
@@ -63,7 +57,36 @@ export const useCart = (userId: string | undefined) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
+
+  // Initial fetch and realtime subscription
+  useEffect(() => {
+    if (!userId) return;
+
+    fetchCart();
+
+    // Subscribe to realtime changes for this user's cart
+    const channel = supabase
+      .channel(`cart-${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'cart_items',
+          filter: `user_id=eq.${userId}`,
+        },
+        () => {
+          // Refetch cart on any change (INSERT, UPDATE, DELETE)
+          fetchCart();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, fetchCart]);
 
   const addToCart = async (productId: string, variantId: string) => {
     if (!userId) {
