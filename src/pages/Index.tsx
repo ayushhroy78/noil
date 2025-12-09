@@ -294,7 +294,7 @@ const Index = () => {
               className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
             >
               <MessageSquare className="w-5 h-5 text-accent" />
-              <span className="text-xs text-foreground font-medium">{t('common.community').slice(0, 6)}</span>
+              <span className="text-xs text-foreground font-medium">{t('common.community')}</span>
             </button>
             <button 
               onClick={() => requireAuth(() => navigate("/certified-restaurants"))}
