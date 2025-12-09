@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +35,7 @@ interface NudgesTabProps {
 }
 
 export const NudgesTab = ({ userId }: NudgesTabProps) => {
+  const { t } = useTranslation();
   const [nudges, setNudges] = useState<NudgeTemplate[]>([]);
   const [trackingData, setTrackingData] = useState<TrackingData | null>(null);
   const [weeklyReport, setWeeklyReport] = useState<any>(null);
@@ -176,24 +178,24 @@ export const NudgesTab = ({ userId }: NudgesTabProps) => {
           <CardContent className="p-5">
             <div className="flex items-center gap-2 mb-4">
               <BarChart3 className="w-5 h-5 text-primary" />
-              <h3 className="font-semibold text-foreground">This Week's Summary</h3>
+              <h3 className="font-semibold text-foreground">{t("discover.weekSummary")}</h3>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <div className="text-2xl font-bold text-primary">{weeklyReport.avgScore}</div>
-                <div className="text-xs text-muted-foreground">Avg Health Score</div>
+                <div className="text-xs text-muted-foreground">{t("discover.avgHealthScore")}</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-foreground">{weeklyReport.totalOil}ml</div>
-                <div className="text-xs text-muted-foreground">Total Oil</div>
+                <div className="text-xs text-muted-foreground">{t("discover.totalOil")}</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-warning">{weeklyReport.hiddenOilPercentage}%</div>
-                <div className="text-xs text-muted-foreground">From Packaged Foods</div>
+                <div className="text-xs text-muted-foreground">{t("discover.fromPackagedFoods")}</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-success">{weeklyReport.bestDay}ml</div>
-                <div className="text-xs text-muted-foreground">Best Day</div>
+                <div className="text-xs text-muted-foreground">{t("discover.bestDay")}</div>
               </div>
             </div>
           </CardContent>
@@ -204,16 +206,16 @@ export const NudgesTab = ({ userId }: NudgesTabProps) => {
       <div>
         <div className="flex items-center gap-2 mb-4">
           <Lightbulb className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">Today's Tips for You</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t("discover.todaysTips")}</h2>
         </div>
 
         {nudges.length === 0 ? (
           <Card className="shadow-soft">
             <CardContent className="p-6 text-center">
               <div className="text-4xl mb-2">🎉</div>
-              <p className="text-foreground font-medium">You're doing great!</p>
+              <p className="text-foreground font-medium">{t("discover.doingGreat")}</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Keep up the healthy habits. No urgent tips for now.
+                {t("discover.keepHealthyHabits")}
               </p>
             </CardContent>
           </Card>
@@ -233,7 +235,7 @@ export const NudgesTab = ({ userId }: NudgesTabProps) => {
                         <p className="text-sm text-foreground">{nudge.template_text}</p>
                         {nudge.priority === 1 && (
                           <Badge variant="destructive" className="mt-2 text-xs">
-                            High Priority
+                            {t("discover.highPriority")}
                           </Badge>
                         )}
                       </div>
