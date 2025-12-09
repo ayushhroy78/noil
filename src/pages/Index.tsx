@@ -242,15 +242,27 @@ const Index = () => {
             <Card 
               key={category.id} 
               onClick={() => requireAuth(() => navigate(category.path))} 
-              className="group relative overflow-hidden bg-card shadow-medium border-0 cursor-pointer hover:shadow-lg transition-all duration-500 hover:-translate-y-1 animate-in fade-in duration-700 h-48" 
+              className="group relative overflow-hidden bg-card shadow-medium border-0 cursor-pointer transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02] animate-in fade-in duration-700 h-48 hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.25)]" 
               style={{ animationDelay: `${index * 100}ms` }}
             >
+              {/* Hover glow overlay */}
+              <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-20 ${
+                category.id === "oil-tracker" ? "shadow-[inset_0_0_30px_rgba(20,184,166,0.3)]" :
+                category.id === "recipes" ? "shadow-[inset_0_0_30px_rgba(16,185,129,0.3)]" :
+                category.id === "discover" ? "shadow-[inset_0_0_30px_rgba(139,92,246,0.3)]" :
+                "shadow-[inset_0_0_30px_rgba(107,142,35,0.3)]"
+              }`} />
+              
               {category.id === "oil-tracker" && (
                 // Tracker Tile - Teal/Cyan gradient with oil meter
-                <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-cyan-500">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-cyan-500 transition-all duration-500 group-hover:from-primary/90 group-hover:via-primary/80 group-hover:to-cyan-400">
+                  {/* Animated glow ring */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-white/20 rounded-full blur-3xl animate-pulse" />
+                  </div>
                   {/* Floating oil drops */}
-                  <div className="absolute top-3 right-3 w-4 h-6 bg-white/20 rounded-full blur-[1px] animate-pulse" />
-                  <div className="absolute top-8 right-8 w-3 h-4 bg-white/15 rounded-full blur-[1px]" style={{ animationDelay: '200ms' }} />
+                  <div className="absolute top-3 right-3 w-4 h-6 bg-white/20 rounded-full blur-[1px] animate-pulse group-hover:scale-125 transition-transform duration-300" />
+                  <div className="absolute top-8 right-8 w-3 h-4 bg-white/15 rounded-full blur-[1px] group-hover:scale-125 transition-transform duration-300" style={{ animationDelay: '200ms' }} />
                   <div className="absolute bottom-12 right-4 w-2 h-3 bg-white/20 rounded-full blur-[1px]" />
                   
                   {/* Oil Meter Illustration */}
@@ -289,15 +301,19 @@ const Index = () => {
 
               {category.id === "recipes" && (
                 // Fit Meal Tile - Green/Emerald gradient with food icons
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-500">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-500 transition-all duration-500 group-hover:from-emerald-400 group-hover:via-green-400 group-hover:to-teal-400">
+                  {/* Animated glow ring */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-white/20 rounded-full blur-3xl animate-pulse" />
+                  </div>
                   {/* Floating leaves */}
-                  <div className="absolute top-4 right-4 w-6 h-6 opacity-60">
+                  <div className="absolute top-4 right-4 w-6 h-6 opacity-60 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2 6.5 5 8 0-4 3-8 5-10 2 2 5 6 5 10 3-1.5 5-4.5 5-8 0-5.5-4.5-10-10-10z" 
                         fill="rgba(255,255,255,0.4)"/>
                     </svg>
                   </div>
-                  <div className="absolute bottom-16 right-6 w-4 h-4 opacity-50 rotate-45">
+                  <div className="absolute bottom-16 right-6 w-4 h-4 opacity-50 rotate-45 group-hover:scale-125 group-hover:rotate-90 transition-all duration-300">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2 6.5 5 8 0-4 3-8 5-10 2 2 5 6 5 10 3-1.5 5-4.5 5-8 0-5.5-4.5-10-10-10z" 
                         fill="rgba(255,255,255,0.4)"/>
@@ -305,7 +321,7 @@ const Index = () => {
                   </div>
                   
                   {/* Salad Bowl Illustration */}
-                  <div className="absolute bottom-1 right-1 w-24 h-24 opacity-90">
+                  <div className="absolute bottom-1 right-1 w-24 h-24 opacity-90 group-hover:scale-110 transition-transform duration-500">
                     <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
                       {/* Bowl */}
                       <ellipse cx="50" cy="70" rx="40" ry="15" fill="rgba(255,255,255,0.25)"/>
@@ -322,32 +338,36 @@ const Index = () => {
                   
                   {/* Badges */}
                   <div className="absolute bottom-3 left-3 flex gap-1">
-                    <div className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+                    <div className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full group-hover:bg-white/30 transition-colors duration-300">
                       <span className="text-[10px] font-semibold text-white">{t('fitMeal.lowOil')}</span>
                     </div>
                   </div>
                   
                   {/* Text content */}
                   <div className="absolute top-4 left-4 z-10">
-                    <h3 className="text-lg font-bold text-white mb-1 drop-shadow-md">{category.title}</h3>
+                    <h3 className="text-lg font-bold text-white mb-1 drop-shadow-md group-hover:drop-shadow-lg transition-all duration-300">{category.title}</h3>
                     <p className="text-xs text-white/80 leading-tight max-w-[100px]">{category.subtitle}</p>
                   </div>
                   
                   {/* Decorative circles */}
-                  <div className="absolute -top-6 -right-6 w-20 h-20 bg-white/10 rounded-full blur-xl" />
+                  <div className="absolute -top-6 -right-6 w-20 h-20 bg-white/10 rounded-full blur-xl group-hover:w-24 group-hover:h-24 group-hover:bg-white/20 transition-all duration-500" />
                 </div>
               )}
 
               {category.id === "discover" && (
                 // Discover Tile - Purple/Violet gradient with wellness icons
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500">
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500 transition-all duration-500 group-hover:from-violet-400 group-hover:via-purple-400 group-hover:to-indigo-400">
+                  {/* Animated glow ring */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-white/20 rounded-full blur-3xl animate-pulse" />
+                  </div>
                   {/* Stars */}
-                  <div className="absolute top-5 right-6 text-white/40">✦</div>
-                  <div className="absolute top-10 right-3 text-white/30 text-sm">✦</div>
-                  <div className="absolute bottom-20 right-8 text-white/25 text-xs">✦</div>
+                  <div className="absolute top-5 right-6 text-white/40 group-hover:scale-150 group-hover:text-white/60 transition-all duration-300">✦</div>
+                  <div className="absolute top-10 right-3 text-white/30 text-sm group-hover:scale-150 group-hover:text-white/50 transition-all duration-300" style={{ transitionDelay: '50ms' }}>✦</div>
+                  <div className="absolute bottom-20 right-8 text-white/25 text-xs group-hover:scale-150 group-hover:text-white/40 transition-all duration-300" style={{ transitionDelay: '100ms' }}>✦</div>
                   
                   {/* Wellness Heart Illustration */}
-                  <div className="absolute bottom-2 right-2 w-20 h-20 opacity-90">
+                  <div className="absolute bottom-2 right-2 w-20 h-20 opacity-90 group-hover:scale-110 transition-transform duration-500">
                     <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
                       {/* Heart shape */}
                       <path d="M40 70 C20 50 5 35 5 22 C5 12 15 5 25 5 C32 5 38 10 40 15 C42 10 48 5 55 5 C65 5 75 12 75 22 C75 35 60 50 40 70Z" 
@@ -363,31 +383,35 @@ const Index = () => {
                   
                   {/* Badges */}
                   <div className="absolute bottom-3 left-3 flex gap-1">
-                    <div className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+                    <div className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full group-hover:bg-white/30 transition-colors duration-300">
                       <span className="text-[10px] font-semibold text-white">{t('discover.learn')}</span>
                     </div>
                   </div>
                   
                   {/* Text content */}
                   <div className="absolute top-4 left-4 z-10">
-                    <h3 className="text-lg font-bold text-white mb-1 drop-shadow-md">{category.title}</h3>
+                    <h3 className="text-lg font-bold text-white mb-1 drop-shadow-md group-hover:drop-shadow-lg transition-all duration-300">{category.title}</h3>
                     <p className="text-xs text-white/80 leading-tight max-w-[100px]">{category.subtitle}</p>
                   </div>
                   
                   {/* Decorative circles */}
-                  <div className="absolute -bottom-10 -left-10 w-28 h-28 bg-white/10 rounded-full blur-xl" />
+                  <div className="absolute -bottom-10 -left-10 w-28 h-28 bg-white/10 rounded-full blur-xl group-hover:w-32 group-hover:h-32 group-hover:bg-white/20 transition-all duration-500" />
                 </div>
               )}
 
               {category.isIconCard && (
                 // Register Restaurant Tile - Olive gradient with Fork & Knife
-                <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #808000 0%, #6B8E23 50%, #556B2F 100%)' }}>
+                <div className="absolute inset-0 transition-all duration-500" style={{ background: 'linear-gradient(135deg, #808000 0%, #6B8E23 50%, #556B2F 100%)' }}>
+                  {/* Animated glow ring */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-white/20 rounded-full blur-3xl animate-pulse" />
+                  </div>
                   {/* Decorative floating elements */}
-                  <div className="absolute top-3 right-3 w-8 h-8 bg-white/10 rounded-full blur-sm" />
-                  <div className="absolute bottom-16 left-4 w-6 h-6 bg-white/10 rounded-full blur-sm" />
+                  <div className="absolute top-3 right-3 w-8 h-8 bg-white/10 rounded-full blur-sm group-hover:scale-125 group-hover:bg-white/20 transition-all duration-300" />
+                  <div className="absolute bottom-16 left-4 w-6 h-6 bg-white/10 rounded-full blur-sm group-hover:scale-125 group-hover:bg-white/20 transition-all duration-300" />
                   
                   {/* Fork & Knife Illustration */}
-                  <div className="absolute bottom-1 right-1 w-24 h-24 opacity-90">
+                  <div className="absolute bottom-1 right-1 w-24 h-24 opacity-90 group-hover:scale-110 transition-transform duration-500">
                     <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
                       {/* Fork */}
                       <g transform="translate(20, 8)">
@@ -418,17 +442,17 @@ const Index = () => {
                   
                   {/* Text content */}
                   <div className="absolute top-4 left-4 z-10">
-                    <h3 className="text-lg font-bold text-white mb-1 drop-shadow-md">{category.title}</h3>
+                    <h3 className="text-lg font-bold text-white mb-1 drop-shadow-md group-hover:drop-shadow-lg transition-all duration-300">{category.title}</h3>
                     <p className="text-xs text-white/80 leading-tight max-w-[100px]">{category.subtitle}</p>
                   </div>
                   
                   {/* Badge */}
-                  <div className="absolute bottom-3 left-3 bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+                  <div className="absolute bottom-3 left-3 bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full group-hover:bg-white/30 transition-colors duration-300">
                     <span className="text-[10px] font-semibold text-white">Partner</span>
                   </div>
                   
                   {/* Decorative circles */}
-                  <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+                  <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-white/10 rounded-full blur-xl group-hover:w-28 group-hover:h-28 group-hover:bg-white/20 transition-all duration-500" />
                 </div>
               )}
             </Card>
