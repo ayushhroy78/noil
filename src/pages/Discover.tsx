@@ -69,9 +69,9 @@ const Discover = () => {
                 <Store className="h-6 w-6 text-green-600" />
               </div>
               <div className="flex-1">
-                <p className="font-medium text-green-800 dark:text-green-200">Healthy Restaurants</p>
+                <p className="font-medium text-green-800 dark:text-green-200">{t('discover.healthyRestaurants')}</p>
                 <p className="text-sm text-green-600 dark:text-green-400">
-                  Find restaurants that cook with healthy oils
+                  {t('discover.findRestaurants')}
                 </p>
               </div>
               <MapPin className="h-5 w-5 text-green-500" />
@@ -93,7 +93,7 @@ const Discover = () => {
               <EnhancedChallengesTab userId={userId} />
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                Please log in to participate in challenges
+                {t('discover.pleaseLoginChallenges')}
               </div>
             )}
           </TabsContent>
@@ -103,7 +103,7 @@ const Discover = () => {
               <QuizzesTab userId={userId} />
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                Please log in to take quizzes
+                {t('discover.pleaseLoginQuizzes')}
               </div>
             )}
           </TabsContent>
@@ -117,7 +117,7 @@ const Discover = () => {
               <NudgesTab userId={userId} />
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                Please log in to view personalized tips
+                {t('discover.pleaseLoginTips')}
               </div>
             )}
           </TabsContent>

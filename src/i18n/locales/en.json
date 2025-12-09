@@ -25,14 +25,20 @@
     "sort": "Sort",
     "viewAll": "View All",
     "seeMore": "See More",
-    "close": "Close"
+    "close": "Close",
+    "loginRequired": "Login Required",
+    "pleaseLogin": "Please login to access this feature.",
+    "loggedOut": "Logged out",
+    "loggedOutDesc": "You have been successfully logged out.",
+    "setLocation": "Set your location"
   },
   "nav": {
     "tracker": "Tracker",
     "recipes": "Recipes",
     "home": "Home",
     "store": "Store",
-    "discover": "Discover"
+    "discover": "Discover",
+    "profile": "Profile"
   },
   "landing": {
     "tagline": "Track. Cook. Thrive.",
@@ -45,7 +51,41 @@
     "welcome": "Welcome",
     "dailyProgress": "Daily Progress",
     "quickActions": "Quick Actions",
-    "recentActivity": "Recent Activity"
+    "recentActivity": "Recent Activity",
+    "searchPlaceholder": "Search healthy recipes, oils, guides...",
+    "healthProfile": "Health Profile",
+    "registerRestaurant": "Register Restaurant",
+    "verifiedRestaurants": "Verified Restaurants",
+    "realTimeDashboard": "Real Time Dashboard",
+    "policyMakerDashboard": "Policy Maker Dashboard",
+    "rewardsStore": "Rewards Store",
+    "oilCalculator": "Oil Calculator",
+    "loginSignup": "Login / Sign Up",
+    "footerTagline": "Less Oil, Same Taste, Better Life"
+  },
+  "carousel": {
+    "wellnessChallenge": "WELLNESS CHALLENGE",
+    "saveOil": "Save 10% Oil",
+    "improveHealth": "Improve Your Health Today",
+    "joinChallenge": "Join Challenge",
+    "smartStoreSale": "SMART STORE SALE",
+    "upTo30Off": "Up to 30% OFF",
+    "certifiedOils": "On Certified Healthy Oils & Essentials",
+    "shopNow": "Shop Now",
+    "partnerWithUs": "PARTNER WITH US",
+    "registerRestaurant": "Register Restaurant",
+    "joinNetwork": "Join Noil's Healthy Dining Network & Grow Your Business",
+    "applyNow": "Apply Now"
+  },
+  "categories": {
+    "tracker": "Tracker",
+    "trackerSubtitle": "Track Your Daily Oil Use",
+    "fitMeal": "Fit Meal",
+    "fitMealSubtitle": "Low-Oil Cooking Ideas",
+    "oilHub": "OilHub",
+    "oilHubSubtitle": "Buy Certified Oils & Essentials",
+    "discover": "Discover",
+    "discoverSubtitle": "Learn Healthy Habits"
   },
   "tracker": {
     "title": "Oil Tracker",
@@ -64,7 +104,7 @@
     "consumption": "Consumption",
     "insights": "Insights",
     "bottles": "Bottles",
-    "barcodeScan": "Scan Barcode",
+    "barcodeScan": "Scan",
     "manualEntry": "Manual Entry",
     "dailyGoal": "Daily Goal",
     "remaining": "Remaining"
@@ -82,11 +122,19 @@
     "steps": "Steps",
     "cookThis": "Cooked this - log oil usage",
     "generateRecipe": "Generate Recipe",
-    "enterIngredients": "Enter your ingredients"
+    "enterIngredients": "Enter your ingredients",
+    "allMeals": "All Meals",
+    "allCuisines": "All Cuisines",
+    "showingRecipes": "Showing",
+    "recipesText": "recipes",
+    "noRecipes": "No recipes available yet",
+    "noMatchingRecipes": "No recipes match your filters",
+    "clearFilters": "Clear filters",
+    "loadingRecipes": "Loading delicious recipes..."
   },
   "oilhub": {
     "title": "OilHub",
-    "subtitle": "Buy Certified Oils & Essentials",
+    "subtitle": "Automatically track your oil usage with our IoT devices",
     "addToCart": "Add to Cart",
     "viewCart": "View Cart",
     "checkout": "Checkout",
@@ -95,21 +143,27 @@
     "total": "Total",
     "orderNow": "Order Now",
     "iotDevices": "IoT Devices",
-    "smartTracking": "Smart Oil Tracking"
+    "smartTracking": "Smart Oil Tracking Devices",
+    "noDevices": "No IoT devices available at the moment"
   },
   "discover": {
     "title": "Discover",
     "subtitle": "Learn Healthy Habits",
     "challenges": "Challenges",
     "quizzes": "Quizzes",
-    "healthInfo": "Health Info",
-    "nudges": "Daily Nudges",
-    "leaderboard": "Leaderboard",
+    "healthInfo": "Info",
+    "nudges": "Tips",
+    "leaderboard": "Leaders",
     "startChallenge": "Start Challenge",
     "takeQuiz": "Take Quiz",
     "points": "Points",
     "streak": "Streak",
-    "badges": "Badges"
+    "badges": "Badges",
+    "healthyRestaurants": "Healthy Restaurants",
+    "findRestaurants": "Find restaurants that cook with healthy oils",
+    "pleaseLoginChallenges": "Please log in to participate in challenges",
+    "pleaseLoginQuizzes": "Please log in to take quizzes",
+    "pleaseLoginTips": "Please log in to view personalized tips"
   },
   "profile": {
     "title": "Profile",

@@ -1,5 +1,6 @@
 import { Activity, Book, Home, ShoppingBag, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -7,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 export const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
@@ -35,8 +37,8 @@ export const BottomNav = () => {
     // Other routes require auth
     if (!isLoggedIn) {
       toast({
-        title: "Login Required",
-        description: "Please login to access this feature.",
+        title: t('common.loginRequired'),
+        description: t('common.pleaseLogin'),
         variant: "destructive"
       });
       navigate("/auth");
@@ -47,11 +49,11 @@ export const BottomNav = () => {
   };
 
   const navItems = [
-    { icon: Activity, label: "Tracker", path: "/tracker" },
-    { icon: Book, label: "Recipes", path: "/fit-meal" },
-    { icon: Home, label: "Home", path: "/home" },
-    { icon: ShoppingBag, label: "Store", path: "/oilhub" },
-    { icon: User, label: "Profile", path: "/profile" },
+    { icon: Activity, labelKey: "nav.tracker", path: "/tracker" },
+    { icon: Book, labelKey: "nav.recipes", path: "/fit-meal" },
+    { icon: Home, labelKey: "nav.home", path: "/home" },
+    { icon: ShoppingBag, labelKey: "nav.store", path: "/oilhub" },
+    { icon: User, labelKey: "nav.profile", path: "/profile" },
   ];
 
   return (
@@ -63,7 +65,7 @@ export const BottomNav = () => {
           const isHome = item.path === "/home";
           return (
             <button
-              key={item.label}
+              key={item.labelKey}
               onClick={() => handleNavigation(item.path)}
               className={`flex flex-col items-center justify-center gap-1 py-1.5 rounded-xl transition-all duration-300 ease-out ${
                 isActive
@@ -72,7 +74,7 @@ export const BottomNav = () => {
               } ${isHome ? "mx-auto" : ""}`}
             >
               <Icon className="w-6 h-6 transition-colors duration-300 ease-out" />
-              <span className="text-xs font-medium transition-colors duration-300 ease-out">{item.label}</span>
+              <span className="text-xs font-medium transition-colors duration-300 ease-out">{t(item.labelKey)}</span>
             </button>
           );
         })}

@@ -59,8 +59,8 @@ const Index = () => {
   const requireAuth = (callback: () => void) => {
     if (!isLoggedIn) {
       toast({
-        title: "Login Required",
-        description: "Please login to access this feature.",
+        title: t('common.loginRequired'),
+        description: t('common.pleaseLogin'),
         variant: "destructive"
       });
       navigate("/auth");
@@ -81,74 +81,79 @@ const Index = () => {
     if (userState) {
       return userState;
     }
-    return "Set your location";
+    return t('common.setLocation');
   };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast({
-      title: "Logged out",
-      description: "You have been successfully logged out."
+      title: t('common.loggedOut'),
+      description: t('common.loggedOutDesc')
     });
     navigate("/auth");
   };
+
   const offerSlides = [{
     id: "wellness-challenge",
-    badge: "💧 WELLNESS CHALLENGE",
-    title: "Save 10% Oil",
-    subtitle: "Improve Your Health Today",
-    buttonText: "Join Challenge",
+    badge: `💧 ${t('carousel.wellnessChallenge')}`,
+    title: t('carousel.saveOil'),
+    subtitle: t('carousel.improveHealth'),
+    buttonText: t('carousel.joinChallenge'),
     gradient: "bg-gradient-success",
     glowClass: "success-glow",
     action: () => requireAuth(() => navigate("/profile?tab=challenges"))
   }, {
     id: "store-discount",
-    badge: "🛍️ SMART STORE SALE",
-    title: "Up to 30% OFF",
-    subtitle: "On Certified Healthy Oils & Essentials",
-    buttonText: "Shop Now",
+    badge: `🛍️ ${t('carousel.smartStoreSale')}`,
+    title: t('carousel.upTo30Off'),
+    subtitle: t('carousel.certifiedOils'),
+    buttonText: t('carousel.shopNow'),
     gradient: "bg-gradient-primary",
     glowClass: "primary-glow",
     action: () => requireAuth(() => navigate("/oilhub"))
   }, {
     id: "register-restaurant",
-    badge: "🍴 PARTNER WITH US",
-    title: "Register Restaurant",
-    subtitle: "Join Noil's Healthy Dining Network & Grow Your Business",
-    buttonText: "Apply Now",
+    badge: `🍴 ${t('carousel.partnerWithUs')}`,
+    title: t('carousel.registerRestaurant'),
+    subtitle: t('carousel.joinNetwork'),
+    buttonText: t('carousel.applyNow'),
     gradient: "bg-gradient-to-br from-amber-500 to-orange-600",
     glowClass: "amber-glow",
     action: () => requireAuth(() => navigate("/restaurant-apply"))
   }];
+
   const categories = [{
     id: "oil-tracker",
-    title: "Tracker",
-    subtitle: "Track Your Daily Oil Use",
+    title: t('categories.tracker'),
+    subtitle: t('categories.trackerSubtitle'),
     image: trackerMainImg,
     color: "from-blue-500/10 to-cyan-500/10",
     path: "/tracker"
   }, {
     id: "recipes",
-    title: "Fit Meal",
-    subtitle: "Low-Oil Cooking Ideas",
+    title: t('categories.fitMeal'),
+    subtitle: t('categories.fitMealSubtitle'),
     image: fitMealMainImg,
     color: "from-green-500/10 to-emerald-500/10",
     path: "/fit-meal"
   }, {
     id: "store",
-    title: "OilHub",
-    subtitle: "Buy Certified Oils & Essentials",
+    title: t('categories.oilHub'),
+    subtitle: t('categories.oilHubSubtitle'),
     image: oilhubMainImg,
     color: "from-orange-500/10 to-amber-500/10",
     path: "/oilhub"
   }, {
     id: "discover",
-    title: "Discover",
-    subtitle: "Learn Healthy Habits",
+    title: t('categories.discover'),
+    subtitle: t('categories.discoverSubtitle'),
     image: discoverMainImg,
     color: "from-purple-500/10 to-pink-500/10",
     path: "/discover"
   }];
-  return <div className="min-h-screen bg-background pb-24 overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+
+  return (
+    <div className="min-h-screen bg-background pb-24 overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card shadow-soft px-4 py-4">
         <div className="flex items-center justify-between mb-3">
@@ -175,54 +180,54 @@ const Index = () => {
                 <button className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors">
                   <User className="w-5 h-5 text-primary" />
                 </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-card border-border">
-              {isLoggedIn ? (
-                <>
-                  <DropdownMenuItem onClick={() => navigate("/profile?tab=health")} className="cursor-pointer">
-                    <Heart className="w-4 h-4 mr-2" />
-                    Health Profile
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 bg-card border-border">
+                {isLoggedIn ? (
+                  <>
+                    <DropdownMenuItem onClick={() => navigate("/profile?tab=health")} className="cursor-pointer">
+                      <Heart className="w-4 h-4 mr-2" />
+                      {t('home.healthProfile')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/restaurant-apply")} className="cursor-pointer">
+                      <Store className="w-4 h-4 mr-2" />
+                      {t('home.registerRestaurant')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/certified-restaurants")} className="cursor-pointer">
+                      <Shield className="w-4 h-4 mr-2" />
+                      {t('home.verifiedRestaurants')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
+                      <Activity className="w-4 h-4 mr-2" />
+                      {t('home.realTimeDashboard')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/policy-dashboard")} className="cursor-pointer">
+                      <Landmark className="w-4 h-4 mr-2" />
+                      {t('home.policyMakerDashboard')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/community")} className="cursor-pointer">
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      {t('common.community')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/profile?tab=rewards")} className="cursor-pointer">
+                      <Gift className="w-4 h-4 mr-2" />
+                      {t('home.rewardsStore')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/oil-calculator")} className="cursor-pointer">
+                      <Calculator className="w-4 h-4 mr-2" />
+                      {t('home.oilCalculator')}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      {t('common.logout')}
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <DropdownMenuItem onClick={() => navigate("/auth")} className="cursor-pointer">
+                    <User className="w-4 h-4 mr-2" />
+                    {t('home.loginSignup')}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/restaurant-apply")} className="cursor-pointer">
-                    <Store className="w-4 h-4 mr-2" />
-                    Register Restaurant
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/certified-restaurants")} className="cursor-pointer">
-                    <Shield className="w-4 h-4 mr-2" />
-                    Verified Restaurants
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
-                    <Activity className="w-4 h-4 mr-2" />
-                    Real Time Dashboard
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/policy-dashboard")} className="cursor-pointer">
-                    <Landmark className="w-4 h-4 mr-2" />
-                    Policy Maker Dashboard
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/community")} className="cursor-pointer">
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Community
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/profile?tab=rewards")} className="cursor-pointer">
-                    <Gift className="w-4 h-4 mr-2" />
-                    Rewards Store
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/oil-calculator")} className="cursor-pointer">
-                    <Calculator className="w-4 h-4 mr-2" />
-                    Oil Calculator
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Logout
-                  </DropdownMenuItem>
-                </>
-              ) : (
-                <DropdownMenuItem onClick={() => navigate("/auth")} className="cursor-pointer">
-                  <User className="w-4 h-4 mr-2" />
-                  Login / Sign Up
-                </DropdownMenuItem>
-              )}
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -230,7 +235,11 @@ const Index = () => {
         
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <input type="text" placeholder="Search healthy recipes, oils, guides..." className="w-full pl-10 pr-4 py-3 bg-secondary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-success/20 transition-all" />
+          <input 
+            type="text" 
+            placeholder={t('home.searchPlaceholder')} 
+            className="w-full pl-10 pr-4 py-3 bg-secondary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-success/20 transition-all" 
+          />
         </div>
       </header>
 
@@ -249,7 +258,8 @@ const Index = () => {
             stopOnInteraction: true
           })]} className="w-full animate-in fade-in slide-in-from-top-4 duration-500">
             <CarouselContent>
-              {offerSlides.map(slide => <CarouselItem key={slide.id}>
+              {offerSlides.map(slide => (
+                <CarouselItem key={slide.id}>
                   <Card className={`relative overflow-hidden ${slide.gradient} border-0 p-6 min-h-[160px]`}>
                     <div className="absolute inset-0 bg-gradient-radial opacity-40" />
                     <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl opacity-20" />
@@ -268,7 +278,8 @@ const Index = () => {
                       </button>
                     </div>
                   </Card>
-                </CarouselItem>)}
+                </CarouselItem>
+              ))}
             </CarouselContent>
             <CarouselPrevious className="left-2 bg-white/80 hover:bg-white border-0 shadow-md" />
             <CarouselNext className="right-2 bg-white/80 hover:bg-white border-0 shadow-md" />
@@ -277,22 +288,25 @@ const Index = () => {
 
         {/* Categories Grid */}
         <div className="grid grid-cols-2 gap-4">
-          {categories.map((category, index) => <Card key={category.id} onClick={() => requireAuth(() => navigate(category.path))} className="group relative overflow-hidden bg-card shadow-medium border-0 cursor-pointer hover:shadow-lg transition-all duration-500 hover:-translate-y-1 animate-in fade-in duration-700 h-48" style={{
-          animationDelay: `${index * 150}ms`
-        }}>
+          {categories.map((category, index) => (
+            <Card 
+              key={category.id} 
+              onClick={() => requireAuth(() => navigate(category.path))} 
+              className="group relative overflow-hidden bg-card shadow-medium border-0 cursor-pointer hover:shadow-lg transition-all duration-500 hover:-translate-y-1 animate-in fade-in duration-700 h-48" 
+              style={{ animationDelay: `${index * 150}ms` }}
+            >
               {/* Full Image Background */}
               <img src={category.image} alt={category.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-            </Card>)}
+            </Card>
+          ))}
         </div>
 
         {/* Footer Branding */}
-        <div className="py-12 space-y-4 animate-in fade-in duration-700" style={{
-        animationDelay: '600ms'
-      }}>
-          <h2 className="font-black text-muted-foreground/20 leading-tight text-5xl font-serif text-center">Less Oil, Same Taste, Better Life <br />
+        <div className="py-12 space-y-4 animate-in fade-in duration-700" style={{ animationDelay: '600ms' }}>
+          <h2 className="font-black text-muted-foreground/20 leading-tight text-5xl font-serif text-center">
+            {t('home.footerTagline')} <br />
             ​
           </h2>
-          
         </div>
       </main>
 
@@ -301,6 +315,8 @@ const Index = () => {
 
       {/* Bottom Navigation */}
       <BottomNav />
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
