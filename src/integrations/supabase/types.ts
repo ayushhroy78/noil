@@ -86,6 +86,45 @@ export type Database = {
         }
         Relationships: []
       }
+      barcode_scans_archive: {
+        Row: {
+          archived_at: string
+          barcode: string | null
+          created_at: string | null
+          fat_content_g: number | null
+          id: string
+          oil_content_ml: number
+          product_name: string
+          scan_date: string
+          trans_fat_g: number | null
+          user_id: string
+        }
+        Insert: {
+          archived_at?: string
+          barcode?: string | null
+          created_at?: string | null
+          fat_content_g?: number | null
+          id?: string
+          oil_content_ml: number
+          product_name: string
+          scan_date?: string
+          trans_fat_g?: number | null
+          user_id: string
+        }
+        Update: {
+          archived_at?: string
+          barcode?: string | null
+          created_at?: string | null
+          fat_content_g?: number | null
+          id?: string
+          oil_content_ml?: number
+          product_name?: string
+          scan_date?: string
+          trans_fat_g?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       bottles: {
         Row: {
           avg_daily_consumption: number | null
@@ -461,6 +500,33 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages_archive: {
+        Row: {
+          archived_at: string
+          content: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          archived_at?: string
+          content: string
+          created_at?: string
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          archived_at?: string
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       community_comments: {
         Row: {
           body: string
@@ -752,6 +818,42 @@ export type Database = {
         }
         Update: {
           amount_ml?: number
+          created_at?: string | null
+          id?: string
+          log_date?: string
+          notes?: string | null
+          oil_type?: string | null
+          source?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      daily_logs_archive: {
+        Row: {
+          amount_ml: number
+          archived_at: string
+          created_at: string | null
+          id: string
+          log_date: string
+          notes: string | null
+          oil_type: string | null
+          source: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_ml: number
+          archived_at?: string
+          created_at?: string | null
+          id?: string
+          log_date?: string
+          notes?: string | null
+          oil_type?: string | null
+          source?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_ml?: number
+          archived_at?: string
           created_at?: string | null
           id?: string
           log_date?: string
@@ -1321,6 +1423,45 @@ export type Database = {
         }
         Relationships: []
       }
+      point_transactions_archive: {
+        Row: {
+          archived_at: string
+          balance_after: number
+          created_at: string
+          description: string
+          id: string
+          points: number
+          source: string
+          source_id: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          archived_at?: string
+          balance_after: number
+          created_at?: string
+          description: string
+          id?: string
+          points: number
+          source: string
+          source_id?: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          archived_at?: string
+          balance_after?: number
+          created_at?: string
+          description?: string
+          id?: string
+          points?: number
+          source?: string
+          source_id?: string | null
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       product_variants: {
         Row: {
           created_at: string
@@ -1792,6 +1933,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_daily_aggregates: {
+        Row: {
+          bottle_oil_ml: number
+          cooking_oil_ml: number
+          date: string
+          hidden_oil_ml: number
+          log_count: number
+          scan_count: number
+          total_oil_ml: number
+          trans_fat_g: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bottle_oil_ml?: number
+          cooking_oil_ml?: number
+          date: string
+          hidden_oil_ml?: number
+          log_count?: number
+          scan_count?: number
+          total_oil_ml?: number
+          trans_fat_g?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bottle_oil_ml?: number
+          cooking_oil_ml?: number
+          date?: string
+          hidden_oil_ml?: number
+          log_count?: number
+          scan_count?: number
+          total_oil_ml?: number
+          trans_fat_g?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_milestones: {
         Row: {
