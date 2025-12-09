@@ -31,6 +31,7 @@ import CreateCommunityPost from "./pages/CreateCommunityPost";
 import CommunityUserProfile from "./pages/CommunityUserProfile";
 import Messages from "./pages/Messages";
 import PolicyMakerDashboard from "./pages/PolicyMakerDashboard";
+import ProductDetail from "./pages/ProductDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,6 +58,7 @@ const App = () => {
               <Route path="/tracker" element={<Tracker />} />
               <Route path="/fit-meal" element={<FitMeal />} />
               <Route path="/oilhub" element={<OilHub />} />
+              <Route path="/oilhub/product/:productId" element={<ProductDetail />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/discover" element={<Discover />} />
               <Route path="/profile" element={<Profile />} />
