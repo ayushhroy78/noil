@@ -1,4 +1,4 @@
-import { Activity, Book, Home, ShoppingBag, User } from "lucide-react";
+import { Activity, Book, Home, Compass, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
@@ -52,7 +52,7 @@ export const BottomNav = () => {
     { icon: Activity, labelKey: "nav.tracker", path: "/tracker" },
     { icon: Book, labelKey: "nav.recipes", path: "/fit-meal" },
     { icon: Home, labelKey: "nav.home", path: "/home" },
-    { icon: ShoppingBag, labelKey: "nav.store", path: "/oilhub" },
+    { icon: Compass, labelKey: "nav.discover", path: "/discover" },
     { icon: User, labelKey: "nav.profile", path: "/profile" },
   ];
 

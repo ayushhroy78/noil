@@ -10,8 +10,6 @@ import Landing from "./pages/Landing";
 import Index from "./pages/Index";
 import Tracker from "./pages/Tracker";
 import FitMeal from "./pages/FitMeal";
-import OilHub from "./pages/OilHub";
-import Cart from "./pages/Cart";
 import Discover from "./pages/Discover";
 import Profile from "./pages/Profile";
 import RestaurantApply from "./pages/RestaurantApply";
@@ -31,7 +29,6 @@ import CreateCommunityPost from "./pages/CreateCommunityPost";
 import CommunityUserProfile from "./pages/CommunityUserProfile";
 import Messages from "./pages/Messages";
 import PolicyMakerDashboard from "./pages/PolicyMakerDashboard";
-import ProductDetail from "./pages/ProductDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,9 +54,6 @@ const App = () => {
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/tracker" element={<Tracker />} />
               <Route path="/fit-meal" element={<FitMeal />} />
-              <Route path="/oilhub" element={<OilHub />} />
-              <Route path="/oilhub/product/:productId" element={<ProductDetail />} />
-              <Route path="/cart" element={<Cart />} />
               <Route path="/discover" element={<Discover />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/restaurant-apply" element={<RestaurantApply />} />
