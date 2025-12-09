@@ -82,21 +82,51 @@ const Index = () => {
     <div className="min-h-screen bg-background pb-24 overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] relative">
       {/* Background Decorative Elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {/* Top right blob */}
-        <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-        {/* Bottom left blob */}
-        <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-success/5 rounded-full blur-3xl" />
-        {/* Center subtle pattern */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/3 rounded-full blur-3xl opacity-50" />
-        {/* Floating dots pattern */}
-        <svg className="absolute inset-0 w-full h-full opacity-[0.03]" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="dotPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-              <circle cx="2" cy="2" r="1.5" fill="currentColor" className="text-foreground" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#dotPattern)" />
+        {/* Animated gradient orbs */}
+        <div className="absolute -top-20 -right-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/3 -left-32 w-80 h-80 bg-success/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-1/4 -right-16 w-64 h-64 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+        
+        {/* Floating oil drops */}
+        <div className="absolute top-1/4 right-8 opacity-20 animate-float">
+          <svg width="32" height="40" viewBox="0 0 40 50" className="text-primary fill-current">
+            <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
+          </svg>
+        </div>
+        <div className="absolute top-2/3 left-6 opacity-15 animate-float" style={{ animationDelay: '1.5s' }}>
+          <svg width="20" height="25" viewBox="0 0 40 50" className="text-success fill-current">
+            <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
+          </svg>
+        </div>
+        <div className="absolute top-1/2 right-1/4 opacity-10 animate-float-slow" style={{ animationDelay: '2.5s' }}>
+          <svg width="24" height="30" viewBox="0 0 40 50" className="text-primary fill-current">
+            <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
+          </svg>
+        </div>
+        <div className="absolute bottom-1/3 left-1/4 opacity-12 animate-float" style={{ animationDelay: '3s' }}>
+          <svg width="18" height="22" viewBox="0 0 40 50" className="text-accent fill-current">
+            <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
+          </svg>
+        </div>
+
+        {/* Decorative pinging circles */}
+        <div className="absolute top-40 left-1/3 w-3 h-3 bg-primary/20 rounded-full animate-ping" style={{ animationDuration: '3s' }} />
+        <div className="absolute top-3/4 right-1/3 w-2 h-2 bg-success/25 rounded-full animate-ping" style={{ animationDuration: '4s', animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-10 w-4 h-4 bg-accent/15 rounded-full animate-ping" style={{ animationDuration: '5s', animationDelay: '2s' }} />
+
+        {/* Subtle wave pattern at bottom */}
+        <svg className="absolute bottom-0 left-0 w-full h-24 opacity-[0.04]" preserveAspectRatio="none" viewBox="0 0 1440 120">
+          <path d="M0,60 C360,120 720,0 1080,60 C1260,90 1380,75 1440,60 L1440,120 L0,120 Z" className="fill-primary" />
         </svg>
+
+        {/* Grid pattern overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.015]"
+          style={{
+            backgroundImage: `radial-gradient(circle, hsl(var(--primary)) 1px, transparent 1px)`,
+            backgroundSize: '32px 32px'
+          }}
+        />
       </div>
 
       {/* Header */}
