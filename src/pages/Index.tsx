@@ -87,24 +87,64 @@ const Index = () => {
         <div className="absolute top-1/3 -left-32 w-80 h-80 bg-success/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         <div className="absolute bottom-1/4 -right-16 w-64 h-64 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
         
-        {/* Floating oil drops */}
-        <div className="absolute top-1/4 right-8 opacity-20 animate-float">
-          <svg width="32" height="40" viewBox="0 0 40 50" className="text-primary fill-current">
+        {/* Floating oil drops - scattered across the screen */}
+        <div className="absolute top-[15%] right-8 opacity-15 animate-float">
+          <svg width="28" height="35" viewBox="0 0 40 50" className="text-primary fill-current">
             <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
           </svg>
         </div>
-        <div className="absolute top-2/3 left-6 opacity-15 animate-float" style={{ animationDelay: '1.5s' }}>
-          <svg width="20" height="25" viewBox="0 0 40 50" className="text-success fill-current">
+        <div className="absolute top-[25%] left-[15%] opacity-10 animate-float-slow" style={{ animationDelay: '0.5s' }}>
+          <svg width="18" height="22" viewBox="0 0 40 50" className="text-success fill-current">
             <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
           </svg>
         </div>
-        <div className="absolute top-1/2 right-1/4 opacity-10 animate-float-slow" style={{ animationDelay: '2.5s' }}>
-          <svg width="24" height="30" viewBox="0 0 40 50" className="text-primary fill-current">
+        <div className="absolute top-[35%] right-[20%] opacity-8 animate-float" style={{ animationDelay: '1s' }}>
+          <svg width="14" height="17" viewBox="0 0 40 50" className="text-primary fill-current">
             <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
           </svg>
         </div>
-        <div className="absolute bottom-1/3 left-1/4 opacity-12 animate-float" style={{ animationDelay: '3s' }}>
-          <svg width="18" height="22" viewBox="0 0 40 50" className="text-accent fill-current">
+        <div className="absolute top-[45%] left-6 opacity-12 animate-float" style={{ animationDelay: '1.5s' }}>
+          <svg width="22" height="27" viewBox="0 0 40 50" className="text-success fill-current">
+            <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
+          </svg>
+        </div>
+        <div className="absolute top-[55%] right-[35%] opacity-8 animate-float-slow" style={{ animationDelay: '2s' }}>
+          <svg width="16" height="20" viewBox="0 0 40 50" className="text-accent fill-current">
+            <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
+          </svg>
+        </div>
+        <div className="absolute top-[65%] left-[25%] opacity-10 animate-float" style={{ animationDelay: '2.5s' }}>
+          <svg width="20" height="25" viewBox="0 0 40 50" className="text-primary fill-current">
+            <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
+          </svg>
+        </div>
+        <div className="absolute top-[72%] right-10 opacity-12 animate-float-slow" style={{ animationDelay: '3s' }}>
+          <svg width="24" height="30" viewBox="0 0 40 50" className="text-success fill-current">
+            <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
+          </svg>
+        </div>
+        <div className="absolute top-[80%] left-[40%] opacity-8 animate-float" style={{ animationDelay: '3.5s' }}>
+          <svg width="12" height="15" viewBox="0 0 40 50" className="text-primary fill-current">
+            <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
+          </svg>
+        </div>
+        <div className="absolute top-[20%] right-[45%] opacity-6 animate-float-slow" style={{ animationDelay: '4s' }}>
+          <svg width="15" height="18" viewBox="0 0 40 50" className="text-accent fill-current">
+            <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
+          </svg>
+        </div>
+        <div className="absolute top-[40%] left-[45%] opacity-10 animate-float" style={{ animationDelay: '4.5s' }}>
+          <svg width="18" height="22" viewBox="0 0 40 50" className="text-success fill-current">
+            <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
+          </svg>
+        </div>
+        <div className="absolute top-[58%] left-[12%] opacity-8 animate-float-slow" style={{ animationDelay: '5s' }}>
+          <svg width="14" height="17" viewBox="0 0 40 50" className="text-primary fill-current">
+            <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
+          </svg>
+        </div>
+        <div className="absolute top-[85%] right-[25%] opacity-10 animate-float" style={{ animationDelay: '5.5s' }}>
+          <svg width="20" height="25" viewBox="0 0 40 50" className="text-accent fill-current">
             <path d="M20 0C20 0 0 20 0 32C0 42 9 50 20 50C31 50 40 42 40 32C40 20 20 0 20 0Z" />
           </svg>
         </div>
