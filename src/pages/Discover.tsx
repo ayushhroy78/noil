@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, Store, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Store, MapPin } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
+import { TopNav } from "@/components/TopNav";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { QuizzesTab } from "@/components/discover/QuizzesTab";
@@ -41,20 +42,7 @@ const Discover = () => {
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-card shadow-soft px-4 py-4">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate("/")}
-            className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-primary" />
-          </button>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">{t('discover.title')}</h1>
-            <p className="text-xs text-muted-foreground">{t('discover.subtitle')}</p>
-          </div>
-        </div>
-      </header>
+      <TopNav title={t('discover.title')} subtitle={t('discover.subtitle')} showBackButton />
 
       {/* Main Content */}
       <main className="px-4 py-6 max-w-2xl mx-auto">

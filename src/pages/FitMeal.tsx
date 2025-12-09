@@ -1,7 +1,7 @@
-import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { BottomNav } from "@/components/BottomNav";
+import { TopNav } from "@/components/TopNav";
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
@@ -104,20 +104,7 @@ const FitMeal = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background pb-24">
-      <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm shadow-soft px-4 py-4 border-b border-primary/10">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate("/")}
-            className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-primary" />
-          </button>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">{t('recipes.title')}</h1>
-            <p className="text-xs text-muted-foreground">{t('recipes.subtitle')}</p>
-          </div>
-        </div>
-      </header>
+      <TopNav title={t('recipes.title')} subtitle={t('recipes.subtitle')} showBackButton />
 
       <main className="px-4 py-6">
         <Tabs defaultValue="explore" className="w-full">

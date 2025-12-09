@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
+import { TopNav } from "@/components/TopNav";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,6 @@ import { HealthProfileForm } from "@/components/profile/HealthProfileForm";
 import { FamilyMembersManager } from "@/components/profile/FamilyMembersManager";
 import { AIConsumptionAudit } from "@/components/profile/AIConsumptionAudit";
 import {
-  ArrowLeft,
   User,
   Gift,
   Trophy,
@@ -110,34 +110,23 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <header className="sticky top-0 z-50 bg-card shadow-soft px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigate("/")}
-              className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
-              data-testid="button-back"
-            >
-              <ArrowLeft className="w-5 h-5 text-primary" />
-            </button>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Profile</h1>
-              <p className="text-xs text-muted-foreground">{userEmail}</p>
-            </div>
-          </div>
-          {userRole === "admin" && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate("/admin")}
-              data-testid="button-admin"
-            >
-              <Shield className="w-4 h-4 mr-1" />
-              Admin
-            </Button>
-          )}
+      <TopNav title="Profile" subtitle={userEmail || undefined} showBackButton />
+      
+      {/* Admin Button - shown below TopNav for admins */}
+      {userRole === "admin" && (
+        <div className="px-4 py-2 bg-card border-b border-border/50">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/admin")}
+            data-testid="button-admin"
+            className="w-full"
+          >
+            <Shield className="w-4 h-4 mr-1" />
+            Admin Panel
+          </Button>
         </div>
-      </header>
+      )}
 
       <main className="px-4 py-6 max-w-2xl mx-auto">
         <Card className="mb-6 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
