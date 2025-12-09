@@ -245,7 +245,141 @@ const Index = () => {
               className="group relative overflow-hidden bg-card shadow-medium border-0 cursor-pointer hover:shadow-lg transition-all duration-500 hover:-translate-y-1 animate-in fade-in duration-700 h-48" 
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              {category.isIconCard ? (
+              {category.id === "oil-tracker" && (
+                // Tracker Tile - Teal/Cyan gradient with oil meter
+                <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-cyan-500">
+                  {/* Floating oil drops */}
+                  <div className="absolute top-3 right-3 w-4 h-6 bg-white/20 rounded-full blur-[1px] animate-pulse" />
+                  <div className="absolute top-8 right-8 w-3 h-4 bg-white/15 rounded-full blur-[1px]" style={{ animationDelay: '200ms' }} />
+                  <div className="absolute bottom-12 right-4 w-2 h-3 bg-white/20 rounded-full blur-[1px]" />
+                  
+                  {/* Oil Meter Illustration */}
+                  <div className="absolute bottom-2 right-2 w-20 h-24 opacity-90">
+                    <svg viewBox="0 0 80 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                      {/* Bottle shape */}
+                      <path d="M30 15 L30 25 L20 35 L20 85 Q20 95 30 95 L50 95 Q60 95 60 85 L60 35 L50 25 L50 15 Z" 
+                        fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.5)" strokeWidth="2"/>
+                      {/* Oil level */}
+                      <path d="M22 50 L22 83 Q22 93 30 93 L50 93 Q58 93 58 83 L58 50 Z" 
+                        fill="rgba(255,255,255,0.4)"/>
+                      {/* Bottle cap */}
+                      <rect x="28" y="8" width="24" height="10" rx="3" fill="rgba(255,255,255,0.3)"/>
+                      {/* Measurement lines */}
+                      <line x1="62" y1="45" x2="68" y2="45" stroke="rgba(255,255,255,0.4)" strokeWidth="2"/>
+                      <line x1="62" y1="60" x2="68" y2="60" stroke="rgba(255,255,255,0.4)" strokeWidth="2"/>
+                      <line x1="62" y1="75" x2="68" y2="75" stroke="rgba(255,255,255,0.4)" strokeWidth="2"/>
+                    </svg>
+                  </div>
+                  
+                  {/* Badge */}
+                  <div className="absolute bottom-3 left-3 bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+                    <span className="text-[10px] font-semibold text-white">{t('tracker.dailyGoal')}</span>
+                  </div>
+                  
+                  {/* Text content */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <h3 className="text-lg font-bold text-white mb-1 drop-shadow-md">{category.title}</h3>
+                    <p className="text-xs text-white/80 leading-tight max-w-[100px]">{category.subtitle}</p>
+                  </div>
+                  
+                  {/* Decorative circles */}
+                  <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+                </div>
+              )}
+
+              {category.id === "recipes" && (
+                // Fit Meal Tile - Green/Emerald gradient with food icons
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-500">
+                  {/* Floating leaves */}
+                  <div className="absolute top-4 right-4 w-6 h-6 opacity-60">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2 6.5 5 8 0-4 3-8 5-10 2 2 5 6 5 10 3-1.5 5-4.5 5-8 0-5.5-4.5-10-10-10z" 
+                        fill="rgba(255,255,255,0.4)"/>
+                    </svg>
+                  </div>
+                  <div className="absolute bottom-16 right-6 w-4 h-4 opacity-50 rotate-45">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2 6.5 5 8 0-4 3-8 5-10 2 2 5 6 5 10 3-1.5 5-4.5 5-8 0-5.5-4.5-10-10-10z" 
+                        fill="rgba(255,255,255,0.4)"/>
+                    </svg>
+                  </div>
+                  
+                  {/* Salad Bowl Illustration */}
+                  <div className="absolute bottom-1 right-1 w-24 h-24 opacity-90">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                      {/* Bowl */}
+                      <ellipse cx="50" cy="70" rx="40" ry="15" fill="rgba(255,255,255,0.25)"/>
+                      <path d="M10 55 Q10 85 50 85 Q90 85 90 55" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.5)" strokeWidth="2"/>
+                      {/* Vegetables */}
+                      <circle cx="35" cy="50" r="10" fill="rgba(255,255,255,0.35)"/>
+                      <circle cx="55" cy="45" r="8" fill="rgba(255,255,255,0.3)"/>
+                      <circle cx="70" cy="52" r="9" fill="rgba(255,255,255,0.35)"/>
+                      <ellipse cx="45" cy="40" rx="12" ry="6" fill="rgba(255,255,255,0.25)" transform="rotate(-15 45 40)"/>
+                      {/* Fork */}
+                      <path d="M20 25 L20 45 M15 25 L15 35 M25 25 L25 35" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  </div>
+                  
+                  {/* Badges */}
+                  <div className="absolute bottom-3 left-3 flex gap-1">
+                    <div className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+                      <span className="text-[10px] font-semibold text-white">{t('fitMeal.lowOil')}</span>
+                    </div>
+                  </div>
+                  
+                  {/* Text content */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <h3 className="text-lg font-bold text-white mb-1 drop-shadow-md">{category.title}</h3>
+                    <p className="text-xs text-white/80 leading-tight max-w-[100px]">{category.subtitle}</p>
+                  </div>
+                  
+                  {/* Decorative circles */}
+                  <div className="absolute -top-6 -right-6 w-20 h-20 bg-white/10 rounded-full blur-xl" />
+                </div>
+              )}
+
+              {category.id === "discover" && (
+                // Discover Tile - Purple/Violet gradient with wellness icons
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500">
+                  {/* Stars */}
+                  <div className="absolute top-5 right-6 text-white/40">✦</div>
+                  <div className="absolute top-10 right-3 text-white/30 text-sm">✦</div>
+                  <div className="absolute bottom-20 right-8 text-white/25 text-xs">✦</div>
+                  
+                  {/* Wellness Heart Illustration */}
+                  <div className="absolute bottom-2 right-2 w-20 h-20 opacity-90">
+                    <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                      {/* Heart shape */}
+                      <path d="M40 70 C20 50 5 35 5 22 C5 12 15 5 25 5 C32 5 38 10 40 15 C42 10 48 5 55 5 C65 5 75 12 75 22 C75 35 60 50 40 70Z" 
+                        fill="rgba(255,255,255,0.25)" stroke="rgba(255,255,255,0.5)" strokeWidth="2"/>
+                      {/* Pulse line */}
+                      <path d="M20 38 L30 38 L35 28 L40 48 L45 33 L50 38 L60 38" 
+                        stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      {/* Sparkle */}
+                      <circle cx="60" cy="20" r="3" fill="rgba(255,255,255,0.4)"/>
+                      <path d="M60 15 L60 25 M55 20 L65 20" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
+                    </svg>
+                  </div>
+                  
+                  {/* Badges */}
+                  <div className="absolute bottom-3 left-3 flex gap-1">
+                    <div className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+                      <span className="text-[10px] font-semibold text-white">{t('discover.learn')}</span>
+                    </div>
+                  </div>
+                  
+                  {/* Text content */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <h3 className="text-lg font-bold text-white mb-1 drop-shadow-md">{category.title}</h3>
+                    <p className="text-xs text-white/80 leading-tight max-w-[100px]">{category.subtitle}</p>
+                  </div>
+                  
+                  {/* Decorative circles */}
+                  <div className="absolute -bottom-10 -left-10 w-28 h-28 bg-white/10 rounded-full blur-xl" />
+                </div>
+              )}
+
+              {category.isIconCard && (
                 // Icon-based card for Register Restaurant
                 <div className={`absolute inset-0 bg-gradient-to-br ${category.color}`}>
                   <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
@@ -259,13 +393,6 @@ const Index = () => {
                   <div className="absolute top-2 right-2 w-8 h-8 bg-warning/10 rounded-full blur-xl" />
                   <div className="absolute bottom-2 left-2 w-6 h-6 bg-warning/10 rounded-full blur-lg" />
                 </div>
-              ) : (
-                // Image-based card
-                <img 
-                  src={category.image} 
-                  alt={category.title} 
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                />
               )}
             </Card>
           ))}
