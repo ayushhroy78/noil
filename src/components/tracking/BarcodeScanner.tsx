@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Camera, X, Scan, Keyboard, History, Plus, Sparkles, Loader2 } from "lucide-react";
+import { Camera, X, Scan, Keyboard, History, Plus, Sparkles, Loader2, Droplet, AlertTriangle, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 
 interface BarcodeScannerProps {
   userId: string;
@@ -32,12 +33,36 @@ interface ProductData {
   transFatG?: number;
 }
 
+interface DetectedOilType {
+  name: string;
+  healthRating: string;
+  concerns: string;
+}
+
+interface OilAlternative {
+  name: string;
+  healthRating: string;
+  reason: string;
+}
+
+const getRatingColor = (rating: string) => {
+  switch (rating?.toUpperCase()) {
+    case 'A': return 'bg-green-500 text-white';
+    case 'B': return 'bg-lime-500 text-white';
+    case 'C': return 'bg-yellow-500 text-white';
+    case 'D': return 'bg-red-500 text-white';
+    default: return 'bg-muted text-muted-foreground';
+  }
+};
+
 export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) => {
   const [isScanning, setIsScanning] = useState(false);
   const [manualBarcode, setManualBarcode] = useState("");
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [productData, setProductData] = useState<ProductData | null>(null);
   const [aiSuggestions, setAiSuggestions] = useState<string | null>(null);
+  const [detectedOilType, setDetectedOilType] = useState<DetectedOilType | null>(null);
+  const [alternatives, setAlternatives] = useState<OilAlternative[] | null>(null);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [history, setHistory] = useState<BarcodeHistory[]>([]);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -312,6 +337,9 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
       // Reset
       setProductData(null);
       setManualBarcode("");
+      setDetectedOilType(null);
+      setAlternatives(null);
+      setAiSuggestions(null);
       fetchHistory();
       onScanComplete();
     } catch (error) {
@@ -326,6 +354,10 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
 
   const fetchAiSuggestions = async (product: ProductData) => {
     setIsLoadingSuggestions(true);
+    setDetectedOilType(null);
+    setAlternatives(null);
+    setAiSuggestions(null);
+    
     try {
       const { data, error } = await supabase.functions.invoke("suggest-oil-alternatives", {
         body: {
@@ -339,7 +371,16 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
       if (error) throw error;
 
       if (data.success) {
-        setAiSuggestions(data.suggestions);
+        if (data.detectedOilType) {
+          setDetectedOilType(data.detectedOilType);
+        }
+        if (data.alternatives) {
+          setAlternatives(data.alternatives);
+        }
+        if (data.suggestions) {
+          // Fallback to old format
+          setAiSuggestions(data.suggestions);
+        }
       }
     } catch (error) {
       console.error("Error fetching AI suggestions:", error);
@@ -352,6 +393,8 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
   const handleCancel = () => {
     setProductData(null);
     setAiSuggestions(null);
+    setDetectedOilType(null);
+    setAlternatives(null);
     setManualBarcode("");
   };
 
@@ -511,12 +554,67 @@ export const BarcodeScanner = ({ userId, onScanComplete }: BarcodeScannerProps) 
                 <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Getting healthier oil suggestions...</span>
+                    <span>Analyzing oil type and getting healthier alternatives...</span>
                   </div>
                 </div>
               )}
 
-              {aiSuggestions && !isLoadingSuggestions && (
+              {/* Detected Oil Type Section */}
+              {detectedOilType && !isLoadingSuggestions && (
+                <div className="p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Droplet className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                    <p className="text-sm font-semibold text-orange-700 dark:text-orange-300">
+                      Oil Type Used
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-foreground">{detectedOilType.name}</span>
+                      <Badge className={getRatingColor(detectedOilType.healthRating)}>
+                        Grade {detectedOilType.healthRating}
+                      </Badge>
+                    </div>
+                    {detectedOilType.concerns && (
+                      <div className="flex items-start gap-2 mt-2">
+                        <AlertTriangle className="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />
+                        <p className="text-xs text-muted-foreground">{detectedOilType.concerns}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Healthier Alternatives Section */}
+              {alternatives && alternatives.length > 0 && !isLoadingSuggestions && (
+                <div className="p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="w-4 h-4 text-green-600 dark:text-green-400" />
+                    <p className="text-sm font-semibold text-green-700 dark:text-green-300">
+                      Healthier Alternatives
+                    </p>
+                  </div>
+                  <div className="space-y-3">
+                    {alternatives.map((alt, index) => (
+                      <div key={index} className="flex items-start gap-3 p-2 bg-background/50 rounded-md">
+                        <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-sm font-medium text-foreground">{alt.name}</span>
+                            <Badge className={`${getRatingColor(alt.healthRating)} shrink-0`}>
+                              {alt.healthRating}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">{alt.reason}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Fallback to old format if structured data not available */}
+              {aiSuggestions && !alternatives && !isLoadingSuggestions && (
                 <div className="space-y-2 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
                   <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="w-4 h-4 text-green-600 dark:text-green-400" />

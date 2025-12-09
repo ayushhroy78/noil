@@ -55,23 +55,46 @@ serve(async (req) => {
     }
 
     // Prepare the prompt for AI
-    const systemPrompt = `You are a nutrition expert specializing in healthy cooking oils. Your role is to suggest healthier oil alternatives based on the nutritional content of packaged foods. Focus on:
+    const systemPrompt = `You are a nutrition expert specializing in healthy cooking oils. Your role is to:
+1. Identify what type of oil is likely used in packaged foods based on product name and category
+2. Suggest healthier oil alternatives
+Focus on:
+- Identifying the most likely oil type used (palm oil, vegetable oil, sunflower oil, etc.)
 - Recommending oils with better health profiles (cold-pressed, unrefined, low trans-fat)
 - Explaining why each alternative is healthier
-- Considering the oil quantity in the product
-- Being practical and realistic in suggestions`;
+- Being practical and realistic in suggestions
+
+IMPORTANT: Always respond in valid JSON format.`;
 
     const userPrompt = `A user scanned a product "${sanitizedProductName}" which contains:
 - Oil content: ${oilContentMl}ml
 ${sanitizedFatContent !== null ? `- Total fat: ${sanitizedFatContent}g` : ''}
 ${sanitizedTransFat !== null ? `- Trans fat: ${sanitizedTransFat}g` : ''}
 
-Suggest 2-3 healthier oil alternatives that could be used instead. For each suggestion, provide:
-1. Oil name (e.g., "Extra Virgin Olive Oil", "Cold-pressed Mustard Oil")
-2. A brief explanation (1-2 sentences) of why it's healthier
-3. Health rating (A for best, B for good, C for acceptable)
+Based on this product, provide:
+1. The most likely oil type used in this product
+2. 2-3 healthier oil alternatives
 
-Keep suggestions practical and concise.`;
+Respond in this exact JSON format:
+{
+  "detectedOilType": {
+    "name": "Palm Oil / Vegetable Oil / Sunflower Oil / etc.",
+    "healthRating": "A/B/C/D (D being worst)",
+    "concerns": "Brief concern about this oil type (1 sentence)"
+  },
+  "alternatives": [
+    {
+      "name": "Extra Virgin Olive Oil",
+      "healthRating": "A",
+      "reason": "Rich in monounsaturated fats and antioxidants"
+    },
+    {
+      "name": "Cold-pressed Mustard Oil",
+      "healthRating": "A",
+      "reason": "Contains omega-3 fatty acids and is heart-healthy"
+    }
+  ]
+}`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -86,7 +109,7 @@ Keep suggestions practical and concise.`;
           { role: 'user', content: userPrompt }
         ],
         temperature: 0.7,
-        max_tokens: 500,
+        max_tokens: 600,
       }),
     });
 
@@ -108,14 +131,29 @@ Keep suggestions practical and concise.`;
     }
 
     const aiData = await response.json();
-    const suggestions = aiData.choices[0]?.message?.content || 'No suggestions available';
+    const rawContent = aiData.choices[0]?.message?.content || '';
+    
+    // Parse the JSON response from AI
+    let parsedResponse = null;
+    try {
+      // Extract JSON from markdown code blocks if present
+      const jsonMatch = rawContent.match(/```(?:json)?\s*([\s\S]*?)```/);
+      const jsonString = jsonMatch ? jsonMatch[1].trim() : rawContent.trim();
+      parsedResponse = JSON.parse(jsonString);
+    } catch (parseError) {
+      console.error('Failed to parse AI response as JSON, using raw content');
+      // Fallback to old format
+      parsedResponse = null;
+    }
 
     console.log('AI suggestions generated successfully');
 
     return new Response(
       JSON.stringify({ 
         success: true,
-        suggestions,
+        suggestions: parsedResponse ? null : rawContent,
+        detectedOilType: parsedResponse?.detectedOilType || null,
+        alternatives: parsedResponse?.alternatives || null,
         productName: sanitizedProductName,
         oilContentMl
       }),
