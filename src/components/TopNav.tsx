@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { User, LogOut, Heart, Store, Activity, Gift, Calculator, MapPin, ChevronDown, Shield, MessageSquare, Landmark, ArrowLeft } from "lucide-react";
+import { User, LogOut, Activity, MapPin, ChevronDown, Shield, Landmark, ArrowLeft } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
@@ -144,14 +144,6 @@ export const TopNav = ({ title, subtitle, showBackButton = false, showSearch = f
             <DropdownMenuContent align="end" className="w-48 bg-card border-border">
               {isLoggedIn ? (
                 <>
-                  <DropdownMenuItem onClick={() => navigate("/profile?tab=health")} className="cursor-pointer">
-                    <Heart className="w-4 h-4 mr-2" />
-                    {t('home.healthProfile')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/restaurant-apply")} className="cursor-pointer">
-                    <Store className="w-4 h-4 mr-2" />
-                    {t('home.registerRestaurant')}
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/certified-restaurants")} className="cursor-pointer">
                     <Shield className="w-4 h-4 mr-2" />
                     {t('home.verifiedRestaurants')}
@@ -163,18 +155,6 @@ export const TopNav = ({ title, subtitle, showBackButton = false, showSearch = f
                   <DropdownMenuItem onClick={() => navigate("/policy-dashboard")} className="cursor-pointer">
                     <Landmark className="w-4 h-4 mr-2" />
                     {t('home.policyMakerDashboard')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/community")} className="cursor-pointer">
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    {t('common.community')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/profile?tab=rewards")} className="cursor-pointer">
-                    <Gift className="w-4 h-4 mr-2" />
-                    {t('home.rewardsStore')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/oil-calculator")} className="cursor-pointer">
-                    <Calculator className="w-4 h-4 mr-2" />
-                    {t('home.oilCalculator')}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
