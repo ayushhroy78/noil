@@ -126,19 +126,11 @@ const Landing = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button 
                 size="lg" 
-                onClick={() => navigate("/home")}
+                onClick={() => navigate("/auth")}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
               >
                 Get Started
                 <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                onClick={() => navigate("/certified-restaurants")}
-                className="border-2 px-8 py-6 text-lg"
-              >
-                View Certified Restaurants
               </Button>
             </div>
           </div>
@@ -230,7 +222,7 @@ const Landing = () => {
           </p>
           <Button 
             size="lg" 
-            onClick={() => navigate("/home")}
+            onClick={() => navigate("/auth")}
             className="bg-white text-primary hover:bg-white/90 px-10 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1"
           >
             Get Started Free
@@ -251,9 +243,6 @@ const Landing = () => {
               </div>
             </div>
             <div className="flex gap-6 text-sm text-muted-foreground">
-              <button onClick={() => navigate("/certified-restaurants")} className="hover:text-primary transition-colors">
-                Certified Restaurants
-              </button>
               <button onClick={() => navigate("/auth")} className="hover:text-primary transition-colors">
                 Sign In
               </button>
