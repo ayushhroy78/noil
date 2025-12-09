@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { BottomNav } from "@/components/BottomNav";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Tracker = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [userId, setUserId] = useState<string | undefined>();
   const { data, loading, refetch } = useTracking(userId);
 
@@ -54,7 +56,7 @@ const Tracker = () => {
           >
             <ArrowLeft className="w-5 h-5 text-primary" />
           </button>
-          <h1 className="text-xl font-bold text-foreground">Oil Tracker</h1>
+          <h1 className="text-xl font-bold text-foreground">{t('tracker.title')}</h1>
         </div>
       </header>
 
@@ -87,9 +89,9 @@ const Tracker = () => {
         {/* Tracking Forms */}
         <Tabs defaultValue="daily" className="w-full">
           <TabsList className="grid w-full grid-cols-4 bg-card/80 backdrop-blur">
-            <TabsTrigger value="daily">Daily Log</TabsTrigger>
-            <TabsTrigger value="bottle">Bottle</TabsTrigger>
-            <TabsTrigger value="scan">Scan</TabsTrigger>
+            <TabsTrigger value="daily">{t('tracker.dailyLog')}</TabsTrigger>
+            <TabsTrigger value="bottle">{t('tracker.bottle')}</TabsTrigger>
+            <TabsTrigger value="scan">{t('tracker.barcodeScan')}</TabsTrigger>
             <TabsTrigger value="iot">IoT</TabsTrigger>
           </TabsList>
           <TabsContent value="daily" className="mt-4">

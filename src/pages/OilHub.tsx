@@ -1,5 +1,6 @@
 import { ArrowLeft, Cpu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { BottomNav } from "@/components/BottomNav";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const OilHub = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [userId, setUserId] = useState<string | undefined>();
   const { loading, getIoTProducts } = useProducts();
   const cart = useCart(userId);
@@ -41,7 +43,7 @@ const OilHub = () => {
             >
               <ArrowLeft className="w-5 h-5 text-primary" />
             </button>
-            <h1 className="text-xl font-bold text-foreground">OilHub</h1>
+            <h1 className="text-xl font-bold text-foreground">{t('oilhub.title')}</h1>
           </div>
           <CartSheet userId={userId} cart={cart} />
         </div>
@@ -50,14 +52,14 @@ const OilHub = () => {
       {/* Main Content */}
       <main className="px-4 py-6 space-y-6 max-w-4xl mx-auto">
         <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-foreground mb-1">Smart Oil Tracking Devices</h2>
-          <p className="text-muted-foreground">Automatically track your oil usage with our IoT devices</p>
+          <h2 className="text-2xl font-bold text-foreground mb-1">{t('oilhub.smartTracking')}</h2>
+          <p className="text-muted-foreground">{t('oilhub.subtitle')}</p>
         </div>
 
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Cpu className="w-5 h-5 text-primary" />
-            IoT Devices
+            {t('oilhub.iotDevices')}
           </h3>
           {loading ? (
             <div className="grid gap-4">
