@@ -11,6 +11,7 @@ import coconutOil from "@/assets/coconut-oil.jpg";
 import sesameOil from "@/assets/sesame-oil.jpg";
 import riceBranOil from "@/assets/rice-bran-oil.jpg";
 import oliveOil from "@/assets/olive-oil.jpg";
+import iotOilDispenser from "@/assets/iot-oil-dispenser.png";
 
 const oilImageMap: Record<string, string> = {
   mustard: mustardOil,
@@ -29,6 +30,11 @@ interface ProductCardProps {
 
 const getProductImage = (product: Product): string | null => {
   if (product.image_url) return product.image_url;
+  
+  // Use IoT device image for IoT products
+  if (product.product_type === "iot_device") {
+    return iotOilDispenser;
+  }
   
   // Try to match oil type to local images
   const oilType = product.oil_type?.toLowerCase() || product.name.toLowerCase();
