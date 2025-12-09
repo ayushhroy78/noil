@@ -2,12 +2,14 @@ import { useState } from "react";
 import { Edit2, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "react-i18next";
 
 interface DailyGoalTrackerProps {
   todayConsumption: number;
 }
 
 export const DailyGoalTracker = ({ todayConsumption }: DailyGoalTrackerProps) => {
+  const { t } = useTranslation();
   const [dailyLimit, setDailyLimit] = useState(() => {
     const saved = localStorage.getItem("dailyOilLimit");
     return saved ? parseInt(saved) : 30;
@@ -52,7 +54,7 @@ export const DailyGoalTracker = ({ todayConsumption }: DailyGoalTrackerProps) =>
 
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center">
-        <h2 className="text-2xl font-bold text-foreground mb-2">Track Your Daily Oil Use</h2>
+        <h2 className="text-2xl font-bold text-foreground mb-2">{t('tracker.trackDailyOilUse')}</h2>
         
         {/* Circular Progress */}
         <div className="relative w-64 h-64 my-6">
@@ -96,15 +98,15 @@ export const DailyGoalTracker = ({ todayConsumption }: DailyGoalTrackerProps) =>
             {/* Consumption display */}
             <div className="text-center">
               <div className="text-3xl font-bold text-foreground">
-                {Math.round(todayConsumption)} ml
-                <span className="text-muted-foreground"> / {dailyLimit} ml</span>
+                {Math.round(todayConsumption)} {t('common.ml')}
+                <span className="text-muted-foreground"> / {dailyLimit} {t('common.ml')}</span>
               </div>
-              <div className="text-sm text-muted-foreground mt-1 font-medium">Daily Goal</div>
+              <div className="text-sm text-muted-foreground mt-1 font-medium">{t('tracker.dailyGoal')}</div>
             </div>
             
             {percentage >= 100 && (
               <div className="mt-2 text-xs font-semibold text-destructive">
-                Goal Exceeded!
+                {t('tracker.goalExceeded')}
               </div>
             )}
           </div>
@@ -114,7 +116,7 @@ export const DailyGoalTracker = ({ todayConsumption }: DailyGoalTrackerProps) =>
         <div className="flex items-center gap-2">
           {!isEditing ? (
             <>
-              <span className="text-sm text-muted-foreground">Daily Limit: {dailyLimit} ml</span>
+              <span className="text-sm text-muted-foreground">{t('tracker.dailyLimit')}: {dailyLimit} {t('common.ml')}</span>
               <Button
                 variant="ghost"
                 size="sm"
@@ -134,7 +136,7 @@ export const DailyGoalTracker = ({ todayConsumption }: DailyGoalTrackerProps) =>
                 min="1"
                 max="200"
               />
-              <span className="text-sm text-muted-foreground">ml</span>
+              <span className="text-sm text-muted-foreground">{t('common.ml')}</span>
               <Button
                 variant="ghost"
                 size="sm"

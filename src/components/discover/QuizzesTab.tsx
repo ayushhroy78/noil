@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Brain, CheckCircle, XCircle, Award } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { usePoints } from "@/hooks/usePoints";
 import { useAchievements } from "@/hooks/useAchievements";
 
@@ -32,6 +33,7 @@ interface QuizzesTabProps {
 }
 
 export const QuizzesTab = ({ userId }: QuizzesTabProps) => {
+  const { t } = useTranslation();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -60,7 +62,7 @@ export const QuizzesTab = ({ userId }: QuizzesTabProps) => {
       setQuizzes(data || []);
     } catch (error) {
       console.error("Error fetching quizzes:", error);
-      toast.error("Failed to load quizzes");
+      toast.error(t('discover.failedToLoadQuizzes'));
     } finally {
       setLoading(false);
     }
@@ -84,7 +86,7 @@ export const QuizzesTab = ({ userId }: QuizzesTabProps) => {
       setScore(0);
     } catch (error) {
       console.error("Error loading quiz questions:", error);
-      toast.error("Failed to load quiz");
+      toast.error(t('discover.failedToLoadQuiz'));
     }
   };
 
@@ -150,7 +152,7 @@ export const QuizzesTab = ({ userId }: QuizzesTabProps) => {
         await checkAndUnlockAchievements("perfect_quiz_scores", 1);
       }
 
-      toast.success(`Quiz completed! You scored ${finalScore}/${questions.length} and earned ${pointsEarned} points!`);
+      toast.success(`${t('discover.quizCompleted')} ${t('discover.youScored')} ${finalScore}/${questions.length}!`);
     } catch (error) {
       console.error("Error saving quiz attempt:", error);
     }
@@ -193,7 +195,7 @@ export const QuizzesTab = ({ userId }: QuizzesTabProps) => {
       <div className="space-y-4">
         <div className="flex items-center gap-2 mb-4">
           <Brain className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">Knowledge Quizzes</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t('discover.knowledgeQuizzes')}</h2>
         </div>
 
         {quizzes.map((quiz) => (
@@ -209,13 +211,13 @@ export const QuizzesTab = ({ userId }: QuizzesTabProps) => {
                     </Badge>
                     <Badge variant="outline">
                       <Award className="w-3 h-3 mr-1" />
-                      {quiz.reward_points} pts
+                      {quiz.reward_points} {t('common.points')}
                     </Badge>
                   </div>
                 </div>
               </div>
               <Button onClick={() => startQuiz(quiz)} size="sm" className="w-full mt-3">
-                Start Quiz
+                {t('discover.startQuiz')}
               </Button>
             </CardContent>
           </Card>
@@ -231,24 +233,24 @@ export const QuizzesTab = ({ userId }: QuizzesTabProps) => {
     return (
       <Card className="shadow-medium">
         <CardHeader>
-          <CardTitle className="text-center">Quiz Completed!</CardTitle>
+          <CardTitle className="text-center">{t('discover.quizCompleted')}</CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <div className="text-6xl font-bold text-primary">{finalScore}/{questions.length}</div>
           <p className="text-lg text-muted-foreground">
-            You scored {percentage.toFixed(0)}%
+            {t('discover.youScored')} {percentage.toFixed(0)}%
           </p>
           {percentage >= 80 && (
-            <Badge className="bg-success text-white">Excellent!</Badge>
+            <Badge className="bg-success text-white">{t('discover.excellent')}</Badge>
           )}
           {percentage >= 50 && percentage < 80 && (
-            <Badge className="bg-warning text-white">Good Job!</Badge>
+            <Badge className="bg-warning text-white">{t('discover.goodJob')}</Badge>
           )}
           {percentage < 50 && (
-            <Badge variant="secondary">Keep Learning!</Badge>
+            <Badge variant="secondary">{t('discover.keepLearning')}</Badge>
           )}
           <Button onClick={backToQuizList} className="w-full">
-            Back to Quizzes
+            {t('discover.backToQuizzes')}
           </Button>
         </CardContent>
       </Card>
@@ -265,10 +267,10 @@ export const QuizzesTab = ({ userId }: QuizzesTabProps) => {
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-4">
         <Button variant="ghost" size="sm" onClick={backToQuizList}>
-          ← Back
+          ← {t('common.back')}
         </Button>
         <Badge variant="outline">
-          Question {currentQuestionIndex + 1} of {questions.length}
+          {t('discover.question')} {currentQuestionIndex + 1} {t('discover.of')} {questions.length}
         </Badge>
       </div>
 
@@ -316,11 +318,11 @@ export const QuizzesTab = ({ userId }: QuizzesTabProps) => {
               disabled={selectedAnswer === null}
               className="w-full mt-4"
             >
-              Submit Answer
+              {t('discover.submitAnswer')}
             </Button>
           ) : (
             <Button onClick={nextQuestion} className="w-full mt-4">
-              {currentQuestionIndex < questions.length - 1 ? "Next Question" : "Finish Quiz"}
+              {currentQuestionIndex < questions.length - 1 ? t('discover.nextQuestion') : t('discover.finishQuiz')}
             </Button>
           )}
         </CardContent>

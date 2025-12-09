@@ -5,6 +5,7 @@ import { Trophy, Medal, Award, User } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 interface LeaderboardEntry {
   rank: number;
@@ -15,6 +16,7 @@ interface LeaderboardEntry {
 }
 
 export const LeaderboardTab = () => {
+  const { t } = useTranslation();
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -79,7 +81,7 @@ export const LeaderboardTab = () => {
               <p className="text-lg font-bold text-primary">
                 {entry[pointsKey]}
               </p>
-              <p className="text-xs text-muted-foreground">points</p>
+              <p className="text-xs text-muted-foreground">{t('common.points')}</p>
             </div>
           </div>
         </Card>
@@ -100,8 +102,8 @@ export const LeaderboardTab = () => {
   return (
     <div className="space-y-4">
       <div className="text-center mb-4">
-        <h2 className="text-2xl font-bold text-foreground">Leaderboard</h2>
-        <p className="text-sm text-muted-foreground">Compete with others and climb the ranks!</p>
+        <h2 className="text-2xl font-bold text-foreground">{t('discover.leaderboardTitle')}</h2>
+        <p className="text-sm text-muted-foreground">{t('discover.leaderboardSubtitle')}</p>
       </div>
 
       {/* Current User Stats */}
@@ -110,11 +112,11 @@ export const LeaderboardTab = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <User className="w-5 h-5 text-primary" />
-              <span className="font-semibold">Your Stats</span>
+              <span className="font-semibold">{t('discover.yourStats')}</span>
             </div>
             <div className="text-right">
               <p className="text-lg font-bold text-primary">{userRank.total_points}</p>
-              <p className="text-xs text-muted-foreground">total points</p>
+              <p className="text-xs text-muted-foreground">{t('discover.totalPoints')}</p>
             </div>
           </div>
         </Card>
@@ -122,8 +124,8 @@ export const LeaderboardTab = () => {
 
       <Tabs defaultValue="all-time" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="all-time">All Time</TabsTrigger>
-          <TabsTrigger value="weekly">This Week</TabsTrigger>
+          <TabsTrigger value="all-time">{t('discover.allTime')}</TabsTrigger>
+          <TabsTrigger value="weekly">{t('discover.thisWeek')}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="all-time" className="mt-4">
@@ -131,7 +133,7 @@ export const LeaderboardTab = () => {
             <LeaderboardList data={leaderboard} pointsKey="total_points" />
           ) : (
             <Card className="p-8 text-center">
-              <p className="text-muted-foreground">No leaderboard data yet. Be the first!</p>
+              <p className="text-muted-foreground">{t('discover.noLeaderboardData')}</p>
             </Card>
           )}
         </TabsContent>
@@ -144,7 +146,7 @@ export const LeaderboardTab = () => {
             />
           ) : (
             <Card className="p-8 text-center">
-              <p className="text-muted-foreground">No weekly data yet. Start earning points!</p>
+              <p className="text-muted-foreground">{t('discover.noWeeklyData')}</p>
             </Card>
           )}
         </TabsContent>

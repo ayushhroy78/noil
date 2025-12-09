@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Lightbulb, AlertCircle, CheckCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface Insight {
   type: "positive" | "warning" | "info";
@@ -11,6 +12,8 @@ interface InsightsSectionProps {
 }
 
 export const InsightsSection = ({ insights }: InsightsSectionProps) => {
+  const { t } = useTranslation();
+
   if (insights.length === 0) return null;
 
   const getIcon = (type: string) => {
@@ -39,7 +42,7 @@ export const InsightsSection = ({ insights }: InsightsSectionProps) => {
     <div className="space-y-3">
       <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
         <Lightbulb className="w-4 h-4 text-primary" />
-        Insights
+        {t('tracker.insights')}
       </h3>
       {insights.map((insight, index) => (
         <Card key={index} className={`border ${getBgColor(insight.type)} shadow-soft`}>
