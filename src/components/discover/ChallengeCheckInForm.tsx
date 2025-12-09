@@ -6,8 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Camera, Upload, Utensils, Droplet, Clock, Heart, Brain, X, Check } from "lucide-react";
+import { Camera, Upload, Utensils, Droplet, Clock, Heart, Brain, X, Check, Shield, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { ChallengeTokenDisplay } from "./ChallengeTokenDisplay";
 
 interface ChallengeCheckInFormProps {
   onSubmit: (data: CheckInFormData) => Promise<any>;
@@ -19,6 +21,8 @@ interface ChallengeCheckInFormProps {
     user_response?: string | null;
   } | null;
   onAnswerPrompt?: (promptId: string, response: string) => void;
+  challengeId?: string;
+  userChallengeId?: string;
 }
 
 export interface CheckInFormData {
@@ -33,6 +37,7 @@ export interface CheckInFormData {
   mood?: string;
   cravings_notes?: string;
   photo_url?: string;
+  verified_with_token?: boolean;
 }
 
 const OIL_TYPES = [
@@ -74,12 +79,22 @@ export const ChallengeCheckInForm = ({
   todayMeals,
   dailyPrompt,
   onAnswerPrompt,
+  challengeId,
+  userChallengeId,
 }: ChallengeCheckInFormProps) => {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [promptResponse, setPromptResponse] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Token verification state
+  const [showTokenScreen, setShowTokenScreen] = useState(false);
+  const [activeToken, setActiveToken] = useState<string | null>(null);
+  const [enteredToken, setEnteredToken] = useState("");
+  const [isValidatingToken, setIsValidatingToken] = useState(false);
+  const [tokenValidated, setTokenValidated] = useState(false);
+  const [tokenError, setTokenError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<CheckInFormData>({
     meal_type: "lunch",
@@ -89,6 +104,22 @@ export const ChallengeCheckInForm = ({
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [alternativeInput, setAlternativeInput] = useState("");
   const [alternatives, setAlternatives] = useState<string[]>([]);
+
+  const handleStartPhotoFlow = () => {
+    if (challengeId && userChallengeId) {
+      setShowTokenScreen(true);
+    } else {
+      // Fallback for challenges without token system
+      fileInputRef.current?.click();
+    }
+  };
+
+  const handleTokenProceed = (token: string) => {
+    setActiveToken(token);
+    setShowTokenScreen(false);
+    // Now show file picker
+    fileInputRef.current?.click();
+  };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -112,6 +143,42 @@ export const ChallengeCheckInForm = ({
     if (url) {
       setFormData(prev => ({ ...prev, photo_url: url }));
       toast.success("Photo uploaded!");
+    }
+  };
+
+  const validateToken = async () => {
+    if (!challengeId || !enteredToken.trim()) {
+      setTokenError("Please enter the verification code");
+      return false;
+    }
+
+    setIsValidatingToken(true);
+    setTokenError(null);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("validate-challenge-token", {
+        body: {
+          challenge_id: challengeId,
+          entered_token: enteredToken.trim(),
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.valid) {
+        setTokenValidated(true);
+        toast.success("Verification successful! +30 bonus points");
+        return true;
+      } else {
+        setTokenError(data.error || "Invalid verification code");
+        return false;
+      }
+    } catch (error: any) {
+      console.error("Token validation error:", error);
+      setTokenError("Failed to validate code. Please try again.");
+      return false;
+    } finally {
+      setIsValidatingToken(false);
     }
   };
 
@@ -150,9 +217,21 @@ export const ChallengeCheckInForm = ({
       return;
     }
 
+    // If photo was uploaded with token flow, validate token first
+    if (activeToken && formData.photo_url && !tokenValidated) {
+      const isValid = await validateToken();
+      if (!isValid) {
+        toast.error("Please verify your photo with the correct code");
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     try {
-      await onSubmit(formData);
+      await onSubmit({
+        ...formData,
+        verified_with_token: tokenValidated,
+      });
       
       // Reset form
       setFormData({ meal_type: "lunch" });
@@ -160,6 +239,10 @@ export const ChallengeCheckInForm = ({
       setIngredients([]);
       setAlternatives([]);
       setStep(1);
+      setActiveToken(null);
+      setEnteredToken("");
+      setTokenValidated(false);
+      setTokenError(null);
     } catch (error) {
       // Error handled in parent
     } finally {
@@ -170,6 +253,18 @@ export const ChallengeCheckInForm = ({
   const availableMeals = ["breakfast", "lunch", "dinner", "snack"].filter(
     m => !todayMeals.includes(m)
   );
+
+  // Show token screen
+  if (showTokenScreen && challengeId && userChallengeId) {
+    return (
+      <ChallengeTokenDisplay
+        challengeId={challengeId}
+        userChallengeId={userChallengeId}
+        onProceed={handleTokenProceed}
+        onCancel={() => setShowTokenScreen(false)}
+      />
+    );
+  }
 
   return (
     <Card className="shadow-soft border-primary/20">
@@ -259,7 +354,7 @@ export const ChallengeCheckInForm = ({
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
                 <Camera className="w-4 h-4" />
-                Meal Photo (Recommended)
+                Meal Photo (Verified)
               </Label>
               <input
                 type="file"
@@ -284,26 +379,84 @@ export const ChallengeCheckInForm = ({
                     onClick={() => {
                       setPhotoPreview(null);
                       setFormData(prev => ({ ...prev, photo_url: undefined }));
+                      setActiveToken(null);
+                      setEnteredToken("");
+                      setTokenValidated(false);
+                      setTokenError(null);
                     }}
                   >
                     <X className="w-4 h-4" />
                   </Button>
-                  <Badge className="absolute bottom-2 left-2 bg-success/90">
-                    +20 points
-                  </Badge>
+                  {tokenValidated ? (
+                    <Badge className="absolute bottom-2 left-2 bg-success/90 gap-1">
+                      <Shield className="w-3 h-3" />
+                      Verified +30 pts
+                    </Badge>
+                  ) : activeToken ? (
+                    <Badge className="absolute bottom-2 left-2 bg-warning/90 gap-1">
+                      <Shield className="w-3 h-3" />
+                      Pending verification
+                    </Badge>
+                  ) : (
+                    <Badge className="absolute bottom-2 left-2 bg-success/90">
+                      +20 points
+                    </Badge>
+                  )}
                 </div>
               ) : (
                 <Button
                   type="button"
                   variant="outline"
                   className="w-full h-24 border-dashed flex flex-col gap-2"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={handleStartPhotoFlow}
                 >
                   <Upload className="w-6 h-6 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">
-                    Upload meal photo for verification
+                    {challengeId ? "Upload verified meal photo" : "Upload meal photo for verification"}
                   </span>
+                  {challengeId && (
+                    <Badge variant="secondary" className="gap-1">
+                      <Shield className="w-3 h-3" />
+                      Anti-cheat protected
+                    </Badge>
+                  )}
                 </Button>
+              )}
+
+              {/* Token Entry (if photo uploaded with token flow) */}
+              {activeToken && photoPreview && !tokenValidated && (
+                <div className="p-3 bg-muted/50 rounded-lg space-y-3">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <Shield className="w-4 h-4 text-primary" />
+                    Enter verification code from your photo
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Type the code you wrote on paper (e.g., {activeToken})
+                  </p>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="e.g., NOIL-1234"
+                      value={enteredToken}
+                      onChange={(e) => {
+                        setEnteredToken(e.target.value.toUpperCase());
+                        setTokenError(null);
+                      }}
+                      className={`font-mono ${tokenError ? "border-destructive" : ""}`}
+                    />
+                    <Button
+                      onClick={validateToken}
+                      disabled={isValidatingToken || !enteredToken.trim()}
+                    >
+                      {isValidatingToken ? "Verifying..." : "Verify"}
+                    </Button>
+                  </div>
+                  {tokenError && (
+                    <div className="flex items-center gap-2 text-sm text-destructive">
+                      <AlertCircle className="w-4 h-4" />
+                      {tokenError}
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 

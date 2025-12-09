@@ -350,6 +350,60 @@ export type Database = {
           },
         ]
       }
+      challenge_tokens: {
+        Row: {
+          challenge_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          issued_at: string
+          status: string
+          token: string
+          used_at: string | null
+          user_challenge_id: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          issued_at?: string
+          status?: string
+          token: string
+          used_at?: string | null
+          user_challenge_id: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          issued_at?: string
+          status?: string
+          token?: string
+          used_at?: string | null
+          user_challenge_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_tokens_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "challenge_tokens_user_challenge_id_fkey"
+            columns: ["user_challenge_id"]
+            isOneToOne: false
+            referencedRelation: "user_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       challenges: {
         Row: {
           challenge_type: string
@@ -1937,6 +1991,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      expire_old_challenge_tokens: { Args: never; Returns: undefined }
       get_anonymized_leaderboard: {
         Args: never
         Returns: {
