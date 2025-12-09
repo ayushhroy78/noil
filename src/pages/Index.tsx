@@ -380,18 +380,55 @@ const Index = () => {
               )}
 
               {category.isIconCard && (
-                // Icon-based card for Register Restaurant
-                <div className={`absolute inset-0 bg-gradient-to-br ${category.color}`}>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-                    <div className="w-16 h-16 rounded-full bg-warning/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-                      <Utensils className="w-8 h-8 text-warning" />
-                    </div>
-                    <h3 className="text-base font-bold text-foreground mb-1">{category.title}</h3>
-                    <p className="text-xs text-muted-foreground leading-tight">{category.subtitle}</p>
+                // Register Restaurant Tile - Olive gradient with Fork & Knife
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #808000 0%, #6B8E23 50%, #556B2F 100%)' }}>
+                  {/* Decorative floating elements */}
+                  <div className="absolute top-3 right-3 w-8 h-8 bg-white/10 rounded-full blur-sm" />
+                  <div className="absolute bottom-16 left-4 w-6 h-6 bg-white/10 rounded-full blur-sm" />
+                  
+                  {/* Fork & Knife Illustration */}
+                  <div className="absolute bottom-1 right-1 w-24 h-24 opacity-90">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                      {/* Fork */}
+                      <g transform="translate(20, 8)">
+                        {/* Fork tines */}
+                        <rect x="8" y="0" width="3" height="22" rx="1.5" fill="white" opacity="0.85"/>
+                        <rect x="14" y="0" width="3" height="22" rx="1.5" fill="white" opacity="0.85"/>
+                        <rect x="20" y="0" width="3" height="22" rx="1.5" fill="white" opacity="0.85"/>
+                        <rect x="26" y="0" width="3" height="22" rx="1.5" fill="white" opacity="0.85"/>
+                        {/* Fork neck */}
+                        <path d="M8 22 Q8 32 18.5 32 Q29 32 29 22" fill="white" opacity="0.85"/>
+                        {/* Fork handle */}
+                        <rect x="15" y="32" width="7" height="50" rx="3" fill="white" opacity="0.85"/>
+                      </g>
+                      
+                      {/* Knife */}
+                      <g transform="translate(52, 8)">
+                        {/* Knife blade */}
+                        <path d="M5 0 L5 38 Q5 43 10 43 L18 43 L18 5 Q18 2 14 0 Z" fill="white" opacity="0.85"/>
+                        {/* Knife handle */}
+                        <rect x="5" y="43" width="13" height="40" rx="3" fill="white" opacity="0.8"/>
+                        {/* Handle details */}
+                        <rect x="8" y="48" width="7" height="3" rx="1" fill="#556B2F" opacity="0.4"/>
+                        <rect x="8" y="55" width="7" height="3" rx="1" fill="#556B2F" opacity="0.4"/>
+                        <rect x="8" y="62" width="7" height="3" rx="1" fill="#556B2F" opacity="0.4"/>
+                      </g>
+                    </svg>
                   </div>
-                  {/* Decorative elements */}
-                  <div className="absolute top-2 right-2 w-8 h-8 bg-warning/10 rounded-full blur-xl" />
-                  <div className="absolute bottom-2 left-2 w-6 h-6 bg-warning/10 rounded-full blur-lg" />
+                  
+                  {/* Text content */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <h3 className="text-lg font-bold text-white mb-1 drop-shadow-md">{category.title}</h3>
+                    <p className="text-xs text-white/80 leading-tight max-w-[100px]">{category.subtitle}</p>
+                  </div>
+                  
+                  {/* Badge */}
+                  <div className="absolute bottom-3 left-3 bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+                    <span className="text-[10px] font-semibold text-white">Partner</span>
+                  </div>
+                  
+                  {/* Decorative circles */}
+                  <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-white/10 rounded-full blur-xl" />
                 </div>
               )}
             </Card>
