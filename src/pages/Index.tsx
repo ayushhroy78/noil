@@ -154,9 +154,66 @@ const Index = () => {
         <div className="absolute top-3/4 right-1/3 w-2 h-2 bg-success/25 rounded-full animate-ping" style={{ animationDuration: '4s', animationDelay: '1s' }} />
         <div className="absolute top-1/2 left-10 w-4 h-4 bg-accent/15 rounded-full animate-ping" style={{ animationDuration: '5s', animationDelay: '2s' }} />
 
+        {/* Twinkling stars/sparkles */}
+        <div className="absolute top-[12%] left-[8%] text-primary/30 animate-twinkle text-lg">✦</div>
+        <div className="absolute top-[28%] right-[12%] text-success/25 animate-twinkle text-sm" style={{ animationDelay: '0.5s' }}>✦</div>
+        <div className="absolute top-[48%] left-[5%] text-accent/20 animate-twinkle text-xl" style={{ animationDelay: '1s' }}>✦</div>
+        <div className="absolute top-[62%] right-[8%] text-primary/25 animate-twinkle" style={{ animationDelay: '1.5s' }}>✦</div>
+        <div className="absolute top-[78%] left-[18%] text-success/20 animate-twinkle text-sm" style={{ animationDelay: '2s' }}>✦</div>
+        <div className="absolute top-[35%] right-[5%] text-accent/25 animate-twinkle" style={{ animationDelay: '2.5s' }}>✦</div>
+
+        {/* Floating health hearts */}
+        <div className="absolute top-[18%] right-[18%] opacity-10 animate-float-slow">
+          <svg width="20" height="18" viewBox="0 0 24 24" className="text-destructive fill-current">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </div>
+        <div className="absolute top-[52%] left-[3%] opacity-8 animate-float" style={{ animationDelay: '1.5s' }}>
+          <svg width="16" height="14" viewBox="0 0 24 24" className="text-destructive fill-current">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </div>
+        <div className="absolute top-[75%] right-[15%] opacity-10 animate-float-slow" style={{ animationDelay: '3s' }}>
+          <svg width="14" height="12" viewBox="0 0 24 24" className="text-destructive fill-current">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </div>
+
+        {/* Floating leaves for health/wellness theme */}
+        <div className="absolute top-[22%] left-[22%] opacity-15 animate-sway">
+          <svg width="18" height="18" viewBox="0 0 24 24" className="text-success fill-current">
+            <path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"/>
+          </svg>
+        </div>
+        <div className="absolute top-[68%] right-[22%] opacity-12 animate-sway" style={{ animationDelay: '1s' }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" className="text-success fill-current">
+            <path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"/>
+          </svg>
+        </div>
+        <div className="absolute top-[42%] right-[3%] opacity-10 animate-sway" style={{ animationDelay: '2s' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" className="text-success fill-current">
+            <path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"/>
+          </svg>
+        </div>
+
+        {/* Health plus signs */}
+        <div className="absolute top-[30%] left-[2%] opacity-10 animate-float-horizontal text-primary font-bold text-xl">+</div>
+        <div className="absolute top-[60%] right-[2%] opacity-8 animate-float-horizontal text-success font-bold text-lg" style={{ animationDelay: '1s' }}>+</div>
+        <div className="absolute top-[88%] left-[30%] opacity-10 animate-float-horizontal text-primary font-bold" style={{ animationDelay: '2s' }}>+</div>
+
+        {/* Decorative circles/rings */}
+        <div className="absolute top-[15%] left-[35%] w-8 h-8 border-2 border-primary/10 rounded-full animate-float-slow" />
+        <div className="absolute top-[50%] right-[12%] w-6 h-6 border border-success/15 rounded-full animate-float" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute top-[82%] left-[8%] w-10 h-10 border-2 border-accent/10 rounded-full animate-float-slow" style={{ animationDelay: '3s' }} />
+
         {/* Subtle wave pattern at bottom */}
         <svg className="absolute bottom-0 left-0 w-full h-24 opacity-[0.04]" preserveAspectRatio="none" viewBox="0 0 1440 120">
           <path d="M0,60 C360,120 720,0 1080,60 C1260,90 1380,75 1440,60 L1440,120 L0,120 Z" className="fill-primary" />
+        </svg>
+
+        {/* Secondary wave */}
+        <svg className="absolute bottom-0 left-0 w-full h-16 opacity-[0.03]" preserveAspectRatio="none" viewBox="0 0 1440 120">
+          <path d="M0,80 C480,40 960,100 1440,60 L1440,120 L0,120 Z" className="fill-success" />
         </svg>
 
         {/* Grid pattern overlay */}
