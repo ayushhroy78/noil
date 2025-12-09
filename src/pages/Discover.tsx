@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, Store, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { BottomNav } from "@/components/BottomNav";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Discover = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -48,8 +50,8 @@ const Discover = () => {
             <ArrowLeft className="w-5 h-5 text-primary" />
           </button>
           <div>
-            <h1 className="text-xl font-bold text-foreground">Discover</h1>
-            <p className="text-xs text-muted-foreground">Learn & Grow Healthier</p>
+            <h1 className="text-xl font-bold text-foreground">{t('discover.title')}</h1>
+            <p className="text-xs text-muted-foreground">{t('discover.subtitle')}</p>
           </div>
         </div>
       </header>
@@ -79,11 +81,11 @@ const Discover = () => {
 
         <Tabs defaultValue="challenges" className="w-full">
           <TabsList className="grid w-full grid-cols-5 mb-6">
-            <TabsTrigger value="challenges" className="text-xs px-1">Challenges</TabsTrigger>
-            <TabsTrigger value="quizzes" className="text-xs px-1" data-testid="tab-quizzes">Quizzes</TabsTrigger>
-            <TabsTrigger value="info" className="text-xs px-1" data-testid="tab-info">Info</TabsTrigger>
-            <TabsTrigger value="tips" className="text-xs px-1" data-testid="tab-tips">Tips</TabsTrigger>
-            <TabsTrigger value="leaderboard" className="text-xs px-1" data-testid="tab-leaderboard">Leaders</TabsTrigger>
+            <TabsTrigger value="challenges" className="text-xs px-1">{t('discover.challenges')}</TabsTrigger>
+            <TabsTrigger value="quizzes" className="text-xs px-1" data-testid="tab-quizzes">{t('discover.quizzes')}</TabsTrigger>
+            <TabsTrigger value="info" className="text-xs px-1" data-testid="tab-info">{t('discover.healthInfo')}</TabsTrigger>
+            <TabsTrigger value="tips" className="text-xs px-1" data-testid="tab-tips">{t('discover.nudges')}</TabsTrigger>
+            <TabsTrigger value="leaderboard" className="text-xs px-1" data-testid="tab-leaderboard">{t('discover.leaderboard')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="challenges">

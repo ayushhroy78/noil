@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { BottomNav } from "@/components/BottomNav";
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const FitMeal = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [recipes, setRecipes] = useState<any[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<any | null>(null);
@@ -111,8 +113,8 @@ const FitMeal = () => {
             <ArrowLeft className="w-5 h-5 text-primary" />
           </button>
           <div>
-            <h1 className="text-xl font-bold text-foreground">Fit Meal</h1>
-            <p className="text-xs text-muted-foreground">Low-Oil Cooking Ideas</p>
+            <h1 className="text-xl font-bold text-foreground">{t('recipes.title')}</h1>
+            <p className="text-xs text-muted-foreground">{t('recipes.subtitle')}</p>
           </div>
         </div>
       </header>
@@ -120,8 +122,8 @@ const FitMeal = () => {
       <main className="px-4 py-6">
         <Tabs defaultValue="explore" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="explore">Explore Recipes</TabsTrigger>
-            <TabsTrigger value="ai">AI Recipe Builder</TabsTrigger>
+            <TabsTrigger value="explore">{t('recipes.explore')}</TabsTrigger>
+            <TabsTrigger value="ai">{t('recipes.aiBuilder')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="explore" className="space-y-6">
@@ -130,7 +132,7 @@ const FitMeal = () => {
               <div className="max-w-4xl mx-auto space-y-4">
                 {/* Meal Type Filter */}
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground px-1">Filter by Meal</p>
+                  <p className="text-sm font-medium text-muted-foreground px-1">{t('recipes.mealType')}</p>
                   <div className="flex flex-wrap gap-2">
                     {mealTypes.map((type) => (
                       <button
@@ -150,7 +152,7 @@ const FitMeal = () => {
 
                 {/* Cuisine Filter */}
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground px-1">Filter by Cuisine</p>
+                  <p className="text-sm font-medium text-muted-foreground px-1">{t('recipes.cuisine')}</p>
                   <div className="flex flex-wrap gap-2">
                     {cuisines.map((cuisine) => (
                       <button
