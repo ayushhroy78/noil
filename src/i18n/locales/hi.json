@@ -25,14 +25,20 @@
     "sort": "क्रमबद्ध करें",
     "viewAll": "सभी देखें",
     "seeMore": "और देखें",
-    "close": "बंद करें"
+    "close": "बंद करें",
+    "loginRequired": "लॉगिन आवश्यक",
+    "pleaseLogin": "इस सुविधा का उपयोग करने के लिए कृपया लॉगिन करें।",
+    "loggedOut": "लॉगआउट हो गया",
+    "loggedOutDesc": "आप सफलतापूर्वक लॉगआउट हो गए हैं।",
+    "setLocation": "अपना स्थान सेट करें"
   },
   "nav": {
     "tracker": "ट्रैकर",
     "recipes": "रेसिपी",
     "home": "होम",
     "store": "स्टोर",
-    "discover": "खोजें"
+    "discover": "खोजें",
+    "profile": "प्रोफाइल"
   },
   "landing": {
     "tagline": "ट्रैक करें। पकाएं। समृद्ध हों।",
@@ -45,7 +51,41 @@
     "welcome": "स्वागत है",
     "dailyProgress": "आज की प्रगति",
     "quickActions": "त्वरित कार्य",
-    "recentActivity": "हाल की गतिविधि"
+    "recentActivity": "हाल की गतिविधि",
+    "searchPlaceholder": "स्वस्थ रेसिपी, तेल, गाइड खोजें...",
+    "healthProfile": "स्वास्थ्य प्रोफाइल",
+    "registerRestaurant": "रेस्तरां पंजीकृत करें",
+    "verifiedRestaurants": "प्रमाणित रेस्तरां",
+    "realTimeDashboard": "रियल टाइम डैशबोर्ड",
+    "policyMakerDashboard": "नीति निर्माता डैशबोर्ड",
+    "rewardsStore": "पुरस्कार स्टोर",
+    "oilCalculator": "तेल कैलकुलेटर",
+    "loginSignup": "लॉगिन / साइन अप",
+    "footerTagline": "कम तेल, वही स्वाद, बेहतर जीवन"
+  },
+  "carousel": {
+    "wellnessChallenge": "वेलनेस चैलेंज",
+    "saveOil": "10% तेल बचाएं",
+    "improveHealth": "आज ही अपनी सेहत सुधारें",
+    "joinChallenge": "चुनौती स्वीकारें",
+    "smartStoreSale": "स्मार्ट स्टोर सेल",
+    "upTo30Off": "30% तक की छूट",
+    "certifiedOils": "प्रमाणित स्वस्थ तेल और आवश्यक सामग्री पर",
+    "shopNow": "अभी खरीदें",
+    "partnerWithUs": "हमारे साथ जुड़ें",
+    "registerRestaurant": "रेस्तरां पंजीकृत करें",
+    "joinNetwork": "नॉयल के स्वस्थ डाइनिंग नेटवर्क से जुड़ें और अपना व्यापार बढ़ाएं",
+    "applyNow": "अभी आवेदन करें"
+  },
+  "categories": {
+    "tracker": "ट्रैकर",
+    "trackerSubtitle": "अपने दैनिक तेल उपयोग को ट्रैक करें",
+    "fitMeal": "फिट मील",
+    "fitMealSubtitle": "कम तेल वाली रेसिपी",
+    "oilHub": "ऑयलहब",
+    "oilHubSubtitle": "प्रमाणित तेल और आवश्यक सामान खरीदें",
+    "discover": "खोजें",
+    "discoverSubtitle": "स्वस्थ आदतें सीखें"
   },
   "tracker": {
     "title": "तेल ट्रैकर",
@@ -64,7 +104,7 @@
     "consumption": "खपत",
     "insights": "अंतर्दृष्टि",
     "bottles": "बोतलें",
-    "barcodeScan": "बारकोड स्कैन करें",
+    "barcodeScan": "स्कैन",
     "manualEntry": "मैन्युअल प्रविष्टि",
     "dailyGoal": "दैनिक लक्ष्य",
     "remaining": "शेष"
@@ -82,11 +122,19 @@
     "steps": "चरण",
     "cookThis": "यह पकाया - तेल का उपयोग लॉग करें",
     "generateRecipe": "रेसिपी बनाएं",
-    "enterIngredients": "अपनी सामग्री दर्ज करें"
+    "enterIngredients": "अपनी सामग्री दर्ज करें",
+    "allMeals": "सभी भोजन",
+    "allCuisines": "सभी व्यंजन",
+    "showingRecipes": "दिखा रहा है",
+    "recipesText": "रेसिपी",
+    "noRecipes": "अभी तक कोई रेसिपी उपलब्ध नहीं है",
+    "noMatchingRecipes": "आपके फ़िल्टर से कोई रेसिपी मेल नहीं खाती",
+    "clearFilters": "फ़िल्टर साफ़ करें",
+    "loadingRecipes": "स्वादिष्ट रेसिपी लोड हो रही हैं..."
   },
   "oilhub": {
     "title": "ऑयलहब",
-    "subtitle": "प्रमाणित तेल और आवश्यक सामान खरीदें",
+    "subtitle": "हमारे IoT उपकरणों के साथ स्वचालित रूप से अपने तेल उपयोग को ट्रैक करें",
     "addToCart": "कार्ट में जोड़ें",
     "viewCart": "कार्ट देखें",
     "checkout": "चेकआउट",
@@ -95,21 +143,27 @@
     "total": "कुल",
     "orderNow": "अभी ऑर्डर करें",
     "iotDevices": "IoT उपकरण",
-    "smartTracking": "स्मार्ट तेल ट्रैकिंग"
+    "smartTracking": "स्मार्ट तेल ट्रैकिंग उपकरण",
+    "noDevices": "इस समय कोई IoT उपकरण उपलब्ध नहीं है"
   },
   "discover": {
     "title": "खोजें",
     "subtitle": "स्वस्थ आदतें सीखें",
     "challenges": "चुनौतियाँ",
     "quizzes": "क्विज़",
-    "healthInfo": "स्वास्थ्य जानकारी",
-    "nudges": "दैनिक सुझाव",
-    "leaderboard": "लीडरबोर्ड",
+    "healthInfo": "जानकारी",
+    "nudges": "टिप्स",
+    "leaderboard": "लीडर्स",
     "startChallenge": "चुनौती शुरू करें",
     "takeQuiz": "क्विज़ लें",
     "points": "अंक",
     "streak": "स्ट्रीक",
-    "badges": "बैज"
+    "badges": "बैज",
+    "healthyRestaurants": "स्वस्थ रेस्तरां",
+    "findRestaurants": "ऐसे रेस्तरां खोजें जो स्वस्थ तेल से खाना बनाते हैं",
+    "pleaseLoginChallenges": "चुनौतियों में भाग लेने के लिए कृपया लॉगिन करें",
+    "pleaseLoginQuizzes": "क्विज़ लेने के लिए कृपया लॉगिन करें",
+    "pleaseLoginTips": "व्यक्तिगत सुझाव देखने के लिए कृपया लॉगिन करें"
   },
   "profile": {
     "title": "प्रोफाइल",

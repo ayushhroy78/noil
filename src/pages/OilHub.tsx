@@ -68,7 +68,7 @@ const OilHub = () => {
             </div>
           ) : iotProducts.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
-              <p>No IoT devices available at the moment</p>
+              <p>{t('oilhub.noDevices')}</p>
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2">

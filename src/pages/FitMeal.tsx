@@ -173,7 +173,7 @@ const FitMeal = () => {
                 {/* Results Count */}
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">
-                    Showing <span className="font-bold text-primary">{filteredRecipes.length}</span> recipes
+                    {t('recipes.showingRecipes')} <span className="font-bold text-primary">{filteredRecipes.length}</span> {t('recipes.recipesText')}
                   </p>
                 </div>
               </div>
@@ -183,21 +183,21 @@ const FitMeal = () => {
             {isLoading ? (
               <div className="text-center py-12">
                 <div className="inline-block w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4"></div>
-                <p className="text-muted-foreground">Loading delicious recipes...</p>
+                <p className="text-muted-foreground">{t('recipes.loadingRecipes')}</p>
               </div>
             ) : recipes.length === 0 ? (
               <div className="text-center py-12">
                 <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
                   <span className="text-4xl">🍽️</span>
                 </div>
-                <p className="text-muted-foreground">No recipes available yet</p>
+                <p className="text-muted-foreground">{t('recipes.noRecipes')}</p>
               </div>
             ) : filteredRecipes.length === 0 ? (
               <div className="text-center py-12">
                 <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
                   <span className="text-4xl">🔍</span>
                 </div>
-                <p className="text-muted-foreground">No recipes match your filters</p>
+                <p className="text-muted-foreground">{t('recipes.noMatchingRecipes')}</p>
                 <button
                   onClick={() => {
                     setFilterMealType("all");
@@ -205,7 +205,7 @@ const FitMeal = () => {
                   }}
                   className="mt-4 text-primary font-medium hover:underline"
                 >
-                  Clear filters
+                  {t('recipes.clearFilters')}
                 </button>
               </div>
             ) : (
