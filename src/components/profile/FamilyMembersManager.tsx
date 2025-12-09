@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,29 +13,6 @@ import { Users, Plus, Edit2, Trash2, Loader2, User, Target, Scale } from "lucide
 interface FamilyMembersManagerProps {
   userId: string;
 }
-
-const relationshipOptions = [
-  { value: "spouse", label: "Spouse" },
-  { value: "child", label: "Child" },
-  { value: "parent", label: "Parent" },
-  { value: "sibling", label: "Sibling" },
-  { value: "grandparent", label: "Grandparent" },
-  { value: "other", label: "Other" },
-];
-
-const activityLevels = [
-  { value: "sedentary", label: "Sedentary" },
-  { value: "light", label: "Lightly Active" },
-  { value: "moderate", label: "Moderately Active" },
-  { value: "active", label: "Active" },
-  { value: "very_active", label: "Very Active" },
-];
-
-const genderOptions = [
-  { value: "male", label: "Male" },
-  { value: "female", label: "Female" },
-  { value: "other", label: "Other" },
-];
 
 interface MemberFormData {
   name: string;
@@ -59,10 +37,34 @@ const emptyFormData: MemberFormData = {
 };
 
 export const FamilyMembersManager = ({ userId }: FamilyMembersManagerProps) => {
+  const { t } = useTranslation();
   const { familyMembers, isLoading, addMember, updateMember, deleteMember, isAdding, isUpdating } = useFamilyMembers(userId);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<FamilyMember | null>(null);
   const [formData, setFormData] = useState<MemberFormData>(emptyFormData);
+
+  const relationshipOptions = [
+    { value: "spouse", label: t("profile.spouse") },
+    { value: "child", label: t("profile.child") },
+    { value: "parent", label: t("profile.parent") },
+    { value: "sibling", label: t("profile.sibling") },
+    { value: "grandparent", label: t("profile.grandparent") },
+    { value: "other", label: t("profile.other") },
+  ];
+
+  const activityLevels = [
+    { value: "sedentary", label: t("profile.sedentary") },
+    { value: "light", label: t("profile.lightlyActive") },
+    { value: "moderate", label: t("profile.moderatelyActive") },
+    { value: "active", label: t("profile.active") },
+    { value: "very_active", label: t("profile.veryActive") },
+  ];
+
+  const genderOptions = [
+    { value: "male", label: t("profile.male") },
+    { value: "female", label: t("profile.female") },
+    { value: "other", label: t("profile.other") },
+  ];
 
   const handleOpenDialog = (member?: FamilyMember) => {
     if (member) {
@@ -87,7 +89,6 @@ export const FamilyMembersManager = ({ userId }: FamilyMembersManagerProps) => {
   const handleSave = () => {
     if (!formData.name.trim()) return;
 
-    // Calculate recommended oil if not manually set
     const recommendedOil = calculateRecommendedOil(
       formData.weight_kg,
       formData.activity_level,
@@ -110,7 +111,7 @@ export const FamilyMembersManager = ({ userId }: FamilyMembersManagerProps) => {
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm("Are you sure you want to remove this family member?")) {
+    if (window.confirm(t("profile.confirmDelete"))) {
       deleteMember(id);
     }
   };
@@ -140,16 +141,16 @@ export const FamilyMembersManager = ({ userId }: FamilyMembersManagerProps) => {
                   <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">Household Summary</h3>
+                  <h3 className="font-semibold">{t("profile.householdSummary")}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {familyMembers.length} family member{familyMembers.length !== 1 ? "s" : ""}
+                    {familyMembers.length} {familyMembers.length !== 1 ? t("profile.familyMembersPlural") : t("profile.familyMember")}
                   </p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-sm text-muted-foreground">Total Daily Goal</p>
+                <p className="text-sm text-muted-foreground">{t("profile.totalDailyGoal")}</p>
                 <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                  {totalHouseholdGoal} ml
+                  {totalHouseholdGoal} {t("common.ml")}
                 </p>
               </div>
             </div>
@@ -163,31 +164,31 @@ export const FamilyMembersManager = ({ userId }: FamilyMembersManagerProps) => {
           <div>
             <CardTitle className="flex items-center gap-2 text-base">
               <Users className="h-5 w-5 text-primary" />
-              Family Members
+              {t("profile.familyMembers")}
             </CardTitle>
             <CardDescription>
-              Track oil consumption for your household
+              {t("profile.trackOilConsumption")}
             </CardDescription>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button size="sm" onClick={() => handleOpenDialog()}>
                 <Plus className="h-4 w-4 mr-1" />
-                Add
+                {t("common.add")}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>
-                  {editingMember ? "Edit Family Member" : "Add Family Member"}
+                  {editingMember ? t("profile.editFamilyMember") : t("profile.addFamilyMember")}
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 mt-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Name *</Label>
+                  <Label htmlFor="name">{t("profile.fullName")} *</Label>
                   <Input
                     id="name"
-                    placeholder="Enter name"
+                    placeholder={t("profile.enterName")}
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   />
@@ -195,13 +196,13 @@ export const FamilyMembersManager = ({ userId }: FamilyMembersManagerProps) => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="relationship">Relationship</Label>
+                    <Label htmlFor="relationship">{t("profile.relationship")}</Label>
                     <Select
                       value={formData.relationship || ""}
                       onValueChange={(value) => setFormData({ ...formData, relationship: value })}
                     >
                       <SelectTrigger id="relationship">
-                        <SelectValue placeholder="Select" />
+                        <SelectValue placeholder={t("profile.select")} />
                       </SelectTrigger>
                       <SelectContent>
                         {relationshipOptions.map((option) => (
@@ -213,11 +214,11 @@ export const FamilyMembersManager = ({ userId }: FamilyMembersManagerProps) => {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="member-age">Age</Label>
+                    <Label htmlFor="member-age">{t("profile.age")}</Label>
                     <Input
                       id="member-age"
                       type="number"
-                      placeholder="Years"
+                      placeholder={t("profile.years")}
                       value={formData.age || ""}
                       onChange={(e) => setFormData({ ...formData, age: e.target.value ? parseInt(e.target.value) : null })}
                     />
@@ -226,21 +227,21 @@ export const FamilyMembersManager = ({ userId }: FamilyMembersManagerProps) => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="member-weight">Weight (kg)</Label>
+                    <Label htmlFor="member-weight">{t("profile.weight")} ({t("profile.kg")})</Label>
                     <Input
                       id="member-weight"
                       type="number"
-                      placeholder="kg"
+                      placeholder={t("profile.kg")}
                       value={formData.weight_kg || ""}
                       onChange={(e) => setFormData({ ...formData, weight_kg: e.target.value ? parseFloat(e.target.value) : null })}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="member-height">Height (cm)</Label>
+                    <Label htmlFor="member-height">{t("profile.height")} ({t("profile.cm")})</Label>
                     <Input
                       id="member-height"
                       type="number"
-                      placeholder="cm"
+                      placeholder={t("profile.cm")}
                       value={formData.height_cm || ""}
                       onChange={(e) => setFormData({ ...formData, height_cm: e.target.value ? parseFloat(e.target.value) : null })}
                     />
@@ -249,13 +250,13 @@ export const FamilyMembersManager = ({ userId }: FamilyMembersManagerProps) => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="member-gender">Gender</Label>
+                    <Label htmlFor="member-gender">{t("profile.gender")}</Label>
                     <Select
                       value={formData.gender || ""}
                       onValueChange={(value) => setFormData({ ...formData, gender: value })}
                     >
                       <SelectTrigger id="member-gender">
-                        <SelectValue placeholder="Select" />
+                        <SelectValue placeholder={t("profile.select")} />
                       </SelectTrigger>
                       <SelectContent>
                         {genderOptions.map((option) => (
@@ -267,13 +268,13 @@ export const FamilyMembersManager = ({ userId }: FamilyMembersManagerProps) => {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="member-activity">Activity Level</Label>
+                    <Label htmlFor="member-activity">{t("profile.activityLevel")}</Label>
                     <Select
                       value={formData.activity_level || "moderate"}
                       onValueChange={(value) => setFormData({ ...formData, activity_level: value })}
                     >
                       <SelectTrigger id="member-activity">
-                        <SelectValue placeholder="Select" />
+                        <SelectValue placeholder={t("profile.select")} />
                       </SelectTrigger>
                       <SelectContent>
                         {activityLevels.map((level) => (
@@ -289,17 +290,17 @@ export const FamilyMembersManager = ({ userId }: FamilyMembersManagerProps) => {
                 <div className="space-y-2">
                   <Label htmlFor="daily-goal" className="flex items-center gap-1">
                     <Target className="h-3 w-3" />
-                    Daily Oil Goal (ml)
+                    {t("profile.dailyOilGoal")}
                   </Label>
                   <Input
                     id="daily-goal"
                     type="number"
-                    placeholder="Auto-calculated if empty"
+                    placeholder={t("profile.autoCalculated")}
                     value={formData.daily_oil_goal_ml || ""}
                     onChange={(e) => setFormData({ ...formData, daily_oil_goal_ml: e.target.value ? parseFloat(e.target.value) : null })}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Leave empty to auto-calculate based on weight and activity
+                    {t("profile.leaveEmptyToCalc")}
                   </p>
                 </div>
 
@@ -311,12 +312,12 @@ export const FamilyMembersManager = ({ userId }: FamilyMembersManagerProps) => {
                   {(isAdding || isUpdating) ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Saving...
+                      {t("common.saving")}
                     </>
                   ) : editingMember ? (
-                    "Update Member"
+                    t("profile.updateMember")
                   ) : (
-                    "Add Member"
+                    t("profile.addMember")
                   )}
                 </Button>
               </div>
@@ -327,9 +328,9 @@ export const FamilyMembersManager = ({ userId }: FamilyMembersManagerProps) => {
           {familyMembers.length === 0 ? (
             <div className="text-center py-8">
               <Users className="h-12 w-12 mx-auto text-muted-foreground/40 mb-3" />
-              <p className="text-muted-foreground">No family members added yet</p>
+              <p className="text-muted-foreground">{t("profile.noFamilyMembers")}</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Add family members to track their oil consumption
+                {t("profile.addFamilyMembersDesc")}
               </p>
             </div>
           ) : (
@@ -353,16 +354,16 @@ export const FamilyMembersManager = ({ userId }: FamilyMembersManagerProps) => {
                         )}
                       </div>
                       <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                        {member.age && <span>{member.age} yrs</span>}
+                        {member.age && <span>{member.age} {t("common.yrs")}</span>}
                         {member.weight_kg && (
                           <span className="flex items-center gap-1">
                             <Scale className="h-3 w-3" />
-                            {member.weight_kg} kg
+                            {member.weight_kg} {t("profile.kg")}
                           </span>
                         )}
                         <span className="flex items-center gap-1 text-primary font-medium">
                           <Target className="h-3 w-3" />
-                          {member.daily_oil_goal_ml || 20} ml/day
+                          {member.daily_oil_goal_ml || 20} {t("common.ml")}/{t("common.daily").toLowerCase()}
                         </span>
                       </div>
                     </div>

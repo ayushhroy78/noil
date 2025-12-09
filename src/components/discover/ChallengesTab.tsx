@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +34,7 @@ interface ChallengesTabProps {
 }
 
 export const ChallengesTab = ({ userId }: ChallengesTabProps) => {
+  const { t } = useTranslation();
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [userChallenges, setUserChallenges] = useState<UserChallenge[]>([]);
   const [loading, setLoading] = useState(true);
@@ -141,9 +143,9 @@ export const ChallengesTab = ({ userId }: ChallengesTabProps) => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "in_progress":
-        return <Badge variant="default">In Progress</Badge>;
+        return <Badge variant="default">{t("challenges.inProgress")}</Badge>;
       case "completed":
-        return <Badge className="bg-success text-white">Completed</Badge>;
+        return <Badge className="bg-success text-white">{t("challenges.completed")}</Badge>;
       default:
         return <Badge variant="outline">{t("challenges.notStarted")}</Badge>;
     }
@@ -161,7 +163,7 @@ export const ChallengesTab = ({ userId }: ChallengesTabProps) => {
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-4">
         <Trophy className="w-5 h-5 text-primary" />
-        <h2 className="text-lg font-semibold text-foreground">Active Challenges</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t("challenges.activeChallenges")}</h2>
       </div>
 
       {challenges.map((challenge) => {
@@ -176,14 +178,14 @@ export const ChallengesTab = ({ userId }: ChallengesTabProps) => {
                 <div className="flex-1">
                   <h3 className="font-semibold text-foreground mb-1">{challenge.title}</h3>
                   <p className="text-sm text-muted-foreground mb-2">{challenge.description}</p>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      <span>{challenge.duration_days} days</span>
+                      <span>{challenge.duration_days} {t("challenges.days")}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Trophy className="w-3 h-3 text-warning" />
-                      <span>{challenge.reward_points} points</span>
+                      <span>{challenge.reward_points} {t("challenges.points")}</span>
                     </div>
                   </div>
                 </div>
@@ -193,9 +195,9 @@ export const ChallengesTab = ({ userId }: ChallengesTabProps) => {
               {isInProgress && userChallenge && (
                 <div className="mb-3">
                   <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                    <span>Progress</span>
+                    <span>{t("challenges.progress")}</span>
                     <span>
-                      {Math.floor(getChallengeProgress(userChallenge))}% complete
+                      {Math.floor(getChallengeProgress(userChallenge))}% {t("challenges.complete")}
                     </span>
                   </div>
                   <Progress value={getChallengeProgress(userChallenge)} className="h-2" />
@@ -206,6 +208,8 @@ export const ChallengesTab = ({ userId }: ChallengesTabProps) => {
                       size="sm"
                       className="w-full mt-3"
                     >
+                      <CheckCircle2 className="w-4 h-4 mr-2" />
+                      {t("challenges.markComplete")}
                       <CheckCircle2 className="w-4 h-4 mr-2" />
                       Mark as Complete
                     </Button>
@@ -220,14 +224,14 @@ export const ChallengesTab = ({ userId }: ChallengesTabProps) => {
                   className="w-full"
                 >
                   <Play className="w-4 h-4 mr-2" />
-                  Start Challenge
+                  {t("challenges.startChallenge")}
                 </Button>
               )}
 
               {isCompleted && (
                 <div className="flex items-center gap-2 text-success text-sm">
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>Completed! +{challenge.reward_points} points earned</span>
+                  <span>{t("challenges.completed")}! +{challenge.reward_points} {t("challenges.earnedPoints")}</span>
                 </div>
               )}
             </CardContent>
