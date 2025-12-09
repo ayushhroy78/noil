@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Search, Gift, Calculator, Shield, MessageSquare, Utensils } from "lucide-react";
+import { Search, Gift, Calculator, Shield, MessageSquare, Utensils, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
 import { TopNav } from "@/components/TopNav";
@@ -345,46 +345,56 @@ const Index = () => {
         {/* Quick Actions Section */}
         <div className="bg-card/80 backdrop-blur-sm rounded-2xl p-4 shadow-soft border border-border/50">
           <h3 className="text-sm font-semibold text-muted-foreground mb-3">{t('home.quickActions')}</h3>
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-5 gap-2">
             <button 
               onClick={() => requireAuth(() => navigate("/profile?tab=rewards"))}
-              className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all hover:scale-105 group"
+              className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all hover:scale-105 group"
             >
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow"
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow"
                    style={{ background: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #2dd4bf 100%)' }}>
-                <Gift className="w-5 h-5 text-white" />
+                <Gift className="w-4 h-4 text-white" />
               </div>
-              <span className="text-xs text-foreground font-medium">{t('home.rewardsStore').split(' ')[0]}</span>
+              <span className="text-[10px] text-foreground font-medium">{t('home.rewardsStore').split(' ')[0]}</span>
             </button>
             <button 
               onClick={() => requireAuth(() => navigate("/oil-calculator"))}
-              className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all hover:scale-105 group"
+              className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all hover:scale-105 group"
             >
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow"
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow"
                    style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)' }}>
-                <Calculator className="w-5 h-5 text-white" />
+                <Calculator className="w-4 h-4 text-white" />
               </div>
-              <span className="text-xs text-foreground font-medium">{t('home.oilCalculator').split(' ')[0]}</span>
+              <span className="text-[10px] text-foreground font-medium">{t('home.oilCalculator').split(' ')[0]}</span>
+            </button>
+            <button 
+              onClick={() => requireAuth(() => navigate("/dashboard"))}
+              className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all hover:scale-105 group"
+            >
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow"
+                   style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%)' }}>
+                <BarChart3 className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-[10px] text-foreground font-medium">{t('home.realTimeDashboard').split(' ')[0]}</span>
             </button>
             <button 
               onClick={() => requireAuth(() => navigate("/community"))}
-              className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all hover:scale-105 group"
+              className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all hover:scale-105 group"
             >
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow"
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow"
                    style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #a78bfa 100%)' }}>
-                <MessageSquare className="w-5 h-5 text-white" />
+                <MessageSquare className="w-4 h-4 text-white" />
               </div>
-              <span className="text-xs text-foreground font-medium">{t('common.community')}</span>
+              <span className="text-[10px] text-foreground font-medium">{t('common.community')}</span>
             </button>
             <button 
               onClick={() => requireAuth(() => navigate("/certified-restaurants"))}
-              className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all hover:scale-105 group"
+              className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all hover:scale-105 group"
             >
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow"
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow"
                    style={{ background: 'linear-gradient(135deg, #808000 0%, #6B8E23 50%, #556B2F 100%)' }}>
-                <Shield className="w-5 h-5 text-white" />
+                <Shield className="w-4 h-4 text-white" />
               </div>
-              <span className="text-xs text-foreground font-medium">{t('home.verifiedRestaurants').split(' ')[0]}</span>
+              <span className="text-[10px] text-foreground font-medium">{t('home.verifiedRestaurants').split(' ')[0]}</span>
             </button>
           </div>
         </div>
