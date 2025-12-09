@@ -1,7 +1,7 @@
-import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { BottomNav } from "@/components/BottomNav";
+import { TopNav } from "@/components/TopNav";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BottleTracking } from "@/components/tracking/BottleTracking";
@@ -48,17 +48,7 @@ const Tracker = () => {
   return (
     <div className="min-h-screen pb-24 bg-gradient-to-b from-primary/5 via-background to-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm shadow-soft px-4 py-4 border-b border-primary/10">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate("/")}
-            className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-primary" />
-          </button>
-          <h1 className="text-xl font-bold text-foreground">{t('tracker.title')}</h1>
-        </div>
-      </header>
+      <TopNav title={t('tracker.title')} showBackButton />
 
       {/* Main Content */}
       <main className="px-4 py-6 space-y-6 max-w-2xl mx-auto">
