@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { User, Search, LogOut, Heart, Store, Activity, Gift, Calculator, MapPin, ChevronDown, Shield, MessageSquare, Landmark } from "lucide-react";
+import { User, Search, LogOut, Heart, Store, Activity, Gift, Calculator, MapPin, ChevronDown, Shield, MessageSquare, Landmark, Utensils } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
 import Chatbot from "@/components/Chatbot";
 import { Card } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -13,7 +12,6 @@ import trackerMainImg from "@/assets/tracker-main.jpg";
 import fitMealMainImg from "@/assets/fit-meal-main.jpg";
 import discoverMainImg from "@/assets/discover-main.jpg";
 import logoImg from "@/assets/logo.jpg";
-import Autoplay from "embla-carousel-autoplay";
 import LocationEditDialog from "@/components/LocationEditDialog";
 import { MealReminder } from "@/components/tracking/MealReminder";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -92,53 +90,60 @@ const Index = () => {
     navigate("/auth");
   };
 
-  const offerSlides = [{
-    id: "wellness-challenge",
-    badge: `💧 ${t('carousel.wellnessChallenge')}`,
-    title: t('carousel.saveOil'),
-    subtitle: t('carousel.improveHealth'),
-    buttonText: t('carousel.joinChallenge'),
-    gradient: "bg-gradient-success",
-    glowClass: "success-glow",
-    action: () => requireAuth(() => navigate("/profile?tab=challenges"))
-  }, {
-    id: "register-restaurant",
-    badge: `🍴 ${t('carousel.partnerWithUs')}`,
-    title: t('carousel.registerRestaurant'),
-    subtitle: t('carousel.joinNetwork'),
-    buttonText: t('carousel.applyNow'),
-    gradient: "bg-gradient-to-br from-amber-500 to-orange-600",
-    glowClass: "amber-glow",
-    action: () => requireAuth(() => navigate("/restaurant-apply"))
-  }];
-
   const categories = [{
     id: "oil-tracker",
     title: t('categories.tracker'),
     subtitle: t('categories.trackerSubtitle'),
     image: trackerMainImg,
-    color: "from-blue-500/10 to-cyan-500/10",
+    color: "from-primary/20 to-primary/5",
     path: "/tracker"
   }, {
     id: "recipes",
     title: t('categories.fitMeal'),
     subtitle: t('categories.fitMealSubtitle'),
     image: fitMealMainImg,
-    color: "from-green-500/10 to-emerald-500/10",
+    color: "from-success/20 to-success/5",
     path: "/fit-meal"
   }, {
     id: "discover",
     title: t('categories.discover'),
     subtitle: t('categories.discoverSubtitle'),
     image: discoverMainImg,
-    color: "from-purple-500/10 to-pink-500/10",
+    color: "from-accent/20 to-accent/5",
     path: "/discover"
+  }, {
+    id: "register-restaurant",
+    title: t('home.registerRestaurant'),
+    subtitle: t('carousel.joinNetwork'),
+    icon: Utensils,
+    color: "from-warning/20 to-warning/5",
+    path: "/restaurant-apply",
+    isIconCard: true
   }];
 
   return (
-    <div className="min-h-screen bg-background pb-24 overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div className="min-h-screen bg-background pb-24 overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] relative">
+      {/* Background Decorative Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        {/* Top right blob */}
+        <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+        {/* Bottom left blob */}
+        <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-success/5 rounded-full blur-3xl" />
+        {/* Center subtle pattern */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/3 rounded-full blur-3xl opacity-50" />
+        {/* Floating dots pattern */}
+        <svg className="absolute inset-0 w-full h-full opacity-[0.03]" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="dotPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="1.5" fill="currentColor" className="text-foreground" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#dotPattern)" />
+        </svg>
+      </div>
+
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-card shadow-soft px-4 py-4">
+      <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md shadow-soft px-4 py-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <img src={logoImg} alt="Noil Logo" className="h-10 w-10 object-contain" />
@@ -221,74 +226,96 @@ const Index = () => {
           <input 
             type="text" 
             placeholder={t('home.searchPlaceholder')} 
-            className="w-full pl-10 pr-4 py-3 bg-secondary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-success/20 transition-all" 
+            className="w-full pl-10 pr-4 py-3 bg-secondary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" 
           />
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="px-4 py-6 space-y-6 max-w-md mx-auto pb-8">
+      <main className="px-4 py-6 space-y-6 max-w-md mx-auto pb-8 relative z-10">
         {/* Meal Reminders */}
         {isLoggedIn && <MealReminder />}
 
-        {/* Offer Carousel */}
-        <div className="relative">
-          <Carousel opts={{
-            align: "start",
-            loop: true
-          }} plugins={[Autoplay({
-            delay: 4000,
-            stopOnInteraction: true
-          })]} className="w-full animate-in fade-in slide-in-from-top-4 duration-500">
-            <CarouselContent>
-              {offerSlides.map(slide => (
-                <CarouselItem key={slide.id}>
-                  <Card className={`relative overflow-hidden ${slide.gradient} border-0 p-6 min-h-[160px]`}>
-                    <div className="absolute inset-0 bg-gradient-radial opacity-40" />
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl opacity-20" />
-                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full blur-2xl opacity-15" />
-                    
-                    <div className="relative z-10 space-y-2">
-                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/15 rounded-full mb-2">
-                        <span className="text-xs font-bold text-white">{slide.badge}</span>
-                      </div>
-                      <h2 className="text-2xl font-bold text-white tracking-tight">
-                        {slide.title}
-                      </h2>
-                      <p className="text-white/90 font-medium text-sm">{slide.subtitle}</p>
-                      <button onClick={slide.action} className="mt-3 px-5 py-2 bg-white text-foreground rounded-lg font-semibold text-sm hover:scale-105 transition-transform shadow-md">
-                        {slide.buttonText}
-                      </button>
-                    </div>
-                  </Card>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="left-2 bg-white/80 hover:bg-white border-0 shadow-md" />
-            <CarouselNext className="right-2 bg-white/80 hover:bg-white border-0 shadow-md" />
-          </Carousel>
-        </div>
-
-        {/* Categories Grid */}
+        {/* Categories Grid - 2x2 */}
         <div className="grid grid-cols-2 gap-4">
           {categories.map((category, index) => (
             <Card 
               key={category.id} 
               onClick={() => requireAuth(() => navigate(category.path))} 
               className="group relative overflow-hidden bg-card shadow-medium border-0 cursor-pointer hover:shadow-lg transition-all duration-500 hover:-translate-y-1 animate-in fade-in duration-700 h-48" 
-              style={{ animationDelay: `${index * 150}ms` }}
+              style={{ animationDelay: `${index * 100}ms` }}
             >
-              {/* Full Image Background */}
-              <img src={category.image} alt={category.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              {category.isIconCard ? (
+                // Icon-based card for Register Restaurant
+                <div className={`absolute inset-0 bg-gradient-to-br ${category.color}`}>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                    <div className="w-16 h-16 rounded-full bg-warning/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                      <Utensils className="w-8 h-8 text-warning" />
+                    </div>
+                    <h3 className="text-base font-bold text-foreground mb-1">{category.title}</h3>
+                    <p className="text-xs text-muted-foreground leading-tight">{category.subtitle}</p>
+                  </div>
+                  {/* Decorative elements */}
+                  <div className="absolute top-2 right-2 w-8 h-8 bg-warning/10 rounded-full blur-xl" />
+                  <div className="absolute bottom-2 left-2 w-6 h-6 bg-warning/10 rounded-full blur-lg" />
+                </div>
+              ) : (
+                // Image-based card
+                <img 
+                  src={category.image} 
+                  alt={category.title} 
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                />
+              )}
             </Card>
           ))}
         </div>
 
-        {/* Footer Branding */}
-        <div className="py-12 space-y-4 animate-in fade-in duration-700" style={{ animationDelay: '600ms' }}>
-          <h2 className="font-black text-muted-foreground/20 leading-tight text-5xl font-serif text-center">
-            {t('home.footerTagline')} <br />
-            ​
+        {/* Quick Actions Section */}
+        <div className="bg-card/80 backdrop-blur-sm rounded-2xl p-4 shadow-soft border border-border/50">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-3">{t('home.quickActions')}</h3>
+          <div className="grid grid-cols-4 gap-3">
+            <button 
+              onClick={() => requireAuth(() => navigate("/profile?tab=rewards"))}
+              className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
+            >
+              <Gift className="w-5 h-5 text-primary" />
+              <span className="text-xs text-foreground font-medium">{t('home.rewardsStore').split(' ')[0]}</span>
+            </button>
+            <button 
+              onClick={() => requireAuth(() => navigate("/oil-calculator"))}
+              className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
+            >
+              <Calculator className="w-5 h-5 text-success" />
+              <span className="text-xs text-foreground font-medium">{t('home.oilCalculator').split(' ')[0]}</span>
+            </button>
+            <button 
+              onClick={() => requireAuth(() => navigate("/community"))}
+              className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
+            >
+              <MessageSquare className="w-5 h-5 text-accent" />
+              <span className="text-xs text-foreground font-medium">{t('common.community').slice(0, 6)}</span>
+            </button>
+            <button 
+              onClick={() => requireAuth(() => navigate("/certified-restaurants"))}
+              className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
+            >
+              <Shield className="w-5 h-5 text-warning" />
+              <span className="text-xs text-foreground font-medium">{t('home.verifiedRestaurants').split(' ')[0]}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Footer Branding with decorative elements */}
+        <div className="relative py-10 space-y-4 animate-in fade-in duration-700" style={{ animationDelay: '400ms' }}>
+          {/* Decorative line */}
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="h-px w-12 bg-gradient-to-r from-transparent to-border" />
+            <div className="w-2 h-2 rounded-full bg-primary/30" />
+            <div className="h-px w-12 bg-gradient-to-l from-transparent to-border" />
+          </div>
+          <h2 className="font-black text-muted-foreground/15 leading-tight text-4xl font-serif text-center">
+            {t('home.footerTagline')}
           </h2>
         </div>
       </main>
