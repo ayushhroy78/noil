@@ -1,10 +1,33 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ChefHat, ShoppingBag, BookOpen, TrendingDown, Users, Award, Shield, ArrowRight, Heart, Activity, Target } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import logoImg from "@/assets/logo.jpg";
+
 const Landing = () => {
   const navigate = useNavigate();
+
+  // Redirect authenticated users to home page
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        navigate("/home", { replace: true });
+      }
+    };
+    
+    checkAuth();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        navigate("/home", { replace: true });
+      }
+    });
+    
+    return () => subscription.unsubscribe();
+  }, [navigate]);
   const features = [{
     icon: Activity,
     title: "Smart Oil Tracking",
