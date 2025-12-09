@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { User, LogOut, Activity, MapPin, ChevronDown, Shield, Landmark, ArrowLeft } from "lucide-react";
+import { User, LogOut, Activity, MapPin, ChevronDown, Shield, Landmark, ArrowLeft, UserCircle } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
@@ -144,6 +144,11 @@ export const TopNav = ({ title, subtitle, showBackButton = false, showSearch = f
             <DropdownMenuContent align="end" className="w-48 bg-card border-border">
               {isLoggedIn ? (
                 <>
+                  <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
+                    <UserCircle className="w-4 h-4 mr-2" />
+                    {t('common.profile')}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate("/certified-restaurants")} className="cursor-pointer">
                     <Shield className="w-4 h-4 mr-2" />
                     {t('home.verifiedRestaurants')}
