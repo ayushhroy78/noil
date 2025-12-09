@@ -441,30 +441,42 @@ const Index = () => {
           <div className="grid grid-cols-4 gap-3">
             <button 
               onClick={() => requireAuth(() => navigate("/profile?tab=rewards"))}
-              className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
+              className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all hover:scale-105 group"
             >
-              <Gift className="w-5 h-5 text-primary" />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow"
+                   style={{ background: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #2dd4bf 100%)' }}>
+                <Gift className="w-5 h-5 text-white" />
+              </div>
               <span className="text-xs text-foreground font-medium">{t('home.rewardsStore').split(' ')[0]}</span>
             </button>
             <button 
               onClick={() => requireAuth(() => navigate("/oil-calculator"))}
-              className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
+              className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all hover:scale-105 group"
             >
-              <Calculator className="w-5 h-5 text-success" />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow"
+                   style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)' }}>
+                <Calculator className="w-5 h-5 text-white" />
+              </div>
               <span className="text-xs text-foreground font-medium">{t('home.oilCalculator').split(' ')[0]}</span>
             </button>
             <button 
               onClick={() => requireAuth(() => navigate("/community"))}
-              className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
+              className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all hover:scale-105 group"
             >
-              <MessageSquare className="w-5 h-5 text-accent" />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow"
+                   style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #a78bfa 100%)' }}>
+                <MessageSquare className="w-5 h-5 text-white" />
+              </div>
               <span className="text-xs text-foreground font-medium">{t('common.community')}</span>
             </button>
             <button 
               onClick={() => requireAuth(() => navigate("/certified-restaurants"))}
-              className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
+              className="flex flex-col items-center gap-2 p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all hover:scale-105 group"
             >
-              <Shield className="w-5 h-5 text-warning" />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow"
+                   style={{ background: 'linear-gradient(135deg, #808000 0%, #6B8E23 50%, #556B2F 100%)' }}>
+                <Shield className="w-5 h-5 text-white" />
+              </div>
               <span className="text-xs text-foreground font-medium">{t('home.verifiedRestaurants').split(' ')[0]}</span>
             </button>
           </div>
