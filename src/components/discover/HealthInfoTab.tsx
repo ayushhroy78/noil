@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,17 +17,18 @@ interface HealthContent {
 }
 
 export const HealthInfoTab = () => {
+  const { t } = useTranslation();
   const [contents, setContents] = useState<HealthContent[]>([]);
   const [selectedContent, setSelectedContent] = useState<HealthContent | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const categories = [
-    { id: "did_you_know", label: "Did You Know?", icon: Lightbulb },
-    { id: "myths_facts", label: "Myths vs Facts", icon: BookOpen },
-    { id: "hidden_oil", label: "Hidden Oil Alerts", icon: AlertTriangle },
-    { id: "cooking_tips", label: "Cooking Tips", icon: ChefHat },
-    { id: "health_risks", label: "Health Risks", icon: Heart },
+    { id: "did_you_know", label: t("discover.didYouKnow"), icon: Lightbulb },
+    { id: "myths_facts", label: t("discover.mythsFacts"), icon: BookOpen },
+    { id: "hidden_oil", label: t("discover.hiddenOilAlerts"), icon: AlertTriangle },
+    { id: "cooking_tips", label: t("discover.cookingTips"), icon: ChefHat },
+    { id: "health_risks", label: t("discover.healthRisks"), icon: Heart },
   ];
 
   useEffect(() => {
@@ -83,7 +85,7 @@ export const HealthInfoTab = () => {
       <div className="space-y-4">
         <Button variant="ghost" size="sm" onClick={() => setSelectedContent(null)}>
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
+          {t("common.back")}
         </Button>
 
         <Card className="shadow-medium">
@@ -125,7 +127,7 @@ export const HealthInfoTab = () => {
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-4">
         <BookOpen className="w-5 h-5 text-primary" />
-        <h2 className="text-lg font-semibold text-foreground">Healthy Life Info</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t("discover.healthyLifeInfo")}</h2>
       </div>
 
       {/* Category Filter */}
@@ -135,7 +137,7 @@ export const HealthInfoTab = () => {
           size="sm"
           onClick={() => setSelectedCategory(null)}
         >
-          All
+          {t("common.all")}
         </Button>
         {categories.map((cat) => {
           const Icon = cat.icon;
