@@ -347,6 +347,8 @@ export const EnhancedChallengesTab = ({ userId }: EnhancedChallengesTabProps) =>
               todayMeals={todayCheckIns.map(c => c.meal_type)}
               dailyPrompt={dailyPrompt}
               onAnswerPrompt={answerDailyPrompt}
+              challengeId={activeChallenge.challenge.id}
+              userChallengeId={activeChallenge.id}
             />
           </TabsContent>
 

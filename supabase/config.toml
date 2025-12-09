@@ -14,3 +14,9 @@ verify_jwt = true
 
 [functions.certify-restaurant]
 verify_jwt = false
+
+[functions.generate-challenge-token]
+verify_jwt = true
+
+[functions.validate-challenge-token]
+verify_jwt = true
