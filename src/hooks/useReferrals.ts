@@ -28,7 +28,7 @@ export const useReferrals = () => {
     },
   });
 
-  // Get referrals made by current user
+  // Get referrals made by current user - optimized with specific columns and limit
   const { data: myReferrals, isLoading: loadingReferrals } = useQuery({
     queryKey: ["my-referrals"],
     queryFn: async () => {
@@ -37,13 +37,15 @@ export const useReferrals = () => {
 
       const { data, error } = await supabase
         .from("referrals")
-        .select("*")
+        .select("id, referred_id, referral_code, status, referrer_rewarded, created_at, completed_at")
         .eq("referrer_id", user.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(100); // Limit for scalability
 
       if (error) throw error;
       return data || [];
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes cache
   });
 
   // Apply referral code during signup

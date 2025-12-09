@@ -41,6 +41,8 @@ export interface CreatePostData {
   image_url?: string;
 }
 
+const POSTS_CACHE_TIME = 2 * 60 * 1000; // 2 minutes
+
 export function useCommunityPosts(
   filter: PostType | 'all' = 'all',
   sort: SortOption = 'new',
@@ -58,9 +60,10 @@ export function useCommunityPosts(
       const { data: { user } } = await supabase.auth.getUser();
       const userId = user?.id;
 
+      // Optimized: specific columns only, use indexes
       let query = supabase
         .from('community_posts')
-        .select('*')
+        .select('id, user_id, title, body, post_type, tags, image_url, created_at, updated_at, is_deleted, is_hidden')
         .eq('is_deleted', false)
         .eq('is_hidden', false);
 

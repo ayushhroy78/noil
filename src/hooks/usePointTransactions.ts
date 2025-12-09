@@ -19,25 +19,29 @@ export interface PointBreakdown {
   count: number;
 }
 
-export const usePointTransactions = () => {
+export const usePointTransactions = (limit: number = 100) => {
   const queryClient = useQueryClient();
 
-  // Fetch all transactions for the current user
+  // Fetch transactions with pagination and specific columns
   const { data: transactions, isLoading } = useQuery({
-    queryKey: ["point-transactions"],
+    queryKey: ["point-transactions", limit],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
+      // Optimized: specific columns, limit, proper indexing
       const { data, error } = await supabase
         .from("point_transactions")
-        .select("*")
+        .select("id, points, transaction_type, source, source_id, description, balance_after, created_at")
         .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(limit);
 
       if (error) throw error;
       return data as PointTransaction[];
     },
+    staleTime: 2 * 60 * 1000, // 2 minutes cache
+    gcTime: 10 * 60 * 1000, // 10 minutes garbage collection
   });
 
   // Calculate breakdown by source
