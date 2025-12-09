@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Activity, TrendingUp, TrendingDown, Share2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { SocialShare } from "@/components/discover/SocialShare";
 import { Button } from "@/components/ui/button";
 
@@ -16,6 +17,8 @@ interface HealthScoreCardProps {
 }
 
 export const HealthScoreCard = ({ data }: HealthScoreCardProps) => {
+  const { t } = useTranslation();
+
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-success";
     if (score >= 50) return "text-warning";
@@ -23,9 +26,9 @@ export const HealthScoreCard = ({ data }: HealthScoreCardProps) => {
   };
 
   const getScoreLabel = (score: number) => {
-    if (score >= 80) return "Healthy";
-    if (score >= 50) return "Needs Improvement";
-    return "High Risk";
+    if (score >= 80) return t('tracker.healthy');
+    if (score >= 50) return t('tracker.needsImprovement');
+    return t('tracker.highRisk');
   };
 
   const getScoreBgColor = (score: number) => {
@@ -46,7 +49,7 @@ export const HealthScoreCard = ({ data }: HealthScoreCardProps) => {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Activity className="w-5 h-5 text-primary" />
-            Health Score
+            {t('tracker.healthScore')}
           </CardTitle>
           <SocialShare
             type="health_score"
@@ -76,13 +79,13 @@ export const HealthScoreCard = ({ data }: HealthScoreCardProps) => {
 
         <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border/40">
           <div className="text-center p-3 rounded-lg bg-card/50">
-            <p className="text-xs text-muted-foreground mb-1">Weekly Avg</p>
+            <p className="text-xs text-muted-foreground mb-1">{t('tracker.weeklyAvg')}</p>
             <p className={`text-xl font-semibold ${getScoreColor(data.weeklyAvg)}`}>
               {data.weeklyAvg}
             </p>
           </div>
           <div className="text-center p-3 rounded-lg bg-card/50">
-            <p className="text-xs text-muted-foreground mb-1">Monthly Avg</p>
+            <p className="text-xs text-muted-foreground mb-1">{t('tracker.monthlyAvg')}</p>
             <p className={`text-xl font-semibold ${getScoreColor(data.monthlyAvg)}`}>
               {data.monthlyAvg}
             </p>
@@ -93,17 +96,17 @@ export const HealthScoreCard = ({ data }: HealthScoreCardProps) => {
           {data.trend === "up" && (
             <>
               <TrendingUp className="w-4 h-4 text-success" />
-              <span className="text-sm text-success font-medium">Improving</span>
+              <span className="text-sm text-success font-medium">{t('tracker.improving')}</span>
             </>
           )}
           {data.trend === "down" && (
             <>
               <TrendingDown className="w-4 h-4 text-destructive" />
-              <span className="text-sm text-destructive font-medium">Declining</span>
+              <span className="text-sm text-destructive font-medium">{t('tracker.declining')}</span>
             </>
           )}
           {data.trend === "stable" && (
-            <span className="text-sm text-muted-foreground font-medium">Stable</span>
+            <span className="text-sm text-muted-foreground font-medium">{t('tracker.stable')}</span>
           )}
         </div>
       </CardContent>
