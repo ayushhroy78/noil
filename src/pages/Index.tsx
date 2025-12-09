@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { User, Search, LogOut, Heart, Store, Activity, Gift, Calculator, MapPin, ChevronDown, LayoutDashboard, Shield, Award, MessageSquare, Landmark } from "lucide-react";
+import { User, Search, LogOut, Heart, Store, Activity, Gift, Calculator, MapPin, ChevronDown, Shield, MessageSquare, Landmark } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BottomNav } from "@/components/BottomNav";
 import Chatbot from "@/components/Chatbot";
@@ -11,7 +11,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import trackerMainImg from "@/assets/tracker-main.jpg";
 import fitMealMainImg from "@/assets/fit-meal-main.jpg";
-import oilhubMainImg from "@/assets/oilhub-main.jpg";
 import discoverMainImg from "@/assets/discover-main.jpg";
 import logoImg from "@/assets/logo.jpg";
 import Autoplay from "embla-carousel-autoplay";
@@ -103,15 +102,6 @@ const Index = () => {
     glowClass: "success-glow",
     action: () => requireAuth(() => navigate("/profile?tab=challenges"))
   }, {
-    id: "store-discount",
-    badge: `🛍️ ${t('carousel.smartStoreSale')}`,
-    title: t('carousel.upTo30Off'),
-    subtitle: t('carousel.certifiedOils'),
-    buttonText: t('carousel.shopNow'),
-    gradient: "bg-gradient-primary",
-    glowClass: "primary-glow",
-    action: () => requireAuth(() => navigate("/oilhub"))
-  }, {
     id: "register-restaurant",
     badge: `🍴 ${t('carousel.partnerWithUs')}`,
     title: t('carousel.registerRestaurant'),
@@ -136,13 +126,6 @@ const Index = () => {
     image: fitMealMainImg,
     color: "from-green-500/10 to-emerald-500/10",
     path: "/fit-meal"
-  }, {
-    id: "store",
-    title: t('categories.oilHub'),
-    subtitle: t('categories.oilHubSubtitle'),
-    image: oilhubMainImg,
-    color: "from-orange-500/10 to-amber-500/10",
-    path: "/oilhub"
   }, {
     id: "discover",
     title: t('categories.discover'),
