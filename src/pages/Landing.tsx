@@ -1,101 +1,79 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { 
-  Droplets, 
-  ChefHat, 
-  ShoppingBag, 
-  BookOpen, 
-  TrendingDown, 
-  Users, 
-  Award, 
-  Shield,
-  ArrowRight,
-  Heart,
-  Activity,
-  Target
-} from "lucide-react";
+import { ChefHat, ShoppingBag, BookOpen, TrendingDown, Users, Award, Shield, ArrowRight, Heart, Activity, Target } from "lucide-react";
 import logoImg from "@/assets/logo.jpg";
-
 const Landing = () => {
   const navigate = useNavigate();
-
-  const features = [
-    {
-      icon: Activity,
-      title: "Smart Oil Tracking",
-      description: "Track your daily oil consumption with bottle tracking, barcode scanning, and manual logging. Get real-time insights on your usage patterns.",
-      color: "from-blue-500 to-cyan-500"
-    },
-    {
-      icon: ChefHat,
-      title: "Fit Meal Recipes",
-      description: "Discover 100+ low-oil recipes or create custom ones with our AI Recipe Builder. Cook healthier without compromising taste.",
-      color: "from-green-500 to-emerald-500"
-    },
-    {
-      icon: ShoppingBag,
-      title: "OilHub Store",
-      description: "Shop certified healthy oils and IoT devices that automatically track your consumption. Premium products, delivered to your door.",
-      color: "from-orange-500 to-amber-500"
-    },
-    {
-      icon: BookOpen,
-      title: "Health Education",
-      description: "Learn about oil myths, hidden oil in foods, and healthy cooking tips. Take quizzes and earn rewards while learning.",
-      color: "from-purple-500 to-pink-500"
-    },
-    {
-      icon: Target,
-      title: "Health Score System",
-      description: "Get a personalized health score (0-100) based on your oil consumption, quality of oils used, and tracking consistency.",
-      color: "from-teal-500 to-green-500"
-    },
-    {
-      icon: Award,
-      title: "Gamified Rewards",
-      description: "Complete challenges, earn points, unlock badges, and redeem rewards. Compete on leaderboards and track your progress.",
-      color: "from-yellow-500 to-orange-500"
-    }
-  ];
-
-  const stats = [
-    { value: "10K+", label: "Active Users" },
-    { value: "30%", label: "Avg Oil Reduction" },
-    { value: "500+", label: "Healthy Recipes" },
-    { value: "100+", label: "Certified Restaurants" }
-  ];
-
-  const benefits = [
-    {
-      icon: Heart,
-      title: "Better Heart Health",
-      description: "Reduce risk of cardiovascular diseases by managing oil intake"
-    },
-    {
-      icon: TrendingDown,
-      title: "Weight Management",
-      description: "Lower calorie consumption naturally by reducing excess oil"
-    },
-    {
-      icon: Users,
-      title: "Family Wellness",
-      description: "Track oil consumption for your entire household"
-    },
-    {
-      icon: Shield,
-      title: "Verified Partners",
-      description: "Blockchain-certified restaurants committed to healthy cooking"
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-background">
+  const features = [{
+    icon: Activity,
+    title: "Smart Oil Tracking",
+    description: "Track your daily oil consumption with bottle tracking, barcode scanning, and manual logging. Get real-time insights on your usage patterns.",
+    color: "from-blue-500 to-cyan-500"
+  }, {
+    icon: ChefHat,
+    title: "Fit Meal Recipes",
+    description: "Discover 100+ low-oil recipes or create custom ones with our AI Recipe Builder. Cook healthier without compromising taste.",
+    color: "from-green-500 to-emerald-500"
+  }, {
+    icon: ShoppingBag,
+    title: "OilHub Store",
+    description: "Shop certified healthy oils and IoT devices that automatically track your consumption. Premium products, delivered to your door.",
+    color: "from-orange-500 to-amber-500"
+  }, {
+    icon: BookOpen,
+    title: "Health Education",
+    description: "Learn about oil myths, hidden oil in foods, and healthy cooking tips. Take quizzes and earn rewards while learning.",
+    color: "from-purple-500 to-pink-500"
+  }, {
+    icon: Target,
+    title: "Health Score System",
+    description: "Get a personalized health score (0-100) based on your oil consumption, quality of oils used, and tracking consistency.",
+    color: "from-teal-500 to-green-500"
+  }, {
+    icon: Award,
+    title: "Gamified Rewards",
+    description: "Complete challenges, earn points, unlock badges, and redeem rewards. Compete on leaderboards and track your progress.",
+    color: "from-yellow-500 to-orange-500"
+  }];
+  const stats = [{
+    value: "10K+",
+    label: "Active Users"
+  }, {
+    value: "30%",
+    label: "Avg Oil Reduction"
+  }, {
+    value: "500+",
+    label: "Healthy Recipes"
+  }, {
+    value: "100+",
+    label: "Certified Restaurants"
+  }];
+  const benefits = [{
+    icon: Heart,
+    title: "Better Heart Health",
+    description: "Reduce risk of cardiovascular diseases by managing oil intake"
+  }, {
+    icon: TrendingDown,
+    title: "Weight Management",
+    description: "Lower calorie consumption naturally by reducing excess oil"
+  }, {
+    icon: Users,
+    title: "Family Wellness",
+    description: "Track oil consumption for your entire household"
+  }, {
+    icon: Shield,
+    title: "Verified Partners",
+    description: "Blockchain-certified restaurants committed to healthy cooking"
+  }];
+  return <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-success/10" />
         <div className="absolute top-20 right-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 left-10 w-96 h-96 bg-success/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute bottom-20 left-10 w-96 h-96 bg-success/20 rounded-full blur-3xl animate-pulse" style={{
+        animationDelay: "1s"
+      }} />
         
         <div className="relative z-10 max-w-6xl mx-auto px-4 py-16 lg:py-24">
           <nav className="flex items-center justify-between mb-16">
@@ -110,7 +88,7 @@ const Landing = () => {
 
           <div className="text-center max-w-3xl mx-auto space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-4">
-              <Droplets className="w-4 h-4" />
+              
               India's #1 Oil Wellness Platform
             </div>
             
@@ -124,11 +102,7 @@ const Landing = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button 
-                size="lg" 
-                onClick={() => navigate("/auth")}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
-              >
+              <Button size="lg" onClick={() => navigate("/auth")} className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
                 Get Started
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
@@ -137,15 +111,10 @@ const Landing = () => {
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 max-w-4xl mx-auto">
-            {stats.map((stat, index) => (
-              <div 
-                key={index} 
-                className="text-center p-6 bg-card/50 backdrop-blur-sm rounded-2xl border border-border/50"
-              >
+            {stats.map((stat, index) => <div key={index} className="text-center p-6 bg-card/50 backdrop-blur-sm rounded-2xl border border-border/50">
                 <div className="text-3xl md:text-4xl font-bold text-primary">{stat.value}</div>
                 <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
       </section>
@@ -164,18 +133,13 @@ const Landing = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <Card 
-                key={index}
-                className="p-6 bg-card border-border/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group"
-              >
+            {features.map((feature, index) => <Card key={index} className="p-6 bg-card border-border/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group">
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                   <feature.icon className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-foreground mb-2">{feature.title}</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -194,18 +158,13 @@ const Landing = () => {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {benefits.map((benefit, index) => (
-              <div 
-                key={index}
-                className="text-center p-6 rounded-2xl bg-gradient-to-b from-card to-secondary/20 border border-border/50"
-              >
+            {benefits.map((benefit, index) => <div key={index} className="text-center p-6 rounded-2xl bg-gradient-to-b from-card to-secondary/20 border border-border/50">
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <benefit.icon className="w-7 h-7 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">{benefit.title}</h3>
                 <p className="text-sm text-muted-foreground">{benefit.description}</p>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
       </section>
@@ -220,11 +179,7 @@ const Landing = () => {
             Join thousands of families who are already cooking healthier, living better, 
             and saving money on cooking oil.
           </p>
-          <Button 
-            size="lg" 
-            onClick={() => navigate("/auth")}
-            className="bg-white text-primary hover:bg-white/90 px-10 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1"
-          >
+          <Button size="lg" onClick={() => navigate("/auth")} className="bg-white text-primary hover:bg-white/90 px-10 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
             Get Started Free
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
@@ -253,8 +208,6 @@ const Landing = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Landing;
