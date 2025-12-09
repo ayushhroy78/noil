@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
@@ -29,13 +30,14 @@ interface RecipeDetailProps {
 
 const RecipeDetail = ({ recipe, onBack, isGenerated = false }: RecipeDetailProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [isLogging, setIsLogging] = useState(false);
 
   const getOilTag = (ml: number) => {
-    if (ml <= 5) return { label: "Very low oil", color: "bg-green-500/10 text-green-700" };
-    if (ml <= 10) return { label: "Low oil", color: "bg-emerald-500/10 text-emerald-700" };
-    return { label: "Moderate oil", color: "bg-yellow-500/10 text-yellow-700" };
+    if (ml <= 5) return { label: t('recipes.veryLowOil'), color: "bg-green-500/10 text-green-700" };
+    if (ml <= 10) return { label: t('recipes.lowOil'), color: "bg-emerald-500/10 text-emerald-700" };
+    return { label: t('recipes.moderateOil'), color: "bg-yellow-500/10 text-yellow-700" };
   };
 
   const oilTag = getOilTag(recipe.oil_estimate_ml);
@@ -48,8 +50,8 @@ const RecipeDetail = ({ recipe, onBack, isGenerated = false }: RecipeDetailProps
       
       if (!user) {
         toast({
-          title: "Authentication Required",
-          description: "Please sign in to log oil consumption",
+          title: t('recipes.authRequired'),
+          description: t('recipes.signInToLog'),
           variant: "destructive",
         });
         navigate("/auth");
@@ -67,14 +69,14 @@ const RecipeDetail = ({ recipe, onBack, isGenerated = false }: RecipeDetailProps
       if (error) throw error;
 
       toast({
-        title: "Logged Successfully",
-        description: `${recipe.oil_estimate_ml}ml oil logged to tracking`,
+        title: t('recipes.loggedSuccessfully'),
+        description: `${recipe.oil_estimate_ml}ml ${t('recipes.loggedToTracking')}`,
       });
 
     } catch (error) {
       console.error('Error logging to tracking:', error);
       toast({
-        title: "Error",
+        title: t('common.error'),
         description: "Failed to log oil consumption",
         variant: "destructive",
       });
@@ -110,7 +112,7 @@ const RecipeDetail = ({ recipe, onBack, isGenerated = false }: RecipeDetailProps
           >
             <ArrowLeft className="w-5 h-5 text-primary" />
           </button>
-          <h1 className="text-xl font-bold text-foreground">Recipe Details</h1>
+          <h1 className="text-xl font-bold text-foreground">{t('recipes.recipeDetails')}</h1>
         </div>
       </header>
 
@@ -139,7 +141,7 @@ const RecipeDetail = ({ recipe, onBack, isGenerated = false }: RecipeDetailProps
           <div className="flex items-center gap-6 text-sm text-muted-foreground pt-2 border-t">
             <div className="flex items-center gap-2">
               <Droplet className="w-5 h-5 text-primary" />
-              <span className="font-medium">{recipe.oil_estimate_ml}ml oil</span>
+              <span className="font-medium">{recipe.oil_estimate_ml}ml {t('recipes.oilUsed').toLowerCase()}</span>
             </div>
             {displayCalories && (
               <div className="flex items-center gap-2">
@@ -158,14 +160,14 @@ const RecipeDetail = ({ recipe, onBack, isGenerated = false }: RecipeDetailProps
 
         {recipe.health_benefits && (
           <Card className="p-4 bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
-            <h3 className="font-semibold text-foreground mb-2">Health Benefits</h3>
+            <h3 className="font-semibold text-foreground mb-2">{t('recipes.healthBenefits')}</h3>
             <p className="text-sm text-muted-foreground">{recipe.health_benefits}</p>
           </Card>
         )}
 
         <Card className="p-6 space-y-4">
           <div>
-            <h3 className="text-lg font-semibold text-foreground mb-3">Ingredients</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-3">{t('recipes.ingredients')}</h3>
             <ul className="space-y-2">
               {recipe.ingredients.map((ingredient, index) => (
                 <li key={index} className="flex items-start gap-2 text-sm">
@@ -179,7 +181,7 @@ const RecipeDetail = ({ recipe, onBack, isGenerated = false }: RecipeDetailProps
 
         <Card className="p-6 space-y-4">
           <div>
-            <h3 className="text-lg font-semibold text-foreground mb-3">Instructions</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-3">{t('recipes.instructions')}</h3>
             <ol className="space-y-3">
               {recipe.steps.map((step, index) => (
                 <li key={index} className="flex gap-3 text-sm">
@@ -198,9 +200,9 @@ const RecipeDetail = ({ recipe, onBack, isGenerated = false }: RecipeDetailProps
           <div className="flex items-start gap-3 mb-3">
             <ShoppingCart className="w-5 h-5 text-green-600 mt-0.5" />
             <div>
-              <h4 className="font-semibold text-foreground mb-1">Order This Meal</h4>
+              <h4 className="font-semibold text-foreground mb-1">{t('recipes.orderThisMeal')}</h4>
               <p className="text-sm text-muted-foreground">
-                Don't feel like cooking? Order this healthy meal prepared fresh for you
+                {t('recipes.orderMealDesc')}
               </p>
             </div>
           </div>
@@ -209,7 +211,7 @@ const RecipeDetail = ({ recipe, onBack, isGenerated = false }: RecipeDetailProps
             className="w-full bg-green-600 hover:bg-green-700 text-white"
           >
             <ShoppingCart className="w-4 h-4 mr-2" />
-            Order Now via WhatsApp
+            {t('recipes.orderNowWhatsApp')}
           </Button>
         </Card>
 
@@ -217,9 +219,9 @@ const RecipeDetail = ({ recipe, onBack, isGenerated = false }: RecipeDetailProps
           <div className="flex items-start gap-3 mb-3">
             <Plus className="w-5 h-5 text-primary mt-0.5" />
             <div>
-              <h4 className="font-semibold text-foreground mb-1">Log to Tracking</h4>
+              <h4 className="font-semibold text-foreground mb-1">{t('recipes.logToTracking')}</h4>
               <p className="text-sm text-muted-foreground">
-                Add this recipe's oil consumption ({recipe.oil_estimate_ml}ml) to your daily tracking
+                {t('recipes.logToTrackingDesc')} ({recipe.oil_estimate_ml}ml)
               </p>
             </div>
           </div>
@@ -228,7 +230,7 @@ const RecipeDetail = ({ recipe, onBack, isGenerated = false }: RecipeDetailProps
             disabled={isLogging}
             className="w-full"
           >
-            {isLogging ? "Logging..." : "Cooked This – Log Oil Usage"}
+            {isLogging ? t('recipes.logging') : t('recipes.cookedThisLog')}
           </Button>
         </Card>
       </main>

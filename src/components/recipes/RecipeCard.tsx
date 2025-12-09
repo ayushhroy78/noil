@@ -1,9 +1,11 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Droplet, Flame, ChefHat, Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import swiggyLogo from "@/assets/swiggy-logo.png";
 import zomatoLogo from "@/assets/zomato-logo.svg";
 import eatclubLogo from "@/assets/eatclub-logo.png";
+
 interface RecipeCardProps {
   id: string;
   name: string;
@@ -28,21 +30,23 @@ const RecipeCard = ({
   onClick,
   onOrderNow,
 }: RecipeCardProps) => {
+  const { t } = useTranslation();
+
   const getOilTag = (ml: number) => {
     if (ml <= 5) return { 
-      label: "Very low oil", 
+      label: t('recipes.veryLowOil'), 
       gradient: "from-emerald-500/20 to-green-500/20",
       textColor: "text-emerald-700 dark:text-emerald-400",
       icon: "✨"
     };
     if (ml <= 10) return { 
-      label: "Low oil", 
+      label: t('recipes.lowOil'), 
       gradient: "from-green-500/20 to-lime-500/20",
       textColor: "text-green-700 dark:text-green-400",
       icon: "🌿"
     };
     return { 
-      label: "Moderate oil", 
+      label: t('recipes.moderateOil'), 
       gradient: "from-yellow-500/20 to-amber-500/20",
       textColor: "text-yellow-700 dark:text-yellow-400",
       icon: "⚖️"
@@ -134,14 +138,14 @@ const RecipeCard = ({
             )}
           </div>
           <span className="text-xs text-primary font-semibold group-hover:underline">
-            View Recipe →
+            {t('recipes.viewRecipe')}
           </span>
         </div>
 
         {/* Order Now Logos */}
         {onOrderNow && (
           <div className="pt-3 border-t border-border/50">
-            <p className="text-xs text-muted-foreground mb-2 text-center">Order via</p>
+            <p className="text-xs text-muted-foreground mb-2 text-center">{t('recipes.orderVia')}</p>
             <div className="flex items-center justify-center gap-3">
               <button
                 onClick={(e) => {

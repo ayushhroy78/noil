@@ -37,7 +37,7 @@ const FitMeal = () => {
     } catch (error) {
       console.error('Error fetching recipes:', error);
       toast({
-        title: "Error",
+        title: t('common.error'),
         description: "Failed to load recipes",
         variant: "destructive",
       });
@@ -144,7 +144,7 @@ const FitMeal = () => {
                             : "bg-secondary/50 text-foreground hover:bg-secondary hover:scale-105"
                         }`}
                       >
-                        {type === "all" ? "All Meals" : type.charAt(0).toUpperCase() + type.slice(1)}
+                        {type === "all" ? t('recipes.allMeals') : type.charAt(0).toUpperCase() + type.slice(1)}
                       </button>
                     ))}
                   </div>
@@ -164,7 +164,7 @@ const FitMeal = () => {
                             : "bg-secondary/50 text-foreground hover:bg-secondary hover:scale-105"
                         }`}
                       >
-                        {cuisine === "all" ? "All Cuisines" : cuisine}
+                        {cuisine === "all" ? t('recipes.allCuisines') : cuisine}
                       </button>
                     ))}
                   </div>
