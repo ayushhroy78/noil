@@ -145,7 +145,7 @@ export const ChallengesTab = ({ userId }: ChallengesTabProps) => {
       case "completed":
         return <Badge className="bg-success text-white">Completed</Badge>;
       default:
-        return <Badge variant="outline">Not Started</Badge>;
+        return <Badge variant="outline">{t("challenges.notStarted")}</Badge>;
     }
   };
 
